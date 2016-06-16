@@ -1,0 +1,22 @@
+{
+  "name": "hello-world",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "dtsm install",
+    "prestart": "tsc",
+    "start": "node .built/main.js"
+  },
+  "dependencies": {
+    "graphql": "^0.6.0",
+    "graphql-decorator": "file:../../",
+    "typescript": "^1.8.10"
+  },
+  "keywords": [],
+  "author": "Quramy",
+  "license": "ISC",
+  "devDependencies": {
+    "dtsm": "^1.1.0"
+  }
+}
