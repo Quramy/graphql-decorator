@@ -1,0 +1,32 @@
+{
+  "name": "graphql-decorator",
+  "version": "0.1.0",
+  "description": "Creates GraphQL Schema from decorated TypeScript Class",
+  "main": "lib/index.js",
+  "scripts": {
+    "typings": "dtsm install",
+    "build": "tsc",
+    "lint": "tslint \"src/**/*.ts\"",
+    "test": "npm run build && npm run lint && mocha lib/**/*.spec.js",
+    "watch": "tsc -w",
+    "watch-test": "mocha lib/**/*.spec.js --watch"
+  },
+  "keywords": [
+    "graphql",
+    "typescript",
+    "decorators"
+  ],
+  "author": "Quramy",
+  "license": "MIT",
+  "dependencies": {
+    "graphql": "^0.6.0",
+    "reflect-metadata": "^0.1.3"
+  },
+  "devDependencies": {
+    "dtsm": "^1.1.0",
+    "mocha": "^2.5.3",
+    "tslint": "^3.11.0",
+    "typescript": "^1.8.10"
+  },
+  "typings": "lib/index.d.ts"
+}

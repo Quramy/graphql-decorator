@@ -1,0 +1,6 @@
+src/
+examples/
+typings/
+*.spec.js
+*.spec.js.map
+*.spec.d.ts
