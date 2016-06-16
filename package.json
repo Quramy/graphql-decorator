@@ -8,7 +8,7 @@
   },
   "scripts": {
     "typings": "dtsm install",
-    "build": "tsc",
+    "build": "rimraf lib && tsc",
     "lint": "tslint \"src/**/*.ts\"",
     "test": "npm run build && npm run lint && mocha lib/**/*.spec.js",
     "watch": "tsc -w",
@@ -28,6 +28,7 @@
   "devDependencies": {
     "dtsm": "^1.1.0",
     "mocha": "^2.5.3",
+    "rimraf": "^2.5.2",
     "tslint": "^3.11.0",
     "typescript": "^1.8.10"
   },

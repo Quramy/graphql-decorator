@@ -1,6 +1,7 @@
 import * as D from "./decorator";
-import { fieldTypeFactory , clearObjectTypeRepository } from "./schema_factory";
 import * as assert from "assert";
+import { clearObjectTypeRepository } from "./object_type_factory";
+import { fieldTypeFactory } from "./field_type_factory";
 const graphql = require("graphql");
 
 describe("fieldTypeFactory", function() {
