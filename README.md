@@ -1,4 +1,4 @@
-# graphql-decorator
+# graphql-decorator [![Build Status](https://travis-ci.org/Quramy/graphql-decorator.svg?branch=master)](https://travis-ci.org/Quramy/graphql-decorator)
 
 Library to help build GraphQL schema with TypeScript.
 
