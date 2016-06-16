@@ -9,8 +9,12 @@ node_js:
 - 4.4.5
 before_install:
 - npm install
+- npm run typings
 script:
 - npm run test
+- cd examples/hello-world
+- npm install
+- npm start
 deploy:
   provider: npm
   email: yosuke.kurami@gmail.com
