@@ -11,10 +11,7 @@ before_install:
 - npm install
 - npm run typings
 script:
-- npm run test
-- cd examples/hello-world
-- npm install
-- npm start
+- sh ./runtest.sh
 deploy:
   provider: npm
   email: yosuke.kurami@gmail.com
