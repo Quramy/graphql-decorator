@@ -40,7 +40,7 @@ async function main() {
 main();
 ```
 
-```
+```sh
 tsc main.ts && node main.js
 ```
 
