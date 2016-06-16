@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Creates GraphQL Schema from decorated TypeScript Class",
   "main": "lib/index.js",
+  "engines": {
+    "node": ">=4.4.0"
+  },
   "scripts": {
     "typings": "dtsm install",
     "build": "tsc",
