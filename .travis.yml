@@ -11,9 +11,6 @@ before_install:
 - npm install
 script:
 - npm run test
-- cd examples/hello-world
-- npm i
-- npm start
 deploy:
   provider: npm
   email: yosuke.kurami@gmail.com
