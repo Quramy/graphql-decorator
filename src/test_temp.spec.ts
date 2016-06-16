@@ -55,7 +55,8 @@ describe("objectTypeFactory", function() {
             objectTypeFactory(Obj);
             assert.fail();
         } catch (e) {
-            // TODO
+            const err = e as SchemaFactoryError;
+            assert(err.type === SchemaFactoryErrorType.NO_FIELD);
         }
     });
 
@@ -75,7 +76,6 @@ describe("schemaFactory", function() {
             schemaFactory(Schema);
             assert(false, "Assertion Error");
         } catch (e) {
-            assert(e instanceof SchemaFactoryError);
             const err = e as SchemaFactoryError;
             assert(err.type === SchemaFactoryErrorType.NO_QUERY_FIELD);
         }

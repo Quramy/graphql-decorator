@@ -54,6 +54,9 @@ export function objectTypeFactory(target: Function) {
     if (typeFromRepository) {
         return typeFromRepository;
     }
+    if (!Reflect.hasMetadata("gq_fields", target.prototype)) {
+        throw new SchemaFactoryError("Class annotated @ObjectType() should has one or more fields annotated by @Filed()", SchemaFactoryErrorType.NO_FIELD);
+    }
     const fieldMetadataList = Reflect.getMetadata("gq_fields", target.prototype) as FieldTypeMetadata[];
     const fields: {[key: string]: any} = {};
     fieldMetadataList.forEach(def => {
@@ -69,6 +72,7 @@ export function objectTypeFactory(target: Function) {
 
 export enum SchemaFactoryErrorType {
     NO_QUERY_FIELD,
+    NO_FIELD,
 }
 
 export class SchemaFactoryError extends Error {
