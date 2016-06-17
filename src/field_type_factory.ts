@@ -1,4 +1,4 @@
-import { FieldTypeMetadata , ArgumentMetadata ,  GQ_OBJECT_METADATA_KEY } from "./decorator";
+import { FieldTypeMetadata , ArgumentMetadata ,  GQ_OBJECT_METADATA_KEY , TypeMetadata } from "./decorator";
 import { objectTypeFactory } from "./object_type_factory";
 import { SchemaFactoryError , SchemaFactoryErrorType } from "./schema_factory";
 const graphql = require("graphql");
@@ -8,7 +8,7 @@ export interface ResolverHolder {
     argumentConfigMap: {[name: string]: any; };
 }
 
-function convertType(typeFn: Function, metadata: ArgumentMetadata, isInput: boolean) {
+function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean) {
     let returnType: any;
     if (!metadata.explicitType) {
         if (typeFn === Number) {
@@ -18,11 +18,13 @@ function convertType(typeFn: Function, metadata: ArgumentMetadata, isInput: bool
         } else if (typeFn === Boolean) {
              returnType = graphql.GraphQLBoolean;
         } else if (typeFn && typeFn.prototype && Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, typeFn.prototype)) {
+            // recursively call objectFactory
             returnType = objectTypeFactory(typeFn, isInput);
         }
     } else {
         returnType = metadata.explicitType;
         if (returnType && returnType.prototype && Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, returnType.prototype)) {
+            // recursively call objectFactory
             returnType = objectTypeFactory(returnType, isInput);
         }
     }
@@ -72,6 +74,7 @@ export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, 
     const isFunctionType = Reflect.getMetadata("design:type", target.prototype, metadata.name) === Function;
 
     if (isInput && isFunctionType) {
+        // TODO write test
         throw new SchemaFactoryError("Field declared in a class annotated by @InputObjectType should not be a function", SchemaFactoryErrorType.INPUT_FIELD_SHOULD_NOT_BE_FUNC);
     }
 

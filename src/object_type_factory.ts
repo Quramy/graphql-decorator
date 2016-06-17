@@ -1,4 +1,4 @@
-import { FieldTypeMetadata , GQ_OBJECT_METADATA_KEY , GQ_FIELDS_KEY } from "./decorator";
+import { FieldTypeMetadata , GQ_OBJECT_METADATA_KEY , GQ_FIELDS_KEY , ObjectTypeMetadata } from "./decorator";
 import { SchemaFactoryError , SchemaFactoryErrorType } from "./schema_factory";
 import { fieldTypeFactory } from "./field_type_factory";
 const graphql = require("graphql");
@@ -10,8 +10,8 @@ export function clearObjectTypeRepository() {
 }
 
 export function objectTypeFactory(target: Function, isInput?: boolean) {
-    const objectTypeDef = Reflect.getMetadata(GQ_OBJECT_METADATA_KEY, target.prototype);
-    const typeFromRepository = objectTypeRepository[objectTypeDef.name];
+    const metadata = Reflect.getMetadata(GQ_OBJECT_METADATA_KEY, target.prototype) as ObjectTypeMetadata;
+    const typeFromRepository = objectTypeRepository[metadata.name];
     if (typeFromRepository) {
         return typeFromRepository;
     }
@@ -23,10 +23,16 @@ export function objectTypeFactory(target: Function, isInput?: boolean) {
     fieldMetadataList.forEach(def => {
         fields[def.name] = fieldTypeFactory(target, def);
     });
-    const ret = new graphql.GraphQLObjectType({
-        name: objectTypeDef.name,
-        fields,
-    });
-    objectTypeRepository[objectTypeDef.name] = ret;
-    return ret;
+    if (isInput) {
+        objectTypeRepository[metadata.name] = new graphql.GraphQLInputObjectType({
+            name: metadata.name,
+            fields,
+        });
+    } else {
+        objectTypeRepository[metadata.name] = new graphql.GraphQLObjectType({
+            name: metadata.name,
+            fields,
+        });
+    }
+    return objectTypeRepository[metadata.name];
 }

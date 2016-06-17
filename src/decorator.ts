@@ -46,11 +46,14 @@ export interface ArgumentOption {
     type?: any;
 }
 
-export interface ArgumentMetadata {
+export interface TypeMetadata {
     name: string;
     isNonNull?: boolean;
     isList?: boolean;
     explicitType?: any;
+}
+
+export interface ArgumentMetadata extends TypeMetadata {
 }
 
 export interface FieldTypeMetadata extends ArgumentMetadata {
