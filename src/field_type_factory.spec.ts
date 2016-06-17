@@ -1,14 +1,29 @@
 import * as D from "./decorator";
 import * as assert from "assert";
 import { clearObjectTypeRepository } from "./object_type_factory";
-import { fieldTypeFactory } from "./field_type_factory";
+import { fieldTypeFactory , resolverFactory } from "./field_type_factory";
 const graphql = require("graphql");
 
-describe("fieldTypeFactory", function() {
+describe("resolverFactory", function() {
     beforeEach(function() {
         clearObjectTypeRepository();
     });
 
+    describe("resolveFunction", function() {
+        it("args", function() {
+            class Obj {
+                @D.Field() twice(input: number): number {
+                    return input * 2;
+                }
+            }
+            const fn = resolverFactory(Obj, "twice", [{name: "input"}]).fn;
+            const actual = fn(new Obj(), {input: 1});
+            assert(actual === 2);
+        });
+    });
+});
+
+describe("fieldTypeFactory", function() {
     describe("with implicit type", function() {
         it("returns null with a class which has no field", function() {
             class Obj {}
@@ -74,7 +89,7 @@ describe("fieldTypeFactory", function() {
         it("returns resolve function with a class which has a function field", function() {
             class Obj { @D.Field() title(): string { return "hello"; }; }
             const actual = fieldTypeFactory(Obj, {name: "title"});
-            assert(actual.resolve === Obj.prototype.title);
+            assert(!!actual.resolve);
         });
     });
 
@@ -96,7 +111,7 @@ describe("fieldTypeFactory", function() {
         it("returns resolve function with a class which has a function field", function() {
             class Obj { @D.Field() title() { return "hello"; } }
             const actual = fieldTypeFactory(Obj, {name: "title", explicitType: graphql.GraphQLString});
-            assert(actual.resolve === Obj.prototype.title);
+            assert(!!actual.resolve);
         });
     });
 

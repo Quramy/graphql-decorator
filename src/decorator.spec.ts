@@ -42,4 +42,12 @@ describe("Decorators", function() {
             assert(actual.isNonNull === true);
         });
     });
+
+    describe("@Arg", function() {
+        it("creates FieldTypeMetadata whose has args", function() {
+            class Obj { @D.Field() someFunction(@D.Arg({name: "input"}) input: any) { } }
+            const actual = Reflect.getMetadata("gq_fields", Obj.prototype)[0] as FieldTypeMetadata;
+            assert(actual.args[0].name === "input");
+        });
+    });
 });
