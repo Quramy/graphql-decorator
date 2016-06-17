@@ -14,11 +14,20 @@ describe("schemaFactory", function() {
         clearObjectTypeRepository();
     });
 
-    it("throws an error with no @Query schema class", function() {
+    it("throws an error with Schema class not annotated", function() {
+        class Schema { }
+        try {
+            schemaFactory(Schema);
+        } catch (e) {
+            const err = e as SchemaFactoryError;
+            assert(err.type === SchemaFactoryErrorType.NO_SCHEMA_ANNOTATION);
+        }
+    });
+
+    it("throws an error with Schema class which has no field annotated by @Query()", function() {
         @D.Schema() class Schema { }
         try {
             schemaFactory(Schema);
-            assert(false, "Assertion Error");
         } catch (e) {
             const err = e as SchemaFactoryError;
             assert(err.type === SchemaFactoryErrorType.NO_QUERY_FIELD);

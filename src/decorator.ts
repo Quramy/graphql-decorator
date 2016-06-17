@@ -110,6 +110,6 @@ export function Arg(option: ArgumentOption) {
 
 export function Schema() {
     return (target: Function) => {
+        Reflect.defineMetadata("gq_schema", {}, target);
     };
 }
-
