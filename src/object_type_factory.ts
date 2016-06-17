@@ -16,7 +16,7 @@ export function objectTypeFactory(target: Function) {
         return typeFromRepository;
     }
     if (!Reflect.hasMetadata(GQ_FIELDS_KEY, target.prototype)) {
-        throw new SchemaFactoryError("Class annotated @ObjectType() should has one or more fields annotated by @Filed()", SchemaFactoryErrorType.NO_FIELD);
+        throw new SchemaFactoryError("Class annotated by @ObjectType() should has one or more fields annotated by @Filed()", SchemaFactoryErrorType.NO_FIELD);
     }
     const fieldMetadataList = Reflect.getMetadata(GQ_FIELDS_KEY, target.prototype) as FieldTypeMetadata[];
     const fields: {[key: string]: any} = {};
