@@ -10,10 +10,14 @@ export function clearObjectTypeRepository() {
 }
 
 export function objectTypeFactory(target: Function, isInput?: boolean) {
-    const metadata = Reflect.getMetadata(GQ_OBJECT_METADATA_KEY, target.prototype) as ObjectTypeMetadata;
-    const typeFromRepository = objectTypeRepository[metadata.name];
+    const objectTypeMetadata = Reflect.getMetadata(GQ_OBJECT_METADATA_KEY, target.prototype) as ObjectTypeMetadata;
+    const typeFromRepository = objectTypeRepository[objectTypeMetadata.name];
     if (typeFromRepository) {
         return typeFromRepository;
+    }
+    if (!!objectTypeMetadata.isInput !== !!isInput) {
+        // TODO write test
+        throw new SchemaFactoryError("", SchemaFactoryErrorType.INVALID_OBJECT_TYPE_METADATA);
     }
     if (!Reflect.hasMetadata(GQ_FIELDS_KEY, target.prototype)) {
         throw new SchemaFactoryError("Class annotated by @ObjectType() should has one or more fields annotated by @Filed()", SchemaFactoryErrorType.NO_FIELD);
@@ -24,15 +28,15 @@ export function objectTypeFactory(target: Function, isInput?: boolean) {
         fields[def.name] = fieldTypeFactory(target, def);
     });
     if (isInput) {
-        objectTypeRepository[metadata.name] = new graphql.GraphQLInputObjectType({
-            name: metadata.name,
+        objectTypeRepository[objectTypeMetadata.name] = new graphql.GraphQLInputObjectType({
+            name: objectTypeMetadata.name,
             fields,
         });
     } else {
-        objectTypeRepository[metadata.name] = new graphql.GraphQLObjectType({
-            name: metadata.name,
+        objectTypeRepository[objectTypeMetadata.name] = new graphql.GraphQLObjectType({
+            name: objectTypeMetadata.name,
             fields,
         });
     }
-    return objectTypeRepository[metadata.name];
+    return objectTypeRepository[objectTypeMetadata.name];
 }
