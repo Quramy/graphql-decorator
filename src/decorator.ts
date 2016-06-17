@@ -1,10 +1,13 @@
 import "reflect-metadata";
 
-export const GQ_OBJECT_METADATA_KEY = "gq_object_type";
+export const GQ_QUERY_KEY                   = "gq_query";
+export const GQ_FIELDS_KEY                  = "gq_fields";
+export const GQ_OBJECT_METADATA_KEY         = "gq_object_type";
+export const GQ_OBJECT_INPUT_METADATA_KEY   = "gq_object_input_type";
 
 export function Query(option?: any) {
     return (target: any, propertyKey: any) => {
-        Reflect.defineMetadata("gq_query_key", propertyKey, target);
+        Reflect.defineMetadata(GQ_QUERY_KEY, propertyKey, target);
     };
 }
 
@@ -16,6 +19,14 @@ export function ObjectType() {
     return (target: any) => {
         Reflect.defineMetadata(GQ_OBJECT_METADATA_KEY, {
             name: target.name + "Type"
+        }, target.prototype);
+    };
+}
+
+export function ObjectInputType() {
+    return (target: any) => {
+        Reflect.defineMetadata(GQ_OBJECT_INPUT_METADATA_KEY, {
+            name: target.name,
         }, target.prototype);
     };
 }
@@ -44,11 +55,11 @@ export interface FieldTypeMetadata {
 
 function createOrSetFieldTypeMetadata(target: any, metadata: FieldTypeMetadata) {
     let fieldDefs: FieldTypeMetadata[];
-    if (!Reflect.hasMetadata("gq_fields", target)) {
+    if (!Reflect.hasMetadata(GQ_FIELDS_KEY, target)) {
         fieldDefs = [];
-        Reflect.defineMetadata("gq_fields", fieldDefs, target);
+        Reflect.defineMetadata(GQ_FIELDS_KEY, fieldDefs, target);
     } else {
-        fieldDefs = Reflect.getMetadata("gq_fields", target);
+        fieldDefs = Reflect.getMetadata(GQ_FIELDS_KEY, target);
     }
     const def = fieldDefs.find(def => def.name === metadata.name);
     if (!def) {

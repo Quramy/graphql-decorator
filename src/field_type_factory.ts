@@ -1,4 +1,4 @@
-import { FieldTypeMetadata , ArgumentMetadata } from "./decorator";
+import { FieldTypeMetadata , ArgumentMetadata , GQ_OBJECT_INPUT_METADATA_KEY , GQ_OBJECT_METADATA_KEY } from "./decorator";
 import { objectTypeFactory } from "./object_type_factory";
 const graphql = require("graphql");
 
@@ -15,8 +15,8 @@ export function argumentFactory(paramFn: Function, metadata: ArgumentMetadata) {
             argType = graphql.GraphQLString;
         } else if (paramFn === Boolean) {
             argType = graphql.GraphQLBoolean;
-        } else {
-            // TODO
+        } else if (paramFn && Reflect.hasMetadata(GQ_OBJECT_INPUT_METADATA_KEY, paramFn.prototype)) {
+            argType = inputObjectTypeFactory(paramFn);
         }
     }
 
@@ -31,7 +31,7 @@ export function argumentFactory(paramFn: Function, metadata: ArgumentMetadata) {
 }
 
 // TODO
-export function inputObjectTypeFactory() {
+export function inputObjectTypeFactory(target: Function) {
 }
 
 export interface ResolverHolder {
@@ -83,12 +83,12 @@ export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata) 
              fieldType = graphql.GraphQLString;
         } else if (typeFn === Boolean) {
              fieldType = graphql.GraphQLBoolean;
-        } else if (typeFn && typeFn.prototype && Reflect.hasMetadata("gq_object_type", typeFn.prototype)) {
+        } else if (typeFn && typeFn.prototype && Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, typeFn.prototype)) {
             fieldType = objectTypeFactory(typeFn);
         }
     } else {
         fieldType = metadata.explicitType;
-        if (fieldType && fieldType.prototype && Reflect.hasMetadata("gq_object_type", fieldType.prototype)) {
+        if (fieldType && fieldType.prototype && Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, fieldType.prototype)) {
             fieldType = objectTypeFactory(fieldType);
         }
         if (isFunctionType) {
