@@ -9,9 +9,15 @@ export function argumentFactory(paramFn: Function, metadata: ArgumentMetadata) {
         return;
     }
     if (!metadata.explicitType) {
-        argType = graphql.GraphQLInt;     // FIXME or float?
-    } else {
-        // TODO
+        if (paramFn === Number) {
+            argType = graphql.GraphQLInt;     // FIXME or float?
+        } else if (paramFn === String) {
+            argType = graphql.GraphQLString;
+        } else if (paramFn === Boolean) {
+            argType = graphql.GraphQLBoolean;
+        } else {
+            // TODO
+        }
     }
 
     if (!argType) {
@@ -24,33 +30,38 @@ export function argumentFactory(paramFn: Function, metadata: ArgumentMetadata) {
     };
 }
 
+// TODO
+export function inputObjectTypeFactory() {
+}
+
 export interface ResolverHolder {
     fn: Function;
-    args: {[name: string]: any; };
+    argumentConfigMap: {[name: string]: any; };
 }
 
 export function resolverFactory(target: Function, name: string, argumentMetadataList: ArgumentMetadata[]): ResolverHolder {
     const params = Reflect.getMetadata("design:paramtypes", target.prototype, name) as Function[];
-    const args: {[name: string]: any; } = {};
+    const argumentConfigMap: {[name: string]: any; } = {};
     const indexMap: {[name: string]: number; } = {};
     params.forEach((paramFn, index) => {
         const metadata = argumentMetadataList[index];
-        args[metadata.name] = argumentFactory(paramFn, metadata);
+        argumentConfigMap[metadata.name] = argumentFactory(paramFn, metadata);
         indexMap[metadata.name] = index;
     });
     const originalFn = target.prototype[name] as Function;
-    const fn = function(self: any, originalArgs: {[name: string]: any; }) {
+    const fn = function(source: any, args: {[name: string]: any; }, context: any, info: any) {
         const rest: any[] = [];
-        Object.keys(originalArgs).forEach(name => {
+        // TODO inject context and info to rest arguments
+        Object.keys(args).forEach(name => {
             const index = indexMap[name];
             if (index >= 0) {
-                rest[index] = originalArgs[name];
+                rest[index] = args[name];
             }
         });
-        return originalFn.apply(self, rest);
+        return originalFn.apply(source, rest);
     };
     return {
-        fn, args,
+        fn, argumentConfigMap,
     };
 }
 
@@ -64,7 +75,7 @@ export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata) 
             typeFn = Reflect.getMetadata("design:returntype", target.prototype, metadata.name) as Function;
             const resolverHolder = resolverFactory(target, metadata.name, metadata.args);
             resolveFn = resolverHolder.fn;
-            args = resolverHolder.args;
+            args = resolverHolder.argumentConfigMap;
         }
         if (typeFn === Number) {
             fieldType = graphql.GraphQLInt;     // FIXME or float?
@@ -83,7 +94,7 @@ export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata) 
         if (isFunctionType) {
             const resolverHolder = resolverFactory(target, metadata.name, metadata.args);
             resolveFn = resolverHolder.fn;
-            args = resolverHolder.args;
+            args = resolverHolder.argumentConfigMap;
         }
     }
     if (!fieldType) return null;

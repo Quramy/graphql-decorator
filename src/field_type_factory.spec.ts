@@ -9,17 +9,47 @@ describe("resolverFactory", function() {
         clearObjectTypeRepository();
     });
 
-    describe("resolveFunction", function() {
-        it("args", function() {
-            class Obj {
-                @D.Field() twice(input: number): number {
-                    return input * 2;
-                }
-            }
-            const fn = resolverFactory(Obj, "twice", [{name: "input"}]).fn;
-            const actual = fn(new Obj(), {input: 1});
-            assert(actual === 2);
-        });
+    it("returns argumentConfigMap. The map has GraphQLInt type with a function which as number argument", function () {
+        class Obj { @D.Field() m(input: number): void {} }
+        const actual = resolverFactory(Obj, "m", [{name: "input"}]).argumentConfigMap;
+        assert(actual["input"].type === graphql.GraphQLInt);
+    });
+
+    it("returns argumentConfigMap. The map has GraphQLInt type with a function which as Number argument", function () {
+        class Obj { @D.Field() m(input: Number): void {} }
+        const actual = resolverFactory(Obj, "m", [{name: "input"}]).argumentConfigMap;
+        assert(actual["input"].type === graphql.GraphQLInt);
+    });
+
+    it("returns argumentConfigMap. The map has GraphQLString type with a function which as string argument", function () {
+        class Obj { @D.Field() m(input: string): void {} }
+        const actual = resolverFactory(Obj, "m", [{name: "input"}]).argumentConfigMap;
+        assert(actual["input"].type === graphql.GraphQLString);
+    });
+
+    it("returns argumentConfigMap. The map has GraphQLString type with a function which as String argument", function () {
+        class Obj { @D.Field() m(input: String): void {} }
+        const actual = resolverFactory(Obj, "m", [{name: "input"}]).argumentConfigMap;
+        assert(actual["input"].type === graphql.GraphQLString);
+    });
+
+    it("returns argumentConfigMap. The map has GraphQLBoolean type with a function which as boolean argument", function () {
+        class Obj { @D.Field() m(input: boolean): void {} }
+        const actual = resolverFactory(Obj, "m", [{name: "input"}]).argumentConfigMap;
+        assert(actual["input"].type === graphql.GraphQLBoolean);
+    });
+
+    it("returns argumentConfigMap. The map has GraphQLBoolean type with a function which as Boolean argument", function () {
+        class Obj { @D.Field() m(input: Boolean): void {} }
+        const actual = resolverFactory(Obj, "m", [{name: "input"}]).argumentConfigMap;
+        assert(actual["input"].type === graphql.GraphQLBoolean);
+    });
+
+    it("returns fn which is executable", function() {
+        class Obj { @D.Field() twice(input: number): number { return input * 2; } }
+        const fn = resolverFactory(Obj, "twice", [{name: "input"}]).fn;
+        const actual = fn(new Obj(), {input: 1});
+        assert(actual === 2);
     });
 });
 
@@ -44,7 +74,7 @@ describe("fieldTypeFactory", function() {
             assert(actual.type.name === "Int");
         });
 
-        it("returns GraphQLString with a class which has a Number field", function() {
+        it("returns GraphQLInt with a class which has a Number field", function() {
             class Obj { @D.Field() count: Number; }
             const actual = fieldTypeFactory(Obj, {name: "count"});
             assert(actual.type instanceof graphql.GraphQLScalarType);
