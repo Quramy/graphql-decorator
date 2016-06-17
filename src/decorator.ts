@@ -3,7 +3,6 @@ import "reflect-metadata";
 export const GQ_QUERY_KEY                   = "gq_query";
 export const GQ_FIELDS_KEY                  = "gq_fields";
 export const GQ_OBJECT_METADATA_KEY         = "gq_object_type";
-export const GQ_OBJECT_INPUT_METADATA_KEY   = "gq_object_input_type";
 
 export function Query(option?: any) {
     return (target: any, propertyKey: any) => {
@@ -15,18 +14,25 @@ export function Mutation() {
     return (target: any) => { };
 }
 
+export interface ObjectTypeMetadata {
+    name: string;
+    isInput: boolean;
+}
+
 export function ObjectType() {
     return (target: any) => {
         Reflect.defineMetadata(GQ_OBJECT_METADATA_KEY, {
-            name: target.name + "Type"
+            name: target.name,
+            isInput: false,
         }, target.prototype);
     };
 }
 
-export function ObjectInputType() {
+export function InputObjectType() {
     return (target: any) => {
-        Reflect.defineMetadata(GQ_OBJECT_INPUT_METADATA_KEY, {
+        Reflect.defineMetadata(GQ_OBJECT_METADATA_KEY, {
             name: target.name,
+            isInput: true,
         }, target.prototype);
     };
 }
@@ -42,14 +48,12 @@ export interface ArgumentOption {
 
 export interface ArgumentMetadata {
     name: string;
-    explicitType?: any;
-}
-
-export interface FieldTypeMetadata {
-    name: string;
     isNonNull?: boolean;
     isList?: boolean;
     explicitType?: any;
+}
+
+export interface FieldTypeMetadata extends ArgumentMetadata {
     args?: ArgumentMetadata[];
 }
 

@@ -25,7 +25,7 @@ describe("objectTypeFactory", function() {
         @D.ObjectType()
         class Obj { @D.Field() title: string; }
         const GQLType = objectTypeFactory(Obj);
-        assert(GQLType._typeConfig.name === "ObjType");
+        assert(GQLType._typeConfig.name === "Obj");
         assert(GQLType._typeConfig.fields.title.type instanceof graphql.GraphQLScalarType);
     });
 });

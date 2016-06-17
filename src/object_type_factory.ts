@@ -9,7 +9,7 @@ export function clearObjectTypeRepository() {
     objectTypeRepository = {};
 }
 
-export function objectTypeFactory(target: Function) {
+export function objectTypeFactory(target: Function, isInput?: boolean) {
     const objectTypeDef = Reflect.getMetadata(GQ_OBJECT_METADATA_KEY, target.prototype);
     const typeFromRepository = objectTypeRepository[objectTypeDef.name];
     if (typeFromRepository) {

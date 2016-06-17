@@ -1,42 +1,39 @@
-import { FieldTypeMetadata , ArgumentMetadata , GQ_OBJECT_INPUT_METADATA_KEY , GQ_OBJECT_METADATA_KEY } from "./decorator";
+import { FieldTypeMetadata , ArgumentMetadata ,  GQ_OBJECT_METADATA_KEY } from "./decorator";
 import { objectTypeFactory } from "./object_type_factory";
+import { SchemaFactoryError , SchemaFactoryErrorType } from "./schema_factory";
 const graphql = require("graphql");
-
-export function argumentFactory(paramFn: Function, metadata: ArgumentMetadata) {
-    let argType: any;
-    if (!metadata) {
-        // TODO?
-        return;
-    }
-    if (!metadata.explicitType) {
-        if (paramFn === Number) {
-            argType = graphql.GraphQLInt;     // FIXME or float?
-        } else if (paramFn === String) {
-            argType = graphql.GraphQLString;
-        } else if (paramFn === Boolean) {
-            argType = graphql.GraphQLBoolean;
-        } else if (paramFn && Reflect.hasMetadata(GQ_OBJECT_INPUT_METADATA_KEY, paramFn.prototype)) {
-            argType = inputObjectTypeFactory(paramFn);
-        }
-    }
-
-    if (!argType) {
-        // TODO
-    }
-
-    return {
-        name: metadata.name,
-        type: argType,
-    };
-}
-
-// TODO
-export function inputObjectTypeFactory(target: Function) {
-}
 
 export interface ResolverHolder {
     fn: Function;
     argumentConfigMap: {[name: string]: any; };
+}
+
+function convertType(typeFn: Function, metadata: ArgumentMetadata, isInput: boolean) {
+    let returnType: any;
+    if (!metadata.explicitType) {
+        if (typeFn === Number) {
+            returnType = graphql.GraphQLInt;     // FIXME or float?
+        } else if (typeFn === String) {
+             returnType = graphql.GraphQLString;
+        } else if (typeFn === Boolean) {
+             returnType = graphql.GraphQLBoolean;
+        } else if (typeFn && typeFn.prototype && Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, typeFn.prototype)) {
+            returnType = objectTypeFactory(typeFn, isInput);
+        }
+    } else {
+        returnType = metadata.explicitType;
+        if (returnType && returnType.prototype && Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, returnType.prototype)) {
+            returnType = objectTypeFactory(returnType, isInput);
+        }
+    }
+    if (!returnType) return null;
+    if (metadata.isList) {
+        returnType = new graphql.GraphQLList(returnType);
+    }
+    if (metadata.isNonNull) {
+        returnType = new graphql.GraphQLNonNull(returnType);
+    }
+    return returnType;
 }
 
 export function resolverFactory(target: Function, name: string, argumentMetadataList: ArgumentMetadata[]): ResolverHolder {
@@ -45,7 +42,10 @@ export function resolverFactory(target: Function, name: string, argumentMetadata
     const indexMap: {[name: string]: number; } = {};
     params.forEach((paramFn, index) => {
         const metadata = argumentMetadataList[index];
-        argumentConfigMap[metadata.name] = argumentFactory(paramFn, metadata);
+        argumentConfigMap[metadata.name] = {
+            name: metadata.name,
+            type: convertType(paramFn, metadata, true),
+        };
         indexMap[metadata.name] = index;
     });
     const originalFn = target.prototype[name] as Function;
@@ -65,45 +65,27 @@ export function resolverFactory(target: Function, name: string, argumentMetadata
     };
 }
 
-export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata) {
-    let fieldType: any, resolveFn: Function, args: {[name: string]: any; };
-    let typeFn: Function, isFunctionType: boolean;
-    typeFn = Reflect.getMetadata("design:type", target.prototype, metadata.name) as Function;
-    isFunctionType = Reflect.getMetadata("design:type", target.prototype, metadata.name) === Function;
-    if (!metadata.explicitType) {
-        if (isFunctionType) {
+export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, isInput?: boolean) {
+    let typeFn = Reflect.getMetadata("design:type", target.prototype, metadata.name) as Function;
+    let resolveFn: Function, args: {[name: string]: any; };
+
+    const isFunctionType = Reflect.getMetadata("design:type", target.prototype, metadata.name) === Function;
+
+    if (isInput && isFunctionType) {
+        throw new SchemaFactoryError("Field declared in a class annotated by @InputObjectType should not be a function", SchemaFactoryErrorType.INPUT_FIELD_SHOULD_NOT_BE_FUNC);
+    }
+
+    if (isFunctionType) {
+        if (!metadata.explicitType) {
             typeFn = Reflect.getMetadata("design:returntype", target.prototype, metadata.name) as Function;
-            const resolverHolder = resolverFactory(target, metadata.name, metadata.args);
-            resolveFn = resolverHolder.fn;
-            args = resolverHolder.argumentConfigMap;
         }
-        if (typeFn === Number) {
-            fieldType = graphql.GraphQLInt;     // FIXME or float?
-        } else if (typeFn === String) {
-             fieldType = graphql.GraphQLString;
-        } else if (typeFn === Boolean) {
-             fieldType = graphql.GraphQLBoolean;
-        } else if (typeFn && typeFn.prototype && Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, typeFn.prototype)) {
-            fieldType = objectTypeFactory(typeFn);
-        }
-    } else {
-        fieldType = metadata.explicitType;
-        if (fieldType && fieldType.prototype && Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, fieldType.prototype)) {
-            fieldType = objectTypeFactory(fieldType);
-        }
-        if (isFunctionType) {
-            const resolverHolder = resolverFactory(target, metadata.name, metadata.args);
-            resolveFn = resolverHolder.fn;
-            args = resolverHolder.argumentConfigMap;
-        }
+        const resolverHolder = resolverFactory(target, metadata.name, metadata.args);
+        resolveFn = resolverHolder.fn;
+        args = resolverHolder.argumentConfigMap;
     }
+
+    const fieldType = convertType(typeFn, metadata, isInput);
     if (!fieldType) return null;
-    if (metadata.isList) {
-        fieldType = new graphql.GraphQLList(fieldType);
-    }
-    if (metadata.isNonNull) {
-        fieldType = new graphql.GraphQLNonNull(fieldType);
-    }
     return {
         type: fieldType,
         args: args && args,
