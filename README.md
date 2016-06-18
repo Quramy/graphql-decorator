@@ -2,16 +2,34 @@
 
 Library to help build [GraphQL](http://graphql.org/) schema with TypeScript.
 
-
 ## Getting started
 
 This tool requires Node.js v4.4.0 or later.
 
 ```sh
-npm i Quramy/graphql-decorator
+npm i graphql-decorator typescript
 ```
 
-Write code such as:
+This tool uses ES.next Decorators and Reflect, so create tsconfig.json :
+
+```json
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es6",
+        "noImplicitAny": false,
+        "sourceMap": false,
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}
+```
+
+And write .ts code such as:
 
 ```ts
 /* main.ts */
@@ -46,10 +64,12 @@ async function main() {
 main();
 ```
 
+Finally, execute the above schema:
+
 ```sh
 tsc main.ts && node main.js
+# -> Hello, world!
 ```
-
 
 ## API Usage
 *T.B.D.*
