@@ -1,10 +1,9 @@
 {
   "name": "hello-world",
   "version": "1.0.0",
-  "description": "",
+  "description": "simple example of graphql-decortor",
   "main": "index.js",
   "scripts": {
-    "postinstall": "dtsm install",
     "prestart": "tsc",
     "start": "node .built/main.js"
   },
@@ -15,8 +14,12 @@
   },
   "keywords": [],
   "author": "Quramy",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Quramy/graphql-decorator.git"
+  },
   "license": "ISC",
   "devDependencies": {
-    "dtsm": "^1.1.0"
+    "@types/node": "^4.0.22-alpha"
   }
 }
