@@ -1,9 +1,11 @@
 # graphql-decorator [![Build Status](https://travis-ci.org/Quramy/graphql-decorator.svg?branch=master)](https://travis-ci.org/Quramy/graphql-decorator)
 
-Library to help build GraphQL schema with TypeScript.
+Library to help build [GraphQL](http://graphql.org/) schema with TypeScript.
 
 
 ## Getting started
+
+This tool requires Node.js v4.4.0 or later.
 
 ```sh
 npm i Quramy/graphql-decorator
@@ -15,9 +17,9 @@ Write code such as:
 /* main.ts */
 
 import { Schema, Query, ObjectType, Field, schemaFactory } from "graphql-decorator";
-const parse = require("graphql/language").parse;
-const execute = require("graphql/execution").execute;
+const graphql = require("graphql").graphql;
 
+// @ObjectType creates GraphQLObjectType from a class
 @ObjectType()
 class QueryType {
     @Field() greeting(): string {
@@ -25,15 +27,19 @@ class QueryType {
     }
 }
 
+// @Schema creates GraphQLSchema from a class.
+// The class should have a field annotated by @Query decorator.
 @Schema()
 class SchemaType {
     @Query() query: QueryType;
 }
 
 async function main() {
+
+    // create schema from annotated class
     const schema = schemaFactory(SchemaType);
-    const ast = parse(`query { greeting }`);
-    const result = await execute(schema, ast);
+
+    const result = await graphql(schema, `query { greeting } `);
     console.log(result.data.greeting);
 }
 
