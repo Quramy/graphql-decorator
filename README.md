@@ -1,6 +1,10 @@
-# graphql-decorator [![Build Status](https://travis-ci.org/Quramy/graphql-decorator.svg?branch=master)](https://travis-ci.org/Quramy/graphql-decorator)
+# graphql-decorator [![Build Status](https://travis-ci.org/Quramy/graphql-decorator.svg?branch=master)](https://travis-ci.org/Quramy/graphql-decorator) [![npm version](https://badge.fury.io/js/graphql-decorator.svg)](https://badge.fury.io/js/graphql-decorator)
 
 Library to help build [GraphQL](http://graphql.org/) schema with TypeScript.
+
+It provide the following features:
+ * Decorators(`@ObjectType`, `@Schema`, `@NonNull`, and more...) which correspond [GraphQL type system](http://graphql.org/docs/api-reference-type-system/). 
+ * A function to create GraphQL Schema from decorated TypeScript class.
 
 ## Getting started
 
