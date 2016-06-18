@@ -73,4 +73,27 @@ describe("schemaFactory", function() {
         assert(actual.data.twice === 2);
         done();
     });
+
+    it("returns a GraphQL schema object which is executable", async function(done) {
+        @D.InputObjectType() class Input {
+            @D.Field() a: number;
+            @D.Field() b: number;
+        }
+        @D.ObjectType() class Query {
+            @D.Field() add( @D.Arg({name: "input"}) input: Input): number {
+                return input.a + input.b;
+            }
+        }
+        @D.Schema() class Schema { @D.Query() query: Query; }
+        const schema = schemaFactory(Schema);
+        const ast = parse(
+            `query {
+                add(input: {a: 1, b: 1})
+            }`
+        );
+        assert.deepEqual(validate(schema, ast), []);
+        const actual = await execute(schema, ast) as {data: {add: number}};
+        assert(actual.data.add === 2);
+        done();
+    });
 });
