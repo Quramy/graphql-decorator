@@ -47,6 +47,32 @@ describe("schemaFactory", function() {
         }
     });
 
+    it("returns a GraphQL schema object with @Query", function() {
+        @D.ObjectType() class Query {
+            @D.Field() title(): string { return "hello"; }
+        }
+        @D.Schema() class Schema { @D.Query() query: Query; }
+        const schema = schemaFactory(Schema);
+        const ast = parse(`query { title }`);
+        assert.deepEqual(validate(schema, ast), []);
+    });
+
+    it("returns a GraphQL schema object with @Mutation", function() {
+        @D.ObjectType() class Query {
+            @D.Field() title(): string { return "hello"; }
+        }
+        @D.ObjectType() class Mutation {
+            @D.Field() countup(): number { return 0; }
+        }
+        @D.Schema() class Schema {
+            @D.Query() query: Query;
+            @D.Mutation() mutation: Mutation;
+        }
+        const schema = schemaFactory(Schema);
+        const ast = parse(`mutation { countup }`);
+        assert.deepEqual(validate(schema, ast), []);
+    });
+
     it("returns a GraphQL schema object which is executable", async function(done) {
         @D.ObjectType() class Query {
             @D.Field() title(): string { return "hello"; }

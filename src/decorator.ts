@@ -1,17 +1,22 @@
 import "reflect-metadata";
 
 export const GQ_QUERY_KEY                   = "gq_query";
+export const GQ_MUTATION_KEY                = "gq_mutation";
 export const GQ_FIELDS_KEY                  = "gq_fields";
 export const GQ_OBJECT_METADATA_KEY         = "gq_object_type";
 
-export function Query(option?: any) {
-    return (target: any, propertyKey: any) => {
-        Reflect.defineMetadata(GQ_QUERY_KEY, propertyKey, target);
-    };
+export interface TypeMetadata {
+    name: string;
+    isNonNull?: boolean;
+    isList?: boolean;
+    explicitType?: any;
 }
 
-export function Mutation() {
-    return (target: any) => { };
+export interface ArgumentMetadata extends TypeMetadata {
+}
+
+export interface FieldTypeMetadata extends ArgumentMetadata {
+    args?: ArgumentMetadata[];
 }
 
 export interface ObjectTypeMetadata {
@@ -44,20 +49,6 @@ export interface FieldOpetion {
 export interface ArgumentOption {
     name: string;
     type?: any;
-}
-
-export interface TypeMetadata {
-    name: string;
-    isNonNull?: boolean;
-    isList?: boolean;
-    explicitType?: any;
-}
-
-export interface ArgumentMetadata extends TypeMetadata {
-}
-
-export interface FieldTypeMetadata extends ArgumentMetadata {
-    args?: ArgumentMetadata[];
 }
 
 function createOrSetFieldTypeMetadata(target: any, metadata: FieldTypeMetadata) {
@@ -123,6 +114,18 @@ export function Arg(option: ArgumentOption) {
             name: propertyKey,
             args,
         });
+    };
+}
+
+export function Query(option?: any) {
+    return (target: any, propertyKey: any) => {
+        Reflect.defineMetadata(GQ_QUERY_KEY, propertyKey, target);
+    };
+}
+
+export function Mutation() {
+    return (target: any, propertyKey: any) => {
+        Reflect.defineMetadata(GQ_MUTATION_KEY, propertyKey, target);
     };
 }
 

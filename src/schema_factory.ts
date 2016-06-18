@@ -1,4 +1,4 @@
-import { FieldTypeMetadata , GQ_QUERY_KEY } from "./decorator";
+import { FieldTypeMetadata , GQ_QUERY_KEY , GQ_MUTATION_KEY } from "./decorator";
 import { objectTypeFactory } from "./object_type_factory";
 const graphql = require("graphql");
 
@@ -26,8 +26,18 @@ export function schemaFactory(target: Function) {
     }
     const queryKey = Reflect.getMetadata(GQ_QUERY_KEY, target.prototype) as string;
     const queryTypeFn = Reflect.getMetadata("design:type", target.prototype, queryKey) as Function;
-    const ret = new graphql.GraphQLSchema({
-        query: objectTypeFactory(queryTypeFn),
-    });
-    return ret;
+
+    if (!Reflect.hasMetadata(GQ_MUTATION_KEY, target.prototype)) {
+        const ret = new graphql.GraphQLSchema({
+            query: objectTypeFactory(queryTypeFn),
+        });
+        return ret;
+    } else {
+        const mutationKey = Reflect.getMetadata(GQ_MUTATION_KEY, target.prototype) as string;
+        const mutationTypeFn = Reflect.getMetadata("design:type", target.prototype, mutationKey) as Function;
+        return new graphql.GraphQLSchema({
+            query: objectTypeFactory(queryTypeFn),
+            mutation: objectTypeFactory(mutationTypeFn),
+        });
+    }
 }
