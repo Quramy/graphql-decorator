@@ -1,6 +1,6 @@
 {
   "name": "graphql-decorator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Creates GraphQL Schema from decorated TypeScript Class",
   "main": "lib/index.js",
   "engines": {
@@ -20,6 +20,10 @@
     "decorators"
   ],
   "author": "Quramy",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Quramy/graphql-decorator.git"
+  },
   "license": "MIT",
   "dependencies": {
     "graphql": "^0.6.0",
