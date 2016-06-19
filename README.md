@@ -3,7 +3,7 @@
 Library to help build [GraphQL](http://graphql.org/) schema with TypeScript.
 
 It provide the following features:
- * Decorators(`@ObjectType`, `@Schema`, `@NonNull`, and more...) which correspond [GraphQL type system](http://graphql.org/docs/api-reference-type-system/). 
+ * Decorators(`@ObjectType`, `@Schema`, `@NonNull`, and more...) corresponding to [GraphQL type system](http://graphql.org/docs/api-reference-type-system/). 
  * A function to create GraphQL Schema from decorated TypeScript class.
 
 ## Getting started
