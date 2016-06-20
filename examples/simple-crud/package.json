@@ -4,7 +4,10 @@
   "description": "CRUD example of graphql-decortor",
   "main": "index.js",
   "scripts": {
-    "postinstall": "dtsm install"
+    "postinstall": "dtsm install",
+    "compile": "tsc",
+    "start": "npm run compile && node .built/server.js",
+    "print": "npm run compile && node .built/print.js"
   },
   "dependencies": {
     "express": "^4.14.0",

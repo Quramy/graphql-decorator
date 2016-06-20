@@ -50,7 +50,7 @@ class MutationType {
 
     @Field()
     changeUser(
-        @Arg({name: "id"}) id: string,
+        @NonNull() @Arg({name: "id"}) id: string,
         @Arg({name: "input"}) input: UserForUpdate
     ): User {
         const user = users.find(u => u.id === id) as User;
@@ -61,7 +61,7 @@ class MutationType {
 
     @Field()
     addUser(
-        @Arg({name: "input"}) input: UserForCreate
+        @NonNull() @Arg({name: "input"}) input: UserForCreate
     ): User {
         const newUser = new User();
         const shasum = createHash("sha1");
@@ -74,7 +74,7 @@ class MutationType {
 
     @Field({type: User})
     deleteUser(
-        @Arg({name: "id"}) id: string
+        @NonNull() @Arg({name: "id"}) id: string
     ) {
         const user = users.find(u => u.id === id) as User;
         if (!user) return null;
