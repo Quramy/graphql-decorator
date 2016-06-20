@@ -146,8 +146,8 @@ class User {
 
 @ObjectType()
 class Query {
-  @List() @Field({type: User}) users: User[] {
-    /* get users procedure */
+  @List() @Field({type: User}) getAllUsers(): Promise<User[]> {
+    /* implementation for fetch all users */
   }
 }
 ```
