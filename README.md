@@ -146,7 +146,7 @@ class User {
 
 @ObjectType()
 class Query {
-  @List @Field({type: User}) users: User[] {
+  @List() @Field({type: User}) users: User[] {
     /* get users procedure */
   }
 }
