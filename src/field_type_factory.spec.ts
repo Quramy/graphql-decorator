@@ -122,6 +122,12 @@ describe("fieldTypeFactory", function() {
             assert(actual.type instanceof graphql.GraphQLObjectType);
         });
 
+        it("returns description with a class which has description metadata", function () {
+            class Obj { @D.Field() title: string; }
+            const actual = fieldTypeFactory(Obj, {name: "title", description: "this is a title"});
+            assert(actual.description === "this is a title");
+        });
+
         it("returns resolve function with a class which has a function field", function() {
             class Obj { @D.Field() title(): string { return "hello"; }; }
             const actual = fieldTypeFactory(Obj, {name: "title"});

@@ -71,6 +71,7 @@ export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, 
     let typeFn = Reflect.getMetadata("design:type", target.prototype, metadata.name) as Function;
     let resolveFn: Function, args: {[name: string]: any; };
 
+    const description = metadata.description;
     const isFunctionType = Reflect.getMetadata("design:type", target.prototype, metadata.name) === Function;
 
     if (isInput && isFunctionType) {
@@ -91,6 +92,7 @@ export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, 
     if (!fieldType) return null;
     return {
         type: fieldType,
+        description: description && description,
         args: args && args,
         resolve: resolveFn,
     };

@@ -7,6 +7,7 @@ export const GQ_OBJECT_METADATA_KEY         = "gq_object_type";
 
 export interface TypeMetadata {
     name?: string;
+    description?: string;
     isNonNull?: boolean;
     isList?: boolean;
     explicitType?: any;
@@ -20,26 +21,18 @@ export interface FieldTypeMetadata extends ArgumentMetadata {
 }
 
 export interface ObjectTypeMetadata {
-    name: string;
-    isInput: boolean;
+    name?: string;
+    description?: string;
+    isInput?: boolean;
 }
 
-export function ObjectType() {
-    return (target: any) => {
-        Reflect.defineMetadata(GQ_OBJECT_METADATA_KEY, {
-            name: target.name,
-            isInput: false,
-        }, target.prototype);
-    };
-}
-
-export function InputObjectType() {
-    return (target: any) => {
-        Reflect.defineMetadata(GQ_OBJECT_METADATA_KEY, {
-            name: target.name,
-            isInput: true,
-        }, target.prototype);
-    };
+function createOrSetObjectTypeMetadata(target: any, metadata: ObjectTypeMetadata) {
+    if (!Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, target.prototype)) {
+        Reflect.defineMetadata(GQ_OBJECT_METADATA_KEY, metadata, target.prototype);
+    } else {
+        const originalMetadata = Reflect.getMetadata(GQ_OBJECT_METADATA_KEY, target.prototype) as ObjectTypeMetadata;
+        Object.assign(originalMetadata, metadata);
+    }
 }
 
 export interface FieldOpetion {
@@ -97,6 +90,24 @@ function setArgumentMetadata(target: any, propertyKey: any, index: number, metad
     }
 }
 
+export function ObjectType() {
+    return (target: any) => {
+        createOrSetObjectTypeMetadata(target, {
+            name: target.name,
+            isInput: false,
+        });
+    };
+}
+
+export function InputObjectType() {
+    return (target: any) => {
+        createOrSetObjectTypeMetadata(target, {
+            name: target.name,
+            isInput: true,
+        });
+    };
+}
+
 export function Field(option?: FieldOpetion) {
     return (target: any, propertyKey: any) => {
         createOrSetFieldTypeMetadata(target, {
@@ -143,6 +154,25 @@ export function Arg(option: ArgumentOption) {
             explicitType: option.type,
         });
     };
+}
+
+export function Description(body: string) {
+    return function(target: any, propertyKey?: any, index?: number) {
+        if (index >= 0) {
+            setArgumentMetadata(target, propertyKey, index, {
+                description: body,
+            });
+        } else if (propertyKey) {
+            createOrSetFieldTypeMetadata(target, {
+                name: propertyKey,
+                description: body,
+            });
+        } else {
+            createOrSetObjectTypeMetadata(target, {
+                description: body,
+            });
+        }
+    } as Function;
 }
 
 export function Query(option?: any) {

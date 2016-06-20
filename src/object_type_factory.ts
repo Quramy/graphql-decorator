@@ -27,15 +27,17 @@ export function objectTypeFactory(target: Function, isInput?: boolean) {
     fieldMetadataList.forEach(def => {
         fields[def.name] = fieldTypeFactory(target, def);
     });
-    if (isInput) {
+    if (!!isInput) {
         objectTypeRepository[objectTypeMetadata.name] = new graphql.GraphQLInputObjectType({
             name: objectTypeMetadata.name,
             fields,
+            description: objectTypeMetadata.description,
         });
     } else {
         objectTypeRepository[objectTypeMetadata.name] = new graphql.GraphQLObjectType({
             name: objectTypeMetadata.name,
             fields,
+            description: objectTypeMetadata.description,
         });
     }
     return objectTypeRepository[objectTypeMetadata.name];
