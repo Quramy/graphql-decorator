@@ -115,7 +115,7 @@ class SomeObject {
 
 The above example has 2 fields, the one is `title` and the another is `greeting`.
 
-You set the `@Field` decorator to your class's properties and methods. The fields annotated by `@Field` will be exposed as fields of this object in GraphQL schema. And when you set `@Field` to methods, the methods will work as the resolver function in schema.
+You can set the `@Field` decorator to your class's properties and methods. The fields annotated by `@Field` will be exposed as fields of this object in GraphQL schema. And when you set `@Field` to methods, the methods will work as the resolver function in schema.
 
 #### Type of field
 
@@ -189,7 +189,7 @@ class MutationType {
 *T.B.D.*
 
 ## Examples
-*T.B.D.*
+Please checkout [exmaples](https://github.com/Quramy/graphql-decorator/tree/master/examples) folder in this repository.
 
 ## License
 This software is released under the MIT License, see LICENSE.txt.
