@@ -91,30 +91,30 @@ function setArgumentMetadata(target: any, propertyKey: any, index: number, metad
 }
 
 export function ObjectType() {
-    return (target: any) => {
+    return function(target: any) {
         createOrSetObjectTypeMetadata(target, {
             name: target.name,
             isInput: false,
         });
-    };
+    } as Function;
 }
 
 export function InputObjectType() {
-    return (target: any) => {
+    return function(target: any) {
         createOrSetObjectTypeMetadata(target, {
             name: target.name,
             isInput: true,
         });
-    };
+    } as Function;
 }
 
 export function Field(option?: FieldOpetion) {
-    return (target: any, propertyKey: any) => {
+    return function(target: any, propertyKey: any) {
         createOrSetFieldTypeMetadata(target, {
             name: propertyKey,
             explicitType: option && option.type,
         });
-    };
+    } as Function;
 }
 
 export function NonNull() {
@@ -129,7 +129,7 @@ export function NonNull() {
                 isNonNull: true,
             });
         }
-    } as any;
+    } as Function;
 }
 
 export function List() {
@@ -144,16 +144,16 @@ export function List() {
                 isList: true,
             });
         }
-    } as any;
+    } as Function;
 }
 
 export function Arg(option: ArgumentOption) {
-    return (target: any, propertyKey: any, index: number) => {
+    return function(target: any, propertyKey: any, index: number) {
         setArgumentMetadata(target, propertyKey, index, {
             name: option.name,
             explicitType: option.type,
         });
-    };
+    } as Function;
 }
 
 export function Description(body: string) {
@@ -176,19 +176,19 @@ export function Description(body: string) {
 }
 
 export function Query(option?: any) {
-    return (target: any, propertyKey: any) => {
+    return function(target: any, propertyKey: any) {
         Reflect.defineMetadata(GQ_QUERY_KEY, propertyKey, target);
-    };
+    } as Function;
 }
 
 export function Mutation() {
-    return (target: any, propertyKey: any) => {
+    return function(target: any, propertyKey: any) {
         Reflect.defineMetadata(GQ_MUTATION_KEY, propertyKey, target);
-    };
+    } as Function;
 }
 
 export function Schema() {
-    return (target: Function) => {
+    return function(target: Function) {
         Reflect.defineMetadata("gq_schema", {}, target);
-    };
+    } as Function;
 }
