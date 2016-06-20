@@ -107,7 +107,7 @@ export function Field(option?: FieldOpetion) {
 }
 
 export function NonNull() {
-    return (target: any, propertyKey: any, index?: number) => {
+    return function(target: any, propertyKey: any, index?: number) {
         if (index >= 0) {
             setArgumentMetadata(target, propertyKey, index, {
                 isNonNull: true,
@@ -118,11 +118,11 @@ export function NonNull() {
                 isNonNull: true,
             });
         }
-    };
+    } as any;
 }
 
 export function List() {
-    return (target: any, propertyKey: any, index?: number) => {
+    return function(target: any, propertyKey: any, index?: number) {
         if (index >= 0) {
             setArgumentMetadata(target, propertyKey, index, {
                 isList: true,
@@ -133,7 +133,7 @@ export function List() {
                 isList: true,
             });
         }
-    };
+    } as any;
 }
 
 export function Arg(option: ArgumentOption) {
