@@ -4,7 +4,7 @@ if [ "$?" -gt 0 ]; then
   exit 1
 fi
 
-pushd examples/hello-world/
+cd examples/hello-world/
 
 npm install
 npm start
@@ -12,9 +12,9 @@ npm start
 if [ "$?" -gt 0 ]; then
   exit 1
 fi
-popd
+cd ../../
 
-pushd examples/simple-crud
+cd examples/simple-crud
 
 npm install
 npm run print
@@ -22,6 +22,6 @@ npm run print
 if [ "$?" -gt 0 ]; then
   exit 1
 fi
-popd
+cd ../../
 
 exit 0
