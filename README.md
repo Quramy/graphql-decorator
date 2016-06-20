@@ -164,6 +164,7 @@ class MutationType {
   ) {
     /* implementation for delete user */
   }
+}
 ```
 
 And you can declare GraphQL InputObjectType with `@InputObjectType` decorator.
@@ -183,6 +184,7 @@ class MutationType {
   ) {
     /* implementation for delete user */
   }
+}
 ```
 
 ## API Usage
