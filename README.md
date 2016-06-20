@@ -75,6 +75,116 @@ tsc main.ts && node main.js
 # -> Hello, world!
 ```
 
+## Guide
+
+### Schema
+
+You can declare a GraphQL schema class with `@Schema`, `@Query` and `@Mutation` decorators.
+
+For example:
+
+```ts
+import { Schema, Query, Mutation } from "graphql-decorator";
+
+@Schema()
+class MySchema {
+  @Query() query: RootQuery;
+  @Mutation() mutation: Mutations;
+}
+```
+
+A schema class should a field annotated by `@Query`, which represents that the type of this filed will be a root query of GraphQL. And the type of this field should be annotated by `@ObjectType`.
+
+The field annotated by `@Mutation` also represents mutation of your GraphQL schema.
+
+### Object Type
+You can annotate your class with `@ObjectType()`
+
+For example:
+
+```ts
+@ObjectType()
+class SomeObject {
+  @Field() title: string;
+
+  @Field() greeting(): string {
+    return "Hello";
+  }
+}
+```
+
+The above example has 2 fields, the one is `title` and the another is `greeting`.
+
+You set the `@Field` decorator to your class's properties and methods. The fields annotated by `@Field` will be exposed as fields of this object in GraphQL schema. And when you set `@Field` to methods, the methods will work as the resolver function in schema.
+
+#### Type of field
+
+By the default, `@Field` detects GraphQLScalarType corresponding to the field type.
+
+You can explicitly configure the type of the fields using `type` option.
+
+```ts
+@ObjectType() class User {
+  @Field() name: string;
+}
+
+@ObjectType() class SomeObject {
+  @Field({type: User}) user: User;
+}
+```
+
+#### NonNull, List
+
+You can use `@NonNull` and `@List` decorator. For example:
+
+```ts
+@ObjectType()
+class User {
+  @NonNull() @Field({type: graphql.GraphQLID})
+  id: string;
+}
+
+@ObjectType()
+class Query {
+  @List @Field({type: User}) users: User[] {
+    /* get users procedure */
+  }
+}
+```
+
+#### Resolver's arguments
+
+You can use `@Arg` for declare arguments of resolver function. For example:
+
+```ts
+@ObjectType()
+class MutationType {
+  @Field({type: User}) deleteUser(
+    @Arg({name: "id"}) id: string
+  ) {
+    /* implementation for delete user */
+  }
+```
+
+And you can declare GraphQL InputObjectType with `@InputObjectType` decorator.
+
+```ts
+@InputObjectType()
+class UserForUpdate {
+  @Field() name: string;
+  @Field() emal: string;
+}
+
+@ObjectType()
+class MutationType {
+  @Field({type: User}) updateUser(
+    @Arg({name: "id"}) id: string,
+    @Arg({name: "input"}) input: UserForUpdate
+  ) {
+    /* implementation for delete user */
+  }
+```
+
 ## API Usage
 *T.B.D.*
 
