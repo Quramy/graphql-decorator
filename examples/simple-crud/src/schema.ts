@@ -9,6 +9,7 @@ import {
     List,
     NonNull,
     Arg,
+    Description,
 } from "graphql-decorator";
 
 const graphql = require("graphql");
@@ -18,6 +19,7 @@ import { createHash } from "crypto";
 let users = data.slice();
 
 @ObjectType()
+@Description("A user type.")
 class User {
     @NonNull() @Field({type: graphql.GraphQLID}) id: string;
     @Field() name: string;
@@ -25,7 +27,9 @@ class User {
 }
 
 @ObjectType()
+@Description("A root query.")
 class QueryType {
+    @Description("return all users.")
     @List() @Field({type: User})
     allUsers() {
         return users;
@@ -33,12 +37,14 @@ class QueryType {
 }
 
 @InputObjectType()
+@Description("A input object to update a user.")
 class UserForUpdate {
     @Field() name: string;
     @Field() email: string;
 }
 
 @InputObjectType()
+@Description("A input object to create a user.")
 class UserForCreate {
     @Field() name: string;
     @NonNull() @Field() email: string;
@@ -46,23 +52,26 @@ class UserForCreate {
 
 
 @ObjectType()
+@Description("Mutations.")
 class MutationType {
 
-    @Field()
+    @Field({type: User})
+    @Description("Update a user and return the changed user.")
     changeUser(
         @NonNull() @Arg({name: "id"}) id: string,
         @Arg({name: "input"}) input: UserForUpdate
-    ): User {
+    ) {
         const user = users.find(u => u.id === id) as User;
         if (!user) return null;
         Object.assign(user, input);
         return user;
     }
 
-    @Field()
+    @Field({type: User})
+    @Description("Create a user and return the created user.")
     addUser(
         @NonNull() @Arg({name: "input"}) input: UserForCreate
-    ): User {
+    ) {
         const newUser = new User();
         const shasum = createHash("sha1");
         shasum.update("usr" + Date.now());
@@ -73,6 +82,7 @@ class MutationType {
     }
 
     @Field({type: User})
+    @Description("Delete a user and return the removed user.")
     deleteUser(
         @NonNull() @Arg({name: "id"}) id: string
     ) {
