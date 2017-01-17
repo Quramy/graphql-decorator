@@ -1,6 +1,6 @@
 {
   "name": "graphql-decorator",
-  "version": "0.2.0",
+  "version": "0.3.0-alpha.1",
   "description": "Creates GraphQL Schema from decorated TypeScript Class",
   "main": "lib/index.js",
   "engines": {
@@ -29,10 +29,10 @@
     "reflect-metadata": "^0.1.3"
   },
   "peerDependencies": {
-    "graphql": "^0.6.0"
+    "graphql": "0.8.2"
   },
   "devDependencies": {
-    "graphql": "^0.6.0",
+    "graphql": "0.8.2",
     "dtsm": "^1.1.0",
     "mocha": "^2.5.3",
     "rimraf": "^2.5.2",

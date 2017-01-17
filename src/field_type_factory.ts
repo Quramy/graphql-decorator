@@ -60,6 +60,9 @@ export function resolverFactory(target: Function, name: string, argumentMetadata
                 rest[index] = args[name];
             }
         });
+        let restCount = rest.length;
+        rest[restCount] = context;
+        console.log("DECORATOR: " + rest);
         return originalFn.apply(source, rest);
     };
     return {
