@@ -38,17 +38,26 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean)
     return returnType;
 }
 
-export function resolverFactory(target: Function, name: string, argumentMetadataList: ArgumentMetadata[]): ResolverHolder {
+export function resolverFactory(target: Function, name: string, argumentMetadataList: ArgumentMetadata[],
+    hasContext?: boolean): ResolverHolder {
     const params = Reflect.getMetadata("design:paramtypes", target.prototype, name) as Function[];
     const argumentConfigMap: {[name: string]: any; } = {};
     const indexMap: {[name: string]: number; } = {};
+
     params.forEach((paramFn, index) => {
-        const metadata = argumentMetadataList[index];
-        argumentConfigMap[metadata.name] = {
-            name: metadata.name,
-            type: convertType(paramFn, metadata, true),
-        };
-        indexMap[metadata.name] = index;
+        if (argumentMetadataList[index] == null) {
+            if (hasContext) {
+                indexMap["context"] = index;
+            }
+        } else {
+            const metadata = argumentMetadataList[index];
+
+            argumentConfigMap[metadata.name] = {
+                name: metadata.name,
+                type: convertType(paramFn, metadata, true),
+            };
+            indexMap[metadata.name] = index;
+        }
     });
     const originalFn = target.prototype[name] as Function;
     const fn = function(source: any, args: {[name: string]: any; }, context: any, info: any) {
@@ -60,9 +69,14 @@ export function resolverFactory(target: Function, name: string, argumentMetadata
                 rest[index] = args[name];
             }
         });
-        let restCount = rest.length;
-        rest[restCount] = context;
-        console.log("DECORATOR: " + rest);
+
+        if (hasContext) {
+            const index = indexMap["context"];
+            if (index >= 0) {
+                rest[index] = context;
+            }
+        }
+
         return originalFn.apply(source, rest);
     };
     return {
@@ -86,7 +100,7 @@ export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, 
         if (!metadata.explicitType) {
             typeFn = Reflect.getMetadata("design:returntype", target.prototype, metadata.name) as Function;
         }
-        const resolverHolder = resolverFactory(target, metadata.name, metadata.args);
+        const resolverHolder = resolverFactory(target, metadata.name, metadata.args, metadata.hasContext);
         resolveFn = resolverHolder.fn;
         args = resolverHolder.argumentConfigMap;
     }
