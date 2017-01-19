@@ -45,7 +45,7 @@ export function resolverFactory(target: Function, name: string, argumentMetadata
     const indexMap: {[name: string]: number; } = {};
 
     params.forEach((paramFn, index) => {
-        if (argumentMetadataList[index] == null) {
+        if (argumentMetadataList == null || argumentMetadataList[index] == null) {
             if (hasContext) {
                 indexMap["context"] = index;
             }
@@ -62,7 +62,7 @@ export function resolverFactory(target: Function, name: string, argumentMetadata
     const originalFn = target.prototype[name] as Function;
     const fn = function(source: any, args: {[name: string]: any; }, context: any, info: any) {
         const rest: any[] = [];
-        // TODO inject context and info to rest arguments
+        // TODO inject info to rest arguments
         Object.keys(args).forEach(name => {
             const index = indexMap[name];
             if (index >= 0) {
@@ -77,7 +77,7 @@ export function resolverFactory(target: Function, name: string, argumentMetadata
             }
         }
 
-        return originalFn.apply(source, rest);
+        return originalFn.apply(target.prototype, rest);
     };
     return {
         fn, argumentConfigMap,
