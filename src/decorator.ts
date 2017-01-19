@@ -17,11 +17,16 @@ export interface ArgumentMetadata extends TypeMetadata {
 }
 
 export interface ContextMetadata extends ArgumentMetadata {
+    index?: number;
 }
 
-export interface FieldTypeMetadata extends ContextMetadata {
+export interface RootMetadata extends ContextMetadata {
+}
+
+export interface FieldTypeMetadata extends RootMetadata {
     args?: ArgumentMetadata[];
-    hasContext?: boolean;
+    root?: RootMetadata;
+    context?: ContextMetadata;
 }
 
 export interface ObjectTypeMetadata {
@@ -96,12 +101,24 @@ function setArgumentMetadata(target: any, propertyKey: any, index: number, metad
 
 function setContextMetadata(target: any, propertyKey: any, index: number, metadata: ContextMetadata) {
     const fieldMetadata = getFieldMetadata(target, propertyKey);
-    if (fieldMetadata && fieldMetadata.hasContext) {
-        Object.assign(fieldMetadata.hasContext, true);
+    if (fieldMetadata && fieldMetadata.context) {
+        Object.assign(fieldMetadata.context, true);
     } else {
         createOrSetFieldTypeMetadata(target, { 
             name: propertyKey,
-            hasContext: true 
+            context: { index: index }
+        });
+    }
+}
+
+function setRootMetadata(target: any, propertyKey: any, index: number, metadata: ContextMetadata) {
+    const fieldMetadata = getFieldMetadata(target, propertyKey);
+    if (fieldMetadata && fieldMetadata.root) {
+        Object.assign(fieldMetadata.root, metadata);
+    } else {
+        createOrSetFieldTypeMetadata(target, { 
+            name: propertyKey,
+            root: { index: index }
         });
     }
 }
@@ -169,6 +186,12 @@ export function Arg(option: ArgumentOption) {
             name: option.name,
             explicitType: option.type,
         });
+    } as Function;
+}
+
+export function Root() {
+    return function(target: any, propertyKey: any, index: number) {
+        setRootMetadata(target, propertyKey, index, { });
     } as Function;
 }
 

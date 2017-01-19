@@ -1,4 +1,5 @@
-import { FieldTypeMetadata , ArgumentMetadata ,  GQ_OBJECT_METADATA_KEY , TypeMetadata } from "./decorator";
+import { FieldTypeMetadata , RootMetadata, ArgumentMetadata, ContextMetadata,  
+    GQ_OBJECT_METADATA_KEY , TypeMetadata } from "./decorator";
 import { objectTypeFactory } from "./object_type_factory";
 import { SchemaFactoryError , SchemaFactoryErrorType } from "./schema_factory";
 const graphql = require("graphql");
@@ -38,16 +39,19 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean)
     return returnType;
 }
 
-export function resolverFactory(target: Function, name: string, argumentMetadataList: ArgumentMetadata[],
-    hasContext?: boolean): ResolverHolder {
+export function resolverFactory(target: Function, name: string, argumentMetadataList: ArgumentMetadata[], 
+    rootMetadata?: RootMetadata, contextMetadata?: ContextMetadata): ResolverHolder {
     const params = Reflect.getMetadata("design:paramtypes", target.prototype, name) as Function[];
     const argumentConfigMap: {[name: string]: any; } = {};
     const indexMap: {[name: string]: number; } = {};
 
     params.forEach((paramFn, index) => {
         if (argumentMetadataList == null || argumentMetadataList[index] == null) {
-            if (hasContext) {
-                indexMap["context"] = index;
+            if (contextMetadata) {
+                indexMap["context"] = contextMetadata.index;
+            }
+            if (rootMetadata) {
+                indexMap["root"] = rootMetadata.index;
             }
         } else {
             const metadata = argumentMetadataList[index];
@@ -60,7 +64,7 @@ export function resolverFactory(target: Function, name: string, argumentMetadata
         }
     });
     const originalFn = target.prototype[name] as Function;
-    const fn = function(source: any, args: {[name: string]: any; }, context: any, info: any) {
+    const fn = function(root: any, args: {[name: string]: any; }, context: any, info: any) {
         const rest: any[] = [];
         // TODO inject info to rest arguments
         Object.keys(args).forEach(name => {
@@ -70,10 +74,17 @@ export function resolverFactory(target: Function, name: string, argumentMetadata
             }
         });
 
-        if (hasContext) {
+        if (contextMetadata) {
             const index = indexMap["context"];
             if (index >= 0) {
                 rest[index] = context;
+            }
+        }
+
+        if (rootMetadata) {
+            const index = indexMap["root"]
+            if (index >= 0) {
+                rest[index] = root;
             }
         }
 
@@ -100,7 +111,7 @@ export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, 
         if (!metadata.explicitType) {
             typeFn = Reflect.getMetadata("design:returntype", target.prototype, metadata.name) as Function;
         }
-        const resolverHolder = resolverFactory(target, metadata.name, metadata.args, metadata.hasContext);
+        const resolverHolder = resolverFactory(target, metadata.name, metadata.args, metadata.root, metadata.context);
         resolveFn = resolverHolder.fn;
         args = resolverHolder.argumentConfigMap;
     }
