@@ -10,6 +10,7 @@ export interface TypeMetadata {
     description?: string;
     isNonNull?: boolean;
     isList?: boolean;
+    isConnection?: boolean;
     explicitType?: any;
 }
 
@@ -160,6 +161,21 @@ export function NonNull() {
             createOrSetFieldTypeMetadata(target, {
                 name: propertyKey,
                 isNonNull: true,
+            });
+        }
+    } as Function;
+}
+
+export function Connection() {
+    return function(target: any, propertyKey: any, index?: number) {
+        if (index >= 0) {
+            setArgumentMetadata(target, propertyKey, index, {
+                isConnection: true,
+            });
+        } else {
+            createOrSetFieldTypeMetadata(target, {
+                name: propertyKey,
+                isConnection: true,
             });
         }
     } as Function;

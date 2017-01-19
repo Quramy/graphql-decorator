@@ -2,6 +2,7 @@ import { FieldTypeMetadata , RootMetadata, ArgumentMetadata, ContextMetadata,
     GQ_OBJECT_METADATA_KEY , TypeMetadata } from "./decorator";
 import { objectTypeFactory } from "./object_type_factory";
 import { SchemaFactoryError , SchemaFactoryErrorType } from "./schema_factory";
+import { ConnectionType } from './connection.type'
 const graphql = require("graphql");
 
 export interface ResolverHolder {
@@ -9,7 +10,7 @@ export interface ResolverHolder {
     argumentConfigMap: {[name: string]: any; };
 }
 
-function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean) {
+function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean, name?: string) {
     let returnType: any;
     if (!metadata.explicitType) {
         if (typeFn === Number) {
@@ -35,6 +36,9 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean)
     }
     if (metadata.isNonNull) {
         returnType = new graphql.GraphQLNonNull(returnType);
+    }
+    if (metadata.isConnection) {
+        returnType = ConnectionType.build(name, returnType);
     }
     return returnType;
 }
@@ -116,7 +120,7 @@ export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, 
         args = resolverHolder.argumentConfigMap;
     }
 
-    const fieldType = convertType(typeFn, metadata, isInput);
+    const fieldType = convertType(typeFn, metadata, isInput, metadata.name);
     if (!fieldType) return null;
     return {
         type: fieldType,
