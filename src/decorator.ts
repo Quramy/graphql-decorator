@@ -25,8 +25,6 @@ export interface RootMetadata extends ContextMetadata {
 
 export interface FieldTypeMetadata extends RootMetadata {
     args?: ArgumentMetadata[];
-    hasContext?: boolean;
-    hasRoot?: boolean;
     root?: RootMetadata;
     context?: ContextMetadata;
 }
@@ -103,12 +101,11 @@ function setArgumentMetadata(target: any, propertyKey: any, index: number, metad
 
 function setContextMetadata(target: any, propertyKey: any, index: number, metadata: ContextMetadata) {
     const fieldMetadata = getFieldMetadata(target, propertyKey);
-    if (fieldMetadata && fieldMetadata.hasContext) {
+    if (fieldMetadata && fieldMetadata.context) {
         Object.assign(fieldMetadata.context, true);
     } else {
         createOrSetFieldTypeMetadata(target, { 
             name: propertyKey,
-            hasContext: true,
             context: { index: index }
         });
     }
@@ -116,12 +113,11 @@ function setContextMetadata(target: any, propertyKey: any, index: number, metada
 
 function setRootMetadata(target: any, propertyKey: any, index: number, metadata: ContextMetadata) {
     const fieldMetadata = getFieldMetadata(target, propertyKey);
-    if (fieldMetadata && fieldMetadata.hasRoot) {
-        Object.assign(fieldMetadata.hasRoot, true);
+    if (fieldMetadata && fieldMetadata.root) {
+        Object.assign(fieldMetadata.root, metadata);
     } else {
         createOrSetFieldTypeMetadata(target, { 
             name: propertyKey,
-            hasRoot: true,
             root: { index: index }
         });
     }
