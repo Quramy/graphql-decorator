@@ -30,7 +30,9 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean,
             returnType = objectTypeFactory(returnType, isInput);
         }
     }
+
     if (!returnType) return null;
+
     if (metadata.isList) {
         returnType = new graphql.GraphQLList(returnType);
     }
