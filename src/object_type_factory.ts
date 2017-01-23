@@ -52,3 +52,11 @@ export function mutationObjectTypeFactory(fieldsDict: any) {
 
     return mutationRootObject;
 }
+
+export function queryObjectTypeFactory(fieldsDict: any) {
+    return new graphql.GraphQLObjectType({
+        name: 'Queries',
+        description: 'Reads from the backend',
+        fields: fieldsDict
+    });
+}

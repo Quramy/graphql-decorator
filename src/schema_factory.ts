@@ -1,5 +1,5 @@
 import { FieldTypeMetadata , GQ_QUERY_KEY , GQ_MUTATION_KEY, GQ_FIELDS_KEY } from "./decorator";
-import { mutationObjectTypeFactory, objectTypeFactory } from "./object_type_factory";
+import { mutationObjectTypeFactory, queryObjectTypeFactory, objectTypeFactory } from "./object_type_factory";
 import { fieldTypeFactory } from "./field_type_factory";
 const graphql = require("graphql");
 
@@ -42,7 +42,7 @@ export function schemaFactory(target: Function) {
             });
         });
 
-        rootQueryObject = mutationObjectTypeFactory(queryFields);
+        rootQueryObject = queryObjectTypeFactory(queryFields);
     }
 
     let mutationFieldsDict: any = {};
@@ -69,7 +69,7 @@ export function schemaFactory(target: Function) {
         let rootMutationObject = mutationObjectTypeFactory(fields);
 
         return new graphql.GraphQLSchema({
-            query: objectTypeFactory(queryTypeFn),
+            query: rootQueryObject,
             mutation: rootMutationObject
         });
     }
