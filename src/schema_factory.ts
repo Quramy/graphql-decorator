@@ -22,16 +22,33 @@ export function schemaFactory(target: Function) {
     if (!Reflect.hasMetadata("gq_schema", target)) {
         throw new SchemaFactoryError("The argument of schemaFactory should be annotated @Schema() decorator", SchemaFactoryErrorType.NO_SCHEMA_ANNOTATION);
     }
+
+    let queryFieldsDict: any = {};
+    var rootQueryObject: any;
     if (!Reflect.hasMetadata(GQ_QUERY_KEY, target.prototype)) {
         throw new SchemaFactoryError("Target should has @Query field", SchemaFactoryErrorType.NO_QUERY_FIELD);
+    } else {
+        const queryMetadata = Reflect.getMetadata(GQ_QUERY_KEY, target.prototype);
+        const queryFields: {[key: string]: any} = {};
+        var queryTypeFn: Function;
+        var queryFieldMetadataList: FieldTypeMetadata[];
+
+        queryMetadata.forEach((queryKey: any) => {
+            queryTypeFn = Reflect.getMetadata("design:type", target.prototype, queryKey) as Function;
+            queryFieldMetadataList = Reflect.getMetadata(GQ_FIELDS_KEY, queryTypeFn.prototype) as FieldTypeMetadata[];
+
+            queryFieldMetadataList.forEach(def => {
+                queryFields[def.name] = fieldTypeFactory(queryTypeFn, def);
+            });
+        });
+
+        rootQueryObject = mutationObjectTypeFactory(queryFields);
     }
-    const queryKey = Reflect.getMetadata(GQ_QUERY_KEY, target.prototype) as string;
-    const queryTypeFn = Reflect.getMetadata("design:type", target.prototype, queryKey) as Function;
 
     let mutationFieldsDict: any = {};
     if (!Reflect.hasMetadata(GQ_MUTATION_KEY, target.prototype)) {
         const ret = new graphql.GraphQLSchema({
-            query: objectTypeFactory(queryTypeFn),
+            query: rootQueryObject,
         });
         return ret;
     } else {
