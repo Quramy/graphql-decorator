@@ -238,7 +238,13 @@ export function Description(body: string) {
 
 export function Query(option?: any) {
     return function(target: any, propertyKey: any) {
-        Reflect.defineMetadata(GQ_QUERY_KEY, propertyKey, target);
+        if (Reflect.hasMetadata(GQ_QUERY_KEY, target)) {
+            let metadata = Reflect.getMetadata(GQ_QUERY_KEY, target);
+            metadata.push(propertyKey)
+            Reflect.defineMetadata(GQ_QUERY_KEY, metadata, target);
+        } else {
+            Reflect.defineMetadata(GQ_QUERY_KEY, [ propertyKey ], target);
+        }
     } as Function;
 }
 
