@@ -242,9 +242,15 @@ export function Query(option?: any) {
     } as Function;
 }
 
-export function Mutation() {
+export function Mutation(option?: any) {
     return function(target: any, propertyKey: any) {
-        Reflect.defineMetadata(GQ_MUTATION_KEY, propertyKey, target);
+        if (Reflect.hasMetadata(GQ_MUTATION_KEY, target)) {
+            let metadata = Reflect.getMetadata(GQ_MUTATION_KEY, target);
+            metadata.push(propertyKey)
+            Reflect.defineMetadata(GQ_MUTATION_KEY, metadata, target);
+        } else {
+            Reflect.defineMetadata(GQ_MUTATION_KEY, [ propertyKey ], target);
+        }
     } as Function;
 }
 
