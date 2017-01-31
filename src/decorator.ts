@@ -10,7 +10,7 @@ export interface TypeMetadata {
     description?: string;
     isNonNull?: boolean;
     isList?: boolean;
-    isConnection?: boolean;
+    isPagination?: boolean;
     explicitType?: any;
 }
 
@@ -166,16 +166,16 @@ export function NonNull() {
     } as Function;
 }
 
-export function Connection() {
+export function Pagination() {
     return function(target: any, propertyKey: any, index?: number) {
         if (index >= 0) {
             setArgumentMetadata(target, propertyKey, index, {
-                isConnection: true,
+                isPagination: true,
             });
         } else {
             createOrSetFieldTypeMetadata(target, {
                 name: propertyKey,
-                isConnection: true,
+                isPagination: true,
             });
         }
     } as Function;

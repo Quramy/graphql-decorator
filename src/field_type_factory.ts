@@ -39,7 +39,7 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean,
     if (metadata.isNonNull) {
         returnType = new graphql.GraphQLNonNull(returnType);
     }
-    if (metadata.isConnection) {
+    if (metadata.isPagination) {
         returnType = ConnectionType.build(name, returnType);
     }
     return returnType;
