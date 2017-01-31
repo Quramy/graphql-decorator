@@ -1,8 +1,5 @@
 
-
 ## Differences from graphql-decorator
-
-#### GraphQL Decorator
 
 This package makes possible the use of decorators to define a GraphQL schema. Note that this package is a fork, we have added some new features to the original package.  
 Apart from the decorators listed on the original documentation, we have added three new and changed the behavior for two others.
@@ -13,7 +10,7 @@ Apart from the decorators listed on the original documentation, we have added th
 - @Query: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
 - @Mutation: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
 
-#### GraphQL Decorator Examples
+### Updated GraphQL Decorator Examples
 
 Use of modified @Query and @Mutation. @Schema stayed the same as on the original repo.
 ```typescript
@@ -76,16 +73,16 @@ export class UserType {
 }
 ```
 
-Use of @Connection
+Use of @Pagination
 ```typescript
-import { ObjectType, Arg, Connection, Ctx, List, Field, Description } from 'graphql-decorator';
+import { ObjectType, Arg, Pagination, Ctx, List, Field, Description } from 'graphql-decorator';
 import * as UserTypes from 'graphql/user/types/index'
 
 @ObjectType()
 @Description("Get all users query.")
 export class UsersQuery {
 
-  @Connection()
+  @Pagination()
   @Field({type: UserTypes.UserType}) 
   users(@Ctx() context: any, @Arg({name: "offset"}) offset: number, @Arg({name: "limit"}) limit: number)  {
     // Get users
