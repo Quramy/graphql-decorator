@@ -91,7 +91,7 @@ export class UsersQuery {
 }
 ```
 
-`nodes`, `count` and `pageInfo` comes with the @Connection decorator.
+`nodes`, `count` and `pageInfo` comes with the @Pagination decorator.
 ```
 {
   users {
