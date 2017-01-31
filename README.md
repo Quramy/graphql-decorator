@@ -1,4 +1,111 @@
-# graphql-decorator [![Build Status](https://travis-ci.org/Quramy/graphql-decorator.svg?branch=master)](https://travis-ci.org/Quramy/graphql-decorator) [![npm version](https://badge.fury.io/js/graphql-decorator.svg)](https://badge.fury.io/js/graphql-decorator)
+
+## Differences from graphql-decorator
+
+This package makes possible the use of decorators to define a GraphQL schema. Note that this package is a fork, we have added some new features to the original package.  
+Apart from the decorators listed on the original documentation, we have added three new and changed the behavior for two others.
+
+- @Ctx: Injects GraphQL context object into annotated method parameter.
+- @Root: Injects GraphQL root object into annotaed method parameter.
+- @Pagination: Wraps the type into a pagination model (http://graphql.org/learn/pagination/). For clarification, see examples below.
+- @Query: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
+- @Mutation: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
+
+### Updated GraphQL Decorator Examples
+
+Use of modified @Query and @Mutation. @Schema stayed the same as on the original repo.
+```typescript
+import { Schema, Query, Mutation } from "graphql-decorator";
+import * as AnswerMutations from 'graphql/answer/mutations/index';
+import * as AnswerQueries from 'graphql/answer/queries/index';
+import * as UserQueries from 'graphql/user/queries/index';
+import * as UserMutations from 'graphql/user/mutations/index';
+
+@Schema()
+export class RootSchema {
+
+  @Query() 
+  answerQuery: AnswerQueries.AnswerQuery;
+
+  @Query() 
+  answersQuery: AnswerQueries.AnswersQuery;
+
+  @Mutation()
+  answerCreateMutation: AnswerMutations.AnswerCreateMutation;
+
+  @Mutation()
+  answerUpvoteMutation: AnswerMutations.AnswerUpvoteMutation;
+}
+```
+
+
+Example usage of @Ctx and @Root.
+```typescript
+import { NonNull, ObjectType, Ctx, List, Field, Description, Root } from 'graphql-decorator';
+import { GraphQLID, GraphQLString, GraphQLList } from 'graphql';
+import * as AnswerTypes from 'graphql/answer/types/index';
+
+@ObjectType()
+@Description('An user')
+export class UserType {
+
+    @NonNull()
+    @Field({type: GraphQLID})
+    id: number;
+    
+    @NonNull()
+    @Field({type: GraphQLString})
+    name: string;
+    
+    @NonNull()
+    @Field({type: GraphQLString})
+    avatarUrl: string;
+
+    @NonNull()
+    @Field({type: GraphQLString})
+    email: string;
+
+    @List() 
+    @Field({type: AnswerTypes.AnswerType}) 
+    answers(@Ctx() context: any, @Root() root: any) {
+        // Get answers using ctx and root.
+    }
+
+}
+```
+
+Use of @Pagination
+```typescript
+import { ObjectType, Arg, Pagination, Ctx, List, Field, Description } from 'graphql-decorator';
+import * as UserTypes from 'graphql/user/types/index'
+
+@ObjectType()
+@Description("Get all users query.")
+export class UsersQuery {
+
+  @Pagination()
+  @Field({type: UserTypes.UserType}) 
+  users(@Ctx() context: any, @Arg({name: "offset"}) offset: number, @Arg({name: "limit"}) limit: number)  {
+    // Get users
+  }
+
+}
+```
+
+`nodes`, `count` and `pageInfo` comes with the @Connection decorator.
+```
+{
+  users {
+    nodes {
+      id,
+      name
+    },
+    count,
+    pageInfo {
+      hasNextPage
+    }
+  }
+}
+```
 
 Helps to build [GraphQL](http://graphql.org/) schema with TypeScript.
 

@@ -42,3 +42,21 @@ export function objectTypeFactory(target: Function, isInput?: boolean) {
     }
     return objectTypeRepository[objectTypeMetadata.name];
 }
+
+export function mutationObjectTypeFactory(fieldsDict: any) {
+    let mutationRootObject = new graphql.GraphQLObjectType({
+        name: 'Mutations',
+        description: 'Perform actions over the backend',
+        fields: fieldsDict
+    });
+
+    return mutationRootObject;
+}
+
+export function queryObjectTypeFactory(fieldsDict: any) {
+    return new graphql.GraphQLObjectType({
+        name: 'Queries',
+        description: 'Reads from the backend',
+        fields: fieldsDict
+    });
+}

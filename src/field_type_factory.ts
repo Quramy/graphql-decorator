@@ -1,6 +1,8 @@
-import { FieldTypeMetadata , ArgumentMetadata ,  GQ_OBJECT_METADATA_KEY , TypeMetadata } from "./decorator";
+import { FieldTypeMetadata , RootMetadata, ArgumentMetadata, ContextMetadata,  
+    GQ_OBJECT_METADATA_KEY , TypeMetadata } from "./decorator";
 import { objectTypeFactory } from "./object_type_factory";
 import { SchemaFactoryError , SchemaFactoryErrorType } from "./schema_factory";
+import { ConnectionType } from './connection.type'
 const graphql = require("graphql");
 
 export interface ResolverHolder {
@@ -8,7 +10,7 @@ export interface ResolverHolder {
     argumentConfigMap: {[name: string]: any; };
 }
 
-function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean) {
+function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean, name?: string) {
     let returnType: any;
     if (!metadata.explicitType) {
         if (typeFn === Number) {
@@ -28,39 +30,71 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean)
             returnType = objectTypeFactory(returnType, isInput);
         }
     }
+
     if (!returnType) return null;
+
     if (metadata.isList) {
         returnType = new graphql.GraphQLList(returnType);
     }
     if (metadata.isNonNull) {
         returnType = new graphql.GraphQLNonNull(returnType);
     }
+    if (metadata.isPagination) {
+        returnType = ConnectionType.build(name, returnType);
+    }
     return returnType;
 }
 
-export function resolverFactory(target: Function, name: string, argumentMetadataList: ArgumentMetadata[]): ResolverHolder {
+export function resolverFactory(target: Function, name: string, argumentMetadataList: ArgumentMetadata[], 
+    rootMetadata?: RootMetadata, contextMetadata?: ContextMetadata): ResolverHolder {
     const params = Reflect.getMetadata("design:paramtypes", target.prototype, name) as Function[];
     const argumentConfigMap: {[name: string]: any; } = {};
     const indexMap: {[name: string]: number; } = {};
+
     params.forEach((paramFn, index) => {
-        const metadata = argumentMetadataList[index];
-        argumentConfigMap[metadata.name] = {
-            name: metadata.name,
-            type: convertType(paramFn, metadata, true),
-        };
-        indexMap[metadata.name] = index;
+        if (argumentMetadataList == null || argumentMetadataList[index] == null) {
+            if (contextMetadata) {
+                indexMap["context"] = contextMetadata.index;
+            }
+            if (rootMetadata) {
+                indexMap["root"] = rootMetadata.index;
+            }
+        } else {
+            const metadata = argumentMetadataList[index];
+
+            argumentConfigMap[metadata.name] = {
+                name: metadata.name,
+                type: convertType(paramFn, metadata, true),
+            };
+            indexMap[metadata.name] = index;
+        }
     });
     const originalFn = target.prototype[name] as Function;
-    const fn = function(source: any, args: {[name: string]: any; }, context: any, info: any) {
+    const fn = function(root: any, args: {[name: string]: any; }, context: any, info: any) {
         const rest: any[] = [];
-        // TODO inject context and info to rest arguments
+        // TODO inject info to rest arguments
         Object.keys(args).forEach(name => {
             const index = indexMap[name];
             if (index >= 0) {
                 rest[index] = args[name];
             }
         });
-        return originalFn.apply(source, rest);
+
+        if (contextMetadata) {
+            const index = indexMap["context"];
+            if (index >= 0) {
+                rest[index] = context;
+            }
+        }
+
+        if (rootMetadata) {
+            const index = indexMap["root"]
+            if (index >= 0) {
+                rest[index] = root;
+            }
+        }
+
+        return originalFn.apply(target.prototype, rest);
     };
     return {
         fn, argumentConfigMap,
@@ -83,12 +117,12 @@ export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, 
         if (!metadata.explicitType) {
             typeFn = Reflect.getMetadata("design:returntype", target.prototype, metadata.name) as Function;
         }
-        const resolverHolder = resolverFactory(target, metadata.name, metadata.args);
+        const resolverHolder = resolverFactory(target, metadata.name, metadata.args, metadata.root, metadata.context);
         resolveFn = resolverHolder.fn;
         args = resolverHolder.argumentConfigMap;
     }
 
-    const fieldType = convertType(typeFn, metadata, isInput);
+    const fieldType = convertType(typeFn, metadata, isInput, metadata.name);
     if (!fieldType) return null;
     return {
         type: fieldType,

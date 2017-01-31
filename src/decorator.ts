@@ -10,14 +10,24 @@ export interface TypeMetadata {
     description?: string;
     isNonNull?: boolean;
     isList?: boolean;
+    isPagination?: boolean;
     explicitType?: any;
 }
 
 export interface ArgumentMetadata extends TypeMetadata {
 }
 
-export interface FieldTypeMetadata extends ArgumentMetadata {
+export interface ContextMetadata extends ArgumentMetadata {
+    index?: number;
+}
+
+export interface RootMetadata extends ContextMetadata {
+}
+
+export interface FieldTypeMetadata extends RootMetadata {
     args?: ArgumentMetadata[];
+    root?: RootMetadata;
+    context?: ContextMetadata;
 }
 
 export interface ObjectTypeMetadata {
@@ -35,7 +45,7 @@ function createOrSetObjectTypeMetadata(target: any, metadata: ObjectTypeMetadata
     }
 }
 
-export interface FieldOpetion {
+export interface FieldOption {
     type?: any;
 }
 
@@ -63,7 +73,7 @@ function createOrSetFieldTypeMetadata(target: any, metadata: FieldTypeMetadata) 
             } else {
                 args = Object.assign([], def.args, metadata.args);
             }
-        }
+        } 
         Object.assign(def, metadata);
         def.args = args;
     }
@@ -90,6 +100,30 @@ function setArgumentMetadata(target: any, propertyKey: any, index: number, metad
     }
 }
 
+function setContextMetadata(target: any, propertyKey: any, index: number, metadata: ContextMetadata) {
+    const fieldMetadata = getFieldMetadata(target, propertyKey);
+    if (fieldMetadata && fieldMetadata.context) {
+        Object.assign(fieldMetadata.context, true);
+    } else {
+        createOrSetFieldTypeMetadata(target, { 
+            name: propertyKey,
+            context: { index: index }
+        });
+    }
+}
+
+function setRootMetadata(target: any, propertyKey: any, index: number, metadata: ContextMetadata) {
+    const fieldMetadata = getFieldMetadata(target, propertyKey);
+    if (fieldMetadata && fieldMetadata.root) {
+        Object.assign(fieldMetadata.root, metadata);
+    } else {
+        createOrSetFieldTypeMetadata(target, { 
+            name: propertyKey,
+            root: { index: index }
+        });
+    }
+}
+
 export function ObjectType() {
     return function(target: any) {
         createOrSetObjectTypeMetadata(target, {
@@ -108,7 +142,7 @@ export function InputObjectType() {
     } as Function;
 }
 
-export function Field(option?: FieldOpetion) {
+export function Field(option?: FieldOption) {
     return function(target: any, propertyKey: any) {
         createOrSetFieldTypeMetadata(target, {
             name: propertyKey,
@@ -127,6 +161,21 @@ export function NonNull() {
             createOrSetFieldTypeMetadata(target, {
                 name: propertyKey,
                 isNonNull: true,
+            });
+        }
+    } as Function;
+}
+
+export function Pagination() {
+    return function(target: any, propertyKey: any, index?: number) {
+        if (index >= 0) {
+            setArgumentMetadata(target, propertyKey, index, {
+                isPagination: true,
+            });
+        } else {
+            createOrSetFieldTypeMetadata(target, {
+                name: propertyKey,
+                isPagination: true,
             });
         }
     } as Function;
@@ -156,6 +205,18 @@ export function Arg(option: ArgumentOption) {
     } as Function;
 }
 
+export function Root() {
+    return function(target: any, propertyKey: any, index: number) {
+        setRootMetadata(target, propertyKey, index, { });
+    } as Function;
+}
+
+export function Ctx() {
+    return function(target: any, propertyKey: any, index: number) {
+        setContextMetadata(target, propertyKey, index, { });
+    } as Function;
+}
+
 export function Description(body: string) {
     return function(target: any, propertyKey?: any, index?: number) {
         if (index >= 0) {
@@ -177,13 +238,25 @@ export function Description(body: string) {
 
 export function Query(option?: any) {
     return function(target: any, propertyKey: any) {
-        Reflect.defineMetadata(GQ_QUERY_KEY, propertyKey, target);
+        if (Reflect.hasMetadata(GQ_QUERY_KEY, target)) {
+            let metadata = Reflect.getMetadata(GQ_QUERY_KEY, target);
+            metadata.push(propertyKey)
+            Reflect.defineMetadata(GQ_QUERY_KEY, metadata, target);
+        } else {
+            Reflect.defineMetadata(GQ_QUERY_KEY, [ propertyKey ], target);
+        }
     } as Function;
 }
 
-export function Mutation() {
+export function Mutation(option?: any) {
     return function(target: any, propertyKey: any) {
-        Reflect.defineMetadata(GQ_MUTATION_KEY, propertyKey, target);
+        if (Reflect.hasMetadata(GQ_MUTATION_KEY, target)) {
+            let metadata = Reflect.getMetadata(GQ_MUTATION_KEY, target);
+            metadata.push(propertyKey)
+            Reflect.defineMetadata(GQ_MUTATION_KEY, metadata, target);
+        } else {
+            Reflect.defineMetadata(GQ_MUTATION_KEY, [ propertyKey ], target);
+        }
     } as Function;
 }
 
