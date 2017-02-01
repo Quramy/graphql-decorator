@@ -73,7 +73,7 @@ describe("schemaFactory", function() {
         assert.deepEqual(validate(schema, ast), []);
     });
 
-    it("returns a GraphQL schema object which is executable", async function(done) {
+    it("returns a GraphQL schema object which is executable", async function(done: any) {
         @D.ObjectType() class Query {
             @D.Field() title(): string { return "hello"; }
         }
@@ -85,7 +85,7 @@ describe("schemaFactory", function() {
         done();
     });
 
-    it("returns a GraphQL schema object which is executable", async function(done) {
+    it("returns a GraphQL schema object which is executable", async function(done: any) {
         @D.ObjectType() class Query {
             @D.Field() twice( @D.Arg({name: "input"}) input: number): number {
                 return input * 2;
@@ -100,7 +100,7 @@ describe("schemaFactory", function() {
         done();
     });
 
-    it("returns a GraphQL schema object which is executable", async function(done) {
+    it("returns a GraphQL schema object which is executable", async function(done: any) {
         @D.InputObjectType() class Input {
             @D.Field() a: number;
             @D.Field() b: number;
