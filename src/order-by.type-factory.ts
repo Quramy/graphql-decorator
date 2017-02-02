@@ -50,6 +50,11 @@ export class OrderByTypeFactory {
 
     if (args && args["orderBy"] != null) {
       if (metadata.isPagination) {
+        if (metadata.explicitType == null) {
+          throw new SchemaFactoryError("The @Field related to @OrderBy should have its type explicitly defined.", 
+            SchemaFactoryErrorType.NO_TYPE_ORDERBY_PARENT_FIELD);
+        }
+
         let returnType = metadata.explicitType;
         const fieldMetadataList = Reflect.getMetadata(GQ_FIELDS_KEY, returnType.prototype) as FieldTypeMetadata[];
         fieldMetadataList.forEach(def => {

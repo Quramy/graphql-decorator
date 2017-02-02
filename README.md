@@ -5,16 +5,17 @@ This package makes possible the use of decorators to define a GraphQL schema. No
 Apart from the decorators listed on the original documentation, we have added three new and changed the behavior for two others.
 
 - @Ctx: Injects GraphQL context object into annotated method parameter.
-- @Root: Injects GraphQL root object into annotaed method parameter.
-- @Pagination: Wraps the type into a pagination model (http://graphql.org/learn/pagination/). For clarification, see examples below.
+- @Root: Injects GraphQL root object into annotated method parameter.
+- @Connection: Wraps the type into a pagination model (http://graphql.org/learn/pagination/). For clarification, see examples below.
+- @OrderBy: It creates an `orderBy` input object to the related @Connection query. The available fields for ordering, comes the the type declared on the related @Field. Examples should make this clearer.
 - @Query: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
 - @Mutation: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
 
-### Updated GraphQL Decorator Examples
+#### GraphQL Decorator Examples
 
 Use of modified @Query and @Mutation. @Schema stayed the same as on the original repo.
 ```typescript
-import { Schema, Query, Mutation } from "graphql-decorator";
+import { Schema, Query, Mutation } from "graphql-schema-decorator";
 import * as AnswerMutations from 'graphql/answer/mutations/index';
 import * as AnswerQueries from 'graphql/answer/queries/index';
 import * as UserQueries from 'graphql/user/queries/index';
@@ -73,28 +74,52 @@ export class UserType {
 }
 ```
 
-Use of @Pagination
+Use of @Connection with @OrderBy
 ```typescript
-import { ObjectType, Arg, Pagination, Ctx, List, Field, Description } from 'graphql-decorator';
-import * as UserTypes from 'graphql/user/types/index'
+import { ObjectType, Arg, Connection, Ctx, List, Field, Description } from 'graphql-decorator';
 
 @ObjectType()
 @Description("Get all users query.")
 export class UsersQuery {
 
-  @Pagination()
-  @Field({type: UserTypes.UserType}) 
-  users(@Ctx() context: any, @Arg({name: "offset"}) offset: number, @Arg({name: "limit"}) limit: number)  {
+  @Connection()
+  @Field({type: UserType}) 
+  users(@Ctx() context: any, @Arg({name: "offset"}) offset: number, @Arg({name: "limit"}) limit: number, @OrderBy() orderBy: orderByItem[])  {
     // Get users
   }
+
+@ObjectType()
+@Description("An user.")
+export class UserType {
+
+    @NonNull()
+    @Description("User id")
+    @Field({type: GraphQLID})
+    id: number;
+    
+    @NonNull()
+    @Description("User name")
+    @Field({type: GraphQLString})
+    name: string;
+}
 
 }
 ```
 
-`nodes`, `count` and `pageInfo` comes with the @Pagination decorator.
+The `orderByType` interface
+```typescript
+export interface orderByItem {
+
+  sort: string;
+  direction: string;
+
+}
+```
+
+`nodes`, `count` and `pageInfo` comes with the @Connection decorator. @OrderBy accepts an array of `orderByItem`
 ```
 {
-  users {
+  users(orderBy: [{sort: id, direction: DESC}, {sort: title, direction: ASC}]) {
     nodes {
       id,
       name
