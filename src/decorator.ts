@@ -1,4 +1,7 @@
 import "reflect-metadata";
+import { OrderByTypeFactory } from './order-by.type-factory';
+import { GraphQLType } from "graphql";
+const graphql = require("graphql");
 
 export const GQ_QUERY_KEY                   = "gq_query";
 export const GQ_MUTATION_KEY                = "gq_mutation";
@@ -214,6 +217,14 @@ export function Root() {
 export function Ctx() {
     return function(target: any, propertyKey: any, index: number) {
         setContextMetadata(target, propertyKey, index, { });
+    } as Function;
+}
+
+export function OrderBy() {
+    return function(target: any, propertyKey: any, index: number) {
+        setArgumentMetadata(target, propertyKey, index, {
+            name: "orderBy"
+        });
     } as Function;
 }
 
