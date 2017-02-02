@@ -1,6 +1,7 @@
 import { FieldTypeMetadata , RootMetadata, ArgumentMetadata, ContextMetadata,  
-    GQ_OBJECT_METADATA_KEY , TypeMetadata } from "./decorator";
+    GQ_OBJECT_METADATA_KEY , GQ_FIELDS_KEY, TypeMetadata } from "./decorator";
 import { objectTypeFactory } from "./object_type_factory";
+import { OrderByTypeFactory } from "./order-by.type-factory";
 import { SchemaFactoryError , SchemaFactoryErrorType } from "./schema_factory";
 import { ConnectionType } from './connection.type'
 const graphql = require("graphql");
@@ -110,7 +111,8 @@ export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, 
 
     if (isInput && isFunctionType) {
         // TODO write test
-        throw new SchemaFactoryError("Field declared in a class annotated by @InputObjectType should not be a function", SchemaFactoryErrorType.INPUT_FIELD_SHOULD_NOT_BE_FUNC);
+        throw new SchemaFactoryError("Field declared in a class annotated by @InputObjectType should not be a function", 
+            SchemaFactoryErrorType.INPUT_FIELD_SHOULD_NOT_BE_FUNC);
     }
 
     if (isFunctionType) {
@@ -123,6 +125,9 @@ export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, 
     }
 
     const fieldType = convertType(typeFn, metadata, isInput, metadata.name);
+
+    args = OrderByTypeFactory.orderByFactory(metadata, args);
+
     if (!fieldType) return null;
     return {
         type: fieldType,

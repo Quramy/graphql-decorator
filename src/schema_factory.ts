@@ -9,6 +9,7 @@ export enum SchemaFactoryErrorType {
     NO_FIELD,
     INVALID_OBJECT_TYPE_METADATA,
     INPUT_FIELD_SHOULD_NOT_BE_FUNC,
+    ORDER_BY_OUTSIDE_PAGINATION
 }
 
 export class SchemaFactoryError extends Error {
@@ -36,7 +37,6 @@ export function schemaFactory(target: Function) {
         queryMetadata.forEach((queryKey: any) => {
             queryTypeFn = Reflect.getMetadata("design:type", target.prototype, queryKey) as Function;
             queryFieldMetadataList = Reflect.getMetadata(GQ_FIELDS_KEY, queryTypeFn.prototype) as FieldTypeMetadata[];
-
             queryFieldMetadataList.forEach(def => {
                 queryFields[def.name] = fieldTypeFactory(queryTypeFn, def);
             });
