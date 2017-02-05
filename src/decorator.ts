@@ -35,7 +35,7 @@ function createOrSetObjectTypeMetadata(target: any, metadata: ObjectTypeMetadata
     }
 }
 
-export interface FieldOpetion {
+export interface FieldOption {
     type?: any;
 }
 
@@ -108,7 +108,7 @@ export function InputObjectType() {
     } as Function;
 }
 
-export function Field(option?: FieldOpetion) {
+export function Field(option?: FieldOption) {
     return function(target: any, propertyKey: any) {
         createOrSetFieldTypeMetadata(target, {
             name: propertyKey,
