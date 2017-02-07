@@ -22,7 +22,7 @@
   "author": "Quramy",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Quramy/graphql-decorator.git"
+    "url": "https://github.com/indigotech/graphql-schema-decorator.git"
   },
   "license": "MIT",
   "dependencies": {
