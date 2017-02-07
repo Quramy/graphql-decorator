@@ -1,4 +1,5 @@
-const graphql = require("graphql");
+import * as graphql from "graphql";
+import { GraphQLObjectType } from "graphql";
 
 export const PageInfoType = 
     new graphql.GraphQLObjectType({

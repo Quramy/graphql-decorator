@@ -6,7 +6,7 @@ Apart from the decorators listed on the original documentation, we have added th
 
 - @Ctx: Injects GraphQL context object into annotated method parameter.
 - @Root: Injects GraphQL root object into annotated method parameter.
-- @Connection: Wraps the type into a pagination model (http://graphql.org/learn/pagination/). For clarification, see examples below.
+- @Pagination: Wraps the type into a pagination model (http://graphql.org/learn/pagination/). For clarification, see examples below.
 - @OrderBy: It creates an `orderBy` input object to the related @Connection query. The available fields for ordering, comes the the type declared on the related @Field. Examples should make this clearer.
 - @Query: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
 - @Mutation: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
@@ -74,15 +74,15 @@ export class UserType {
 }
 ```
 
-Use of @Connection with @OrderBy
+Use of @Pagination with @OrderBy
 ```typescript
-import { ObjectType, Arg, Connection, Ctx, List, Field, Description } from 'graphql-decorator';
+import { ObjectType, Arg, Pagination, Ctx, List, Field, Description } from 'graphql-decorator';
 
 @ObjectType()
 @Description("Get all users query.")
 export class UsersQuery {
 
-  @Connection()
+  @Pagination()
   @Field({type: UserType}) 
   users(@Ctx() context: any, @Arg({name: "offset"}) offset: number, @Arg({name: "limit"}) limit: number, @OrderBy() orderBy: orderByItem[])  {
     // Get users

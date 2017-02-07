@@ -1,8 +1,8 @@
 import * as D from "./decorator";
-import * as assert from "assert";
 import { clearObjectTypeRepository } from "./object_type_factory";
 import { fieldTypeFactory , resolverFactory } from "./field_type_factory";
-const graphql = require("graphql");
+import * as graphql from "graphql";
+const assert = require("assert");
 
 describe("resolverFactory", function() {
     beforeEach(function() {

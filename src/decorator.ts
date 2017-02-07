@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { OrderByTypeFactory } from './order-by.type-factory';
 import { GraphQLType } from "graphql";
-const graphql = require("graphql");
+import * as graphql from "graphql";
 
 export const GQ_QUERY_KEY                   = "gq_query";
 export const GQ_MUTATION_KEY                = "gq_mutation";
