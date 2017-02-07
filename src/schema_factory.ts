@@ -1,7 +1,8 @@
 import { FieldTypeMetadata , GQ_QUERY_KEY , GQ_MUTATION_KEY, GQ_FIELDS_KEY } from "./decorator";
 import { mutationObjectTypeFactory, queryObjectTypeFactory, objectTypeFactory } from "./object_type_factory";
 import { fieldTypeFactory } from "./field_type_factory";
-const graphql = require("graphql");
+import * as graphql from "graphql";
+import { GraphQLSchema } from "graphql";
 
 export enum SchemaFactoryErrorType {
     NO_SCHEMA_ANNOTATION,

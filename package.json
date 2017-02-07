@@ -1,6 +1,6 @@
 {
   "name": "graphql-schema-decorator",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Creates GraphQL Schema from decorated TypeScript Class",
   "main": "lib/index.js",
   "engines": {
@@ -35,10 +35,13 @@
     "graphql": "0.9.1",
     "dtsm": "1.1.0",
     "mocha": "2.5.3",
+    "assert": "1.4.1",
     "rimraf": "2.5.2",
     "tslint": "3.11.0",
     "typescript": "2.1.5",
-    "@types/graphql": "0.8.6"
+    "@types/graphql": "0.8.6",
+    "@types/mocha": "2.2.39",
+    "@types/node": "7.0.5"
   },
   "typings": "lib/index.d.ts"
 }

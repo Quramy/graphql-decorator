@@ -1,4 +1,4 @@
-const graphql = require("graphql");
+import * as graphql from 'graphql';
 
 import * as PaginationTypes from './page-info.type';
 

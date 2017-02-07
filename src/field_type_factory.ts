@@ -4,7 +4,7 @@ import { objectTypeFactory } from "./object_type_factory";
 import { OrderByTypeFactory } from "./order-by.type-factory";
 import { SchemaFactoryError , SchemaFactoryErrorType } from "./schema_factory";
 import { ConnectionType } from './connection.type'
-const graphql = require("graphql");
+import * as graphql from "graphql";
 
 export interface ResolverHolder {
     fn: Function;
