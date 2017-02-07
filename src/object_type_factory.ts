@@ -1,7 +1,8 @@
 import { FieldTypeMetadata , GQ_OBJECT_METADATA_KEY , GQ_FIELDS_KEY , ObjectTypeMetadata } from "./decorator";
 import { SchemaFactoryError , SchemaFactoryErrorType } from "./schema_factory";
 import { fieldTypeFactory } from "./field_type_factory";
-const graphql = require("graphql");
+import * as graphql from "graphql";
+import { GraphQLObjectType } from "graphql";
 
 let objectTypeRepository: {[key: string]: any} = {};
 

@@ -1,12 +1,13 @@
 import "reflect-metadata";
-import * as assert from "assert";
 import * as D from "./decorator";
 import { SchemaFactoryError , SchemaFactoryErrorType } from "./schema_factory";
 import { objectTypeFactory , clearObjectTypeRepository } from "./object_type_factory";
 
-const graphql = require("graphql");
-const parse = require("graphql/language").parse as (source: string) => any;
-const execute = require("graphql/execution").execute as (schema: any, ast: any, ...args: any[]) => Promise<any>;
+import * as graphql from "graphql";
+import { parse } from "graphql/language";
+import { execute } from "graphql/execution";
+
+const assert = require("assert");
 
 describe("objectTypeFactory", function() {
     beforeEach(function() {

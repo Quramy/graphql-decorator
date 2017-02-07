@@ -1,9 +1,8 @@
 import "reflect-metadata";
 import * as D from "./decorator";
-import * as assert from "assert";
+import * as graphql from "graphql";
 import { FieldTypeMetadata , GQ_FIELDS_KEY , getFieldMetadata , GQ_OBJECT_METADATA_KEY , ObjectTypeMetadata } from "./decorator";
-
-const graphql = require("graphql");
+const assert = require("assert");
 
 describe("Decorators", function() {
     describe("@ObjectType", function () {
