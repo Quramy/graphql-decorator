@@ -1,5 +1,5 @@
 import { FieldTypeMetadata , RootMetadata, ArgumentMetadata, ContextMetadata,  
-    GQ_OBJECT_METADATA_KEY , GQ_FIELDS_KEY, TypeMetadata } from "./decorator";
+    GQ_OBJECT_METADATA_KEY , GQ_FIELDS_KEY, GQ_ENUM_METADATA_KEY, TypeMetadata } from "./decorator";
 import { objectTypeFactory } from "./object_type_factory";
 import { OrderByTypeFactory } from "./order-by.type-factory";
 import { SchemaFactoryError , SchemaFactoryErrorType } from "./schema_factory";
@@ -13,6 +13,7 @@ export interface ResolverHolder {
 
 function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean, name?: string) {
     let returnType: any;
+
     if (!metadata.explicitType) {
         if (typeFn === Number) {
             returnType = graphql.GraphQLInt;     // FIXME or float?
@@ -29,6 +30,8 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean,
         if (returnType && returnType.prototype && Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, returnType.prototype)) {
             // recursively call objectFactory
             returnType = objectTypeFactory(returnType, isInput);
+        } else if (returnType && returnType.prototype && Reflect.hasMetadata(GQ_ENUM_METADATA_KEY, returnType.prototype)) {
+            let enumMetadata = Reflect.getMetadata(GQ_ENUM_METADATA_KEY, returnType.prototype);
         }
     }
 
@@ -62,7 +65,6 @@ export function resolverFactory(target: Function, name: string, argumentMetadata
             }
         } else {
             const metadata = argumentMetadataList[index];
-
             argumentConfigMap[metadata.name] = {
                 name: metadata.name,
                 type: convertType(paramFn, metadata, true),

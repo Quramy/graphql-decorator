@@ -7,6 +7,8 @@ export const GQ_QUERY_KEY                   = "gq_query";
 export const GQ_MUTATION_KEY                = "gq_mutation";
 export const GQ_FIELDS_KEY                  = "gq_fields";
 export const GQ_OBJECT_METADATA_KEY         = "gq_object_type";
+export const GQ_ENUM_METADATA_KEY           = "gq_enum_type";
+export const GQ_DESCRIPTION_KEY             = "gq_description";
 
 export interface TypeMetadata {
     name?: string;
@@ -39,11 +41,52 @@ export interface ObjectTypeMetadata {
     isInput?: boolean;
 }
 
+export interface EnumTypeMetadata {
+    name?: string;
+    description?: string;
+    values?: EnumValueMetadata[];
+}
+
+export interface EnumValueMetadata {
+    value?: number;
+    description?: string;
+}
+
+function mergeDescriptionMetadata(target: any, sourceMetadata: any): any {
+    if (Reflect.hasMetadata(GQ_DESCRIPTION_KEY, target.prototype)) {
+        let descriptionMetadata = Reflect.getMetadata(GQ_DESCRIPTION_KEY, target.prototype);
+        sourceMetadata = Object.assign(sourceMetadata, descriptionMetadata);
+    }
+
+    return sourceMetadata;
+}
+
 function createOrSetObjectTypeMetadata(target: any, metadata: ObjectTypeMetadata) {
     if (!Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, target.prototype)) {
-        Reflect.defineMetadata(GQ_OBJECT_METADATA_KEY, metadata, target.prototype);
+        let mergedMetadata = mergeDescriptionMetadata(target, metadata);
+        Reflect.defineMetadata(GQ_OBJECT_METADATA_KEY, mergedMetadata, target.prototype);
     } else {
         const originalMetadata = Reflect.getMetadata(GQ_OBJECT_METADATA_KEY, target.prototype) as ObjectTypeMetadata;
+        Object.assign(originalMetadata, metadata);
+    }
+}
+
+function createOrSetEnumTypeMetadata(target: any, metadata: EnumTypeMetadata) {
+    if (!Reflect.hasMetadata(GQ_ENUM_METADATA_KEY, target.prototype)) {
+        let mergedMetadata = mergeDescriptionMetadata(target, metadata);
+        Reflect.defineMetadata(GQ_ENUM_METADATA_KEY, mergedMetadata, target.prototype);
+    } else {
+        const originalMetadata = Reflect.getMetadata(GQ_ENUM_METADATA_KEY, target.prototype) as EnumTypeMetadata;
+        Object.assign(originalMetadata, metadata);
+    }
+}
+
+function createOrSetValueTypeMetadata(target: any, metadata: EnumTypeMetadata) {
+    if (!Reflect.hasMetadata(GQ_ENUM_METADATA_KEY, target.prototype)) {
+        let mergedMetadata = mergeDescriptionMetadata(target, metadata);
+        Reflect.defineMetadata(GQ_ENUM_METADATA_KEY, mergedMetadata, target.prototype);
+    } else {
+        const originalMetadata = Reflect.getMetadata(GQ_ENUM_METADATA_KEY, target.prototype) as EnumTypeMetadata;
         Object.assign(originalMetadata, metadata);
     }
 }
@@ -80,6 +123,10 @@ function createOrSetFieldTypeMetadata(target: any, metadata: FieldTypeMetadata) 
         Object.assign(def, metadata);
         def.args = args;
     }
+}
+
+function createDescriptionMetadata(target: any, body: string) {
+    Reflect.defineMetadata(GQ_DESCRIPTION_KEY, { description: body }, target.prototype);
 }
 
 export function getFieldMetadata(target: any, name: string) {
@@ -127,6 +174,14 @@ function setRootMetadata(target: any, propertyKey: any, index: number, metadata:
     }
 }
 
+export function EnumType() {
+    return function(target: any) {
+        createOrSetEnumTypeMetadata(target, {
+            name: target.name
+        });
+    } as Function;
+}
+
 export function ObjectType() {
     return function(target: any) {
         createOrSetObjectTypeMetadata(target, {
@@ -153,6 +208,15 @@ export function Field(option?: FieldOption) {
         });
     } as Function;
 }
+
+// export function Value(actualValue?: any) {
+//     return function(target: any, propertyKey: any) {
+//         createOrSetValueTypeMetadata(target, {
+//             name: propertyKey,
+//             value: actualValue
+//         });
+//     } as Function;
+// }
 
 export function NonNull() {
     return function(target: any, propertyKey: any, index?: number) {
@@ -240,9 +304,17 @@ export function Description(body: string) {
                 description: body,
             });
         } else {
-            createOrSetObjectTypeMetadata(target, {
-                description: body,
-            });
+            if (Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, target.prototype)) {
+                createOrSetObjectTypeMetadata(target, {
+                    description: body,
+                });
+            } else if (Reflect.hasMetadata(GQ_ENUM_METADATA_KEY, target.prototype)) {
+                createOrSetEnumTypeMetadata(target, {
+                    description: body,
+                });
+            } else {
+                createDescriptionMetadata(target, body);
+            }
         }
     } as Function;
 }
