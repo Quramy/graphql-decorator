@@ -6,6 +6,7 @@ import * as graphql from "graphql";
 export const GQ_QUERY_KEY                   = "gq_query";
 export const GQ_MUTATION_KEY                = "gq_mutation";
 export const GQ_FIELDS_KEY                  = "gq_fields";
+export const GQ_VALUES_KEY                  = "gq_values";
 export const GQ_OBJECT_METADATA_KEY         = "gq_object_type";
 export const GQ_ENUM_METADATA_KEY           = "gq_enum_type";
 export const GQ_DESCRIPTION_KEY             = "gq_description";
@@ -48,12 +49,30 @@ export interface EnumTypeMetadata {
 }
 
 export interface EnumValueMetadata {
-    value?: number;
+    name: string;
+    value?: any;
     description?: string;
 }
 
+export interface FieldOption {
+    type?: any;
+}
+
+export interface ArgumentOption {
+    name: string;
+    type?: any;
+}
+
+export interface DescriptionMetadata {
+    description: string;
+}
+
+export interface PropertyDescriptionMetadata extends DescriptionMetadata {
+    name: string;
+}
+
 function mergeDescriptionMetadata(target: any, sourceMetadata: any): any {
-    if (Reflect.hasMetadata(GQ_DESCRIPTION_KEY, target.prototype)) {
+    if (target.prototype != null && Reflect.hasMetadata(GQ_DESCRIPTION_KEY, target.prototype)) {
         let descriptionMetadata = Reflect.getMetadata(GQ_DESCRIPTION_KEY, target.prototype);
         sourceMetadata = Object.assign(sourceMetadata, descriptionMetadata);
     }
@@ -81,23 +100,22 @@ function createOrSetEnumTypeMetadata(target: any, metadata: EnumTypeMetadata) {
     }
 }
 
-function createOrSetValueTypeMetadata(target: any, metadata: EnumTypeMetadata) {
-    if (!Reflect.hasMetadata(GQ_ENUM_METADATA_KEY, target.prototype)) {
-        let mergedMetadata = mergeDescriptionMetadata(target, metadata);
-        Reflect.defineMetadata(GQ_ENUM_METADATA_KEY, mergedMetadata, target.prototype);
+function createOrSetValueTypeMetadata(target: any, metadata: EnumValueMetadata) {
+    let valueDefs: EnumValueMetadata[];
+    if (!Reflect.hasMetadata(GQ_VALUES_KEY, target)) {
+        valueDefs = [];
+        Reflect.defineMetadata(GQ_VALUES_KEY, valueDefs, target);
     } else {
-        const originalMetadata = Reflect.getMetadata(GQ_ENUM_METADATA_KEY, target.prototype) as EnumTypeMetadata;
-        Object.assign(originalMetadata, metadata);
+        valueDefs = Reflect.getMetadata(GQ_VALUES_KEY, target);
     }
-}
-
-export interface FieldOption {
-    type?: any;
-}
-
-export interface ArgumentOption {
-    name: string;
-    type?: any;
+    const def = valueDefs.find(def => def.name === metadata.name);
+    if (!def) {
+        let propertyDescriptionMetadata = getPropertyDescriptionMetadata(target, metadata.name);
+        Object.assign(metadata, propertyDescriptionMetadata);
+        valueDefs.push(metadata);
+    } else {
+        console.log("TODO");
+    }
 }
 
 function createOrSetFieldTypeMetadata(target: any, metadata: FieldTypeMetadata) {
@@ -110,6 +128,8 @@ function createOrSetFieldTypeMetadata(target: any, metadata: FieldTypeMetadata) 
     }
     const def = fieldDefs.find(def => def.name === metadata.name);
     if (!def) {
+        let propertyDescriptionMetadata = getPropertyDescriptionMetadata(target, metadata.name);
+        Object.assign(metadata, propertyDescriptionMetadata);
         fieldDefs.push(metadata);
     } else {
         let args: ArgumentMetadata[] = def.args;
@@ -123,10 +143,29 @@ function createOrSetFieldTypeMetadata(target: any, metadata: FieldTypeMetadata) 
         Object.assign(def, metadata);
         def.args = args;
     }
+
 }
 
 function createDescriptionMetadata(target: any, body: string) {
-    Reflect.defineMetadata(GQ_DESCRIPTION_KEY, { description: body }, target.prototype);
+    let metadata = {
+        description: body
+    };
+    Reflect.defineMetadata(GQ_DESCRIPTION_KEY, metadata, target.prototype);
+}
+
+function createPropertyDescriptionMetadata(target: any, body: string, propertyKey: string) {
+    let metadata = {
+        name: propertyKey,
+        description: body
+    };
+    Reflect.defineMetadata(propertyKey, metadata, target);
+}
+
+export function getPropertyDescriptionMetadata(target: any, name: string) {
+    if (!Reflect.hasMetadata(name, target)) {
+        return null;
+    }
+    return (<PropertyDescriptionMetadata>Reflect.getMetadata(name, target));
 }
 
 export function getFieldMetadata(target: any, name: string) {
@@ -134,6 +173,13 @@ export function getFieldMetadata(target: any, name: string) {
         return null;
     }
     return (<FieldTypeMetadata[]>Reflect.getMetadata(GQ_FIELDS_KEY, target)).find(m => m.name === name);
+}
+
+export function getValueMetadata(target: any, name: string) {
+    if (!Reflect.hasMetadata(GQ_VALUES_KEY, target)) {
+        return null;
+    }
+    return (<EnumValueMetadata[]>Reflect.getMetadata(GQ_VALUES_KEY, target)).find(m => m.name === name);
 }
 
 function setArgumentMetadata(target: any, propertyKey: any, index: number, metadata: ArgumentMetadata) {
@@ -209,14 +255,14 @@ export function Field(option?: FieldOption) {
     } as Function;
 }
 
-// export function Value(actualValue?: any) {
-//     return function(target: any, propertyKey: any) {
-//         createOrSetValueTypeMetadata(target, {
-//             name: propertyKey,
-//             value: actualValue
-//         });
-//     } as Function;
-// }
+export function Value(value?: any) {
+    return function(target: any, propertyKey: any) {
+        createOrSetValueTypeMetadata(target, {
+            name: propertyKey,
+            value: value
+        });
+    } as Function;
+}
 
 export function NonNull() {
     return function(target: any, propertyKey: any, index?: number) {
@@ -299,10 +345,19 @@ export function Description(body: string) {
                 description: body,
             });
         } else if (propertyKey) {
-            createOrSetFieldTypeMetadata(target, {
-                name: propertyKey,
-                description: body,
-            });
+            if (getFieldMetadata(target, propertyKey) != null) {
+                createOrSetFieldTypeMetadata(target, {
+                    name: propertyKey,
+                    description: body
+                });
+            } else if (getValueMetadata(target, propertyKey) != null) {
+                createOrSetValueTypeMetadata(target, {
+                    name: propertyKey,
+                    description: body
+                });
+            } else {
+                createPropertyDescriptionMetadata(target, body, propertyKey);
+            }
         } else {
             if (Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, target.prototype)) {
                 createOrSetObjectTypeMetadata(target, {
