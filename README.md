@@ -2,12 +2,14 @@
 ## Differences from graphql-decorator
 
 This package makes possible the use of decorators to define a GraphQL schema. Note that this package is a fork, we have added some new features to the original package.  
-Apart from the decorators listed on the original documentation, we have added three new and changed the behavior for two others.
+Apart from the decorators listed on the original documentation, we have added six new and changed the behavior for two others.
 
 - @Ctx: Injects GraphQL context object into annotated method parameter.
 - @Root: Injects GraphQL root object into annotated method parameter.
 - @Pagination: Wraps the type into a pagination model (http://graphql.org/learn/pagination/). For clarification, see examples below.
 - @OrderBy: It creates an `orderBy` input object to the related @Connection query. The available fields for ordering, comes the the type declared on the related @Field. Examples should make this clearer.
+- @EnumType: It can be used just like @ObjectType in order to create `GraphQLEnumType` objects.
+- @Value: Should be used on classes decorated with @EnumType. It creates values for enums. Accepts an object of type `any` as parameter. This paremeter will be the enum value. If none is passed, the enum value is the enum itself. See example below.
 - @Query: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
 - @Mutation: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
 
@@ -116,7 +118,7 @@ export interface orderByItem {
 }
 ```
 
-`nodes`, `count` and `pageInfo` comes with the @Connection decorator. @OrderBy accepts an array of `orderByItem`
+`nodes`, `count` and `pageInfo` comes with the @Pagination decorator. @OrderBy accepts an array of `orderByItem`
 ```
 {
   users(orderBy: [{sort: id, direction: DESC}, {sort: title, direction: ASC}]) {
@@ -128,6 +130,46 @@ export interface orderByItem {
     pageInfo {
       hasNextPage
     }
+  }
+}
+```
+
+Use of @EnumType and @Value
+```typescript
+import { EnumType, Description, Value } from 'graphql-schema-decorator';
+
+@EnumType()
+@Description('An user role. Either ADMIN or DEFAULT')
+export class UserRoleType {
+
+    @Value(0)
+    @Description("Admin role")
+    ADMIN: string;
+    
+    @Value("value")
+    @Description("Default role")
+    DEFAULT: string;
+
+    @Value()
+    @Description("God role")
+    GOD: string;
+
+}
+```
+And you can use the just declared enum like this.
+```typescript
+import { ObjectType, Arg, Pagination, Field, Description } from 'graphql-schema-decorator';
+import * as UserTypes from 'graphql-schema/user/type';
+
+@ObjectType()
+@Description("Get all users query.")
+export class UsersQuery {
+  
+  @Pagination()
+  @Field({type: UserTypes.UserType}) 
+  users(@Arg({name: "role", type: UserTypes.UserRoleType }) role: any) {
+    // The role value will either be 0, "value" or GOD.
+    // Get users by role.
   }
 }
 ```
