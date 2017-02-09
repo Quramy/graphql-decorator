@@ -113,8 +113,6 @@ function createOrSetValueTypeMetadata(target: any, metadata: EnumValueMetadata) 
         let propertyDescriptionMetadata = getPropertyDescriptionMetadata(target, metadata.name);
         Object.assign(metadata, propertyDescriptionMetadata);
         valueDefs.push(metadata);
-    } else {
-        console.log("TODO");
     }
 }
 

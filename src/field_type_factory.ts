@@ -1,6 +1,7 @@
 import { FieldTypeMetadata , RootMetadata, ArgumentMetadata, ContextMetadata,  
     GQ_OBJECT_METADATA_KEY , GQ_FIELDS_KEY, GQ_ENUM_METADATA_KEY, TypeMetadata } from "./decorator";
 import { objectTypeFactory } from "./object_type_factory";
+import { enumTypeFactory } from "./enum.type-factory";
 import { OrderByTypeFactory } from "./order-by.type-factory";
 import { SchemaFactoryError , SchemaFactoryErrorType } from "./schema_factory";
 import { ConnectionType } from './connection.type'
@@ -32,6 +33,7 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean,
             returnType = objectTypeFactory(returnType, isInput);
         } else if (returnType && returnType.prototype && Reflect.hasMetadata(GQ_ENUM_METADATA_KEY, returnType.prototype)) {
             let enumMetadata = Reflect.getMetadata(GQ_ENUM_METADATA_KEY, returnType.prototype);
+            returnType = enumTypeFactory(returnType);
         }
     }
 
