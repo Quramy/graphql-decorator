@@ -52,7 +52,7 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean,
 }
 
 export function resolverFactory(target: Function, name: string, argumentMetadataList: ArgumentMetadata[], 
-    rootMetadata?: RootMetadata, contextMetadata?: ContextMetadata): ResolverHolder {
+    rootMetadata?: RootMetadata, contextMetadata?: ContextMetadata, fieldParentClass?: any): ResolverHolder {
     const params = Reflect.getMetadata("design:paramtypes", target.prototype, name) as Function[];
     const argumentConfigMap: {[name: string]: any; } = {};
     const indexMap: {[name: string]: number; } = {};
@@ -74,7 +74,7 @@ export function resolverFactory(target: Function, name: string, argumentMetadata
             indexMap[metadata.name] = index;
         }
     });
-    const originalFn = target.prototype[name] as Function;
+    const originalFn = fieldParentClass[name] as Function;
     const fn = function(root: any, args: {[name: string]: any; }, context: any, info: any) {
         const rest: any[] = [];
         // TODO inject info to rest arguments
@@ -99,7 +99,7 @@ export function resolverFactory(target: Function, name: string, argumentMetadata
             }
         }
 
-        return originalFn.apply(target.prototype, rest);
+        return originalFn.apply(fieldParentClass, rest);
     };
     return {
         fn, argumentConfigMap,
@@ -123,7 +123,17 @@ export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, 
         if (!metadata.explicitType) {
             typeFn = Reflect.getMetadata("design:returntype", target.prototype, metadata.name) as Function;
         }
-        const resolverHolder = resolverFactory(target, metadata.name, metadata.args, metadata.root, metadata.context);
+        
+        let container = Reflect.getMetadata("gq_usecontainer", target);
+        let fieldParentClass;
+        if (container != null) {
+            fieldParentClass = container.get(target);
+        } else {
+            fieldParentClass = new (target as any);
+        }
+
+        const resolverHolder = resolverFactory(target, metadata.name, metadata.args, metadata.root, metadata.context, fieldParentClass);
+
         resolveFn = resolverHolder.fn;
         args = resolverHolder.argumentConfigMap;
     }

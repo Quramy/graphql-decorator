@@ -401,3 +401,13 @@ export function Schema() {
         Reflect.defineMetadata("gq_schema", {}, target);
     } as Function;
 }
+
+export function UseContainer(container: any) {
+    return function(target: Function) {
+        if (!Reflect.hasMetadata("gq_usecontainer", target)) {
+            Reflect.defineMetadata("gq_usecontainer", container, target);
+        }
+        
+    };
+}
+

@@ -12,6 +12,7 @@ Apart from the decorators listed on the original documentation, we have added si
 - @Value: Should be used on classes decorated with @EnumType. It creates values for enums. Accepts an object of type `any` as parameter. This paremeter will be the enum value. If none is passed, the enum value is the enum itself. See example below.
 - @Query: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
 - @Mutation: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
+- @UseContainer: Sets the IoC container to be used in order to instantiate the decorated clas.
 
 #### GraphQL Decorator Examples
 
@@ -171,6 +172,34 @@ export class UsersQuery {
     // The role value will either be 0, "value" or GOD.
     // Get users by role.
   }
+}
+```
+
+Use of `UseContainer` along with `typedi` container. Note that `bannerRepository` will be injected through the constructor.
+
+```typescript
+import { ObjectType, Field, Description, List, UseContainer } from 'graphql-schema-decorator';
+import { Container, Inject, Service } from 'typedi';
+import * as BannerTypes from 'graphql-schema/banner/type/banner.type';
+import { BannerRepository, BannerLocalDataSource } from 'data/source/banner';
+import { ModuleRepository } from 'data/source/module';
+
+@ObjectType()
+@Description("Get a list of banners.")
+@UseContainer(Container)
+@Service()
+export class BannersQuery {
+	
+	constructor(
+		private readonly bannerRepository: BannerRepository
+	) { }
+
+	@List()
+	@Field({type: BannerTypes.BannerType}) 
+	banners()  {
+		return this.bannerRepository.getBanners();
+	}
+
 }
 ```
 
