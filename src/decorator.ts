@@ -2,6 +2,7 @@ import "reflect-metadata";
 import { OrderByTypeFactory } from './order-by.type-factory';
 import { GraphQLType } from "graphql";
 import * as graphql from "graphql";
+import { IoCContainer } from "./ioc-container"
 
 export const GQ_QUERY_KEY                   = "gq_query";
 export const GQ_MUTATION_KEY                = "gq_mutation";
@@ -10,6 +11,8 @@ export const GQ_VALUES_KEY                  = "gq_values";
 export const GQ_OBJECT_METADATA_KEY         = "gq_object_type";
 export const GQ_ENUM_METADATA_KEY           = "gq_enum_type";
 export const GQ_DESCRIPTION_KEY             = "gq_description";
+
+
 
 export interface TypeMetadata {
     name?: string;
@@ -404,10 +407,7 @@ export function Schema() {
 
 export function UseContainer(container: any) {
     return function(target: Function) {
-        if (!Reflect.hasMetadata("gq_usecontainer", target)) {
-            Reflect.defineMetadata("gq_usecontainer", container, target);
-        }
-        
+        IoCContainer.INSTANCE = container;
     };
 }
 
