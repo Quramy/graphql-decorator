@@ -6,6 +6,7 @@ import { OrderByTypeFactory } from "./order-by.type-factory";
 import { SchemaFactoryError , SchemaFactoryErrorType } from "./schema_factory";
 import { ConnectionType } from './connection.type'
 import * as graphql from "graphql";
+import { IoCContainer } from "./ioc-container"
 
 export interface ResolverHolder {
     fn: Function;
@@ -124,10 +125,9 @@ export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, 
             typeFn = Reflect.getMetadata("design:returntype", target.prototype, metadata.name) as Function;
         }
         
-        let container = Reflect.getMetadata("gq_usecontainer", target);
         let fieldParentClass;
-        if (container != null) {
-            fieldParentClass = container.get(target);
+        if (IoCContainer.INSTANCE != null) {
+            fieldParentClass = IoCContainer.INSTANCE.get(target);
         } else {
             fieldParentClass = new (target as any);
         }
