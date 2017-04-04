@@ -1,6 +1,11 @@
 import * as graphql from "graphql";
 import { GraphQLObjectType } from "graphql";
 
+export interface PageInfoObject {
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
 export const PageInfoType = 
     new graphql.GraphQLObjectType({
       name: 'PageInfo',
