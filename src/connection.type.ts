@@ -1,6 +1,12 @@
 import * as graphql from 'graphql';
 
-import * as PaginationTypes from './page-info.type';
+import { PageInfoType, PageInfoObject } from './page-info.type';
+
+export interface ConnectionObject<T> {
+  count: number;
+  nodes: T[];
+  pageInfo: PageInfoObject;
+}
 
 export class ConnectionType {
 
@@ -20,7 +26,7 @@ export class ConnectionType {
             description: 'Array of elements'
           },
           pageInfo: {
-            type: PaginationTypes.PageInfoType,
+            type: PageInfoType,
             description: 'Page information'
           }
         }
