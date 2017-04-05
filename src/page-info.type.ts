@@ -1,7 +1,7 @@
 import * as graphql from "graphql";
 import { GraphQLObjectType } from "graphql";
 
-export interface PageInfoObject {
+export interface PageInfo {
   hasNextPage: boolean;
   hasPreviousPage: boolean;
 }
