@@ -4,7 +4,7 @@ import { objectTypeFactory } from "./object_type_factory";
 import { enumTypeFactory } from "./enum.type-factory";
 import { OrderByTypeFactory } from "./order-by.type-factory";
 import { SchemaFactoryError , SchemaFactoryErrorType } from "./schema_factory";
-import { ConnectionType } from './connection.type'
+import { PaginationType } from './pagination.type'
 import * as graphql from "graphql";
 import { IoCContainer } from "./ioc-container"
 
@@ -47,7 +47,7 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean,
         returnType = new graphql.GraphQLNonNull(returnType);
     }
     if (metadata.isPagination) {
-        returnType = ConnectionType.build(name, returnType);
+        returnType = PaginationType.build(name, returnType);
     }
     return returnType;
 }

@@ -1,17 +1,25 @@
 import * as graphql from 'graphql';
+import { OrderByItem } from './order-by-item';
+import { PageInfoType, PageInfo } from './page-info.type';
 
-import { PageInfoType, PageInfoObject } from './page-info.type';
-
-export interface ConnectionObject<T> {
+export interface PaginationResponse<T> {
   count: number;
   nodes: T[];
-  pageInfo: PageInfoObject;
+  pageInfo: PageInfo;
 }
 
-export class ConnectionType {
+export class PaginationRequest {
+  constructor(
+    readonly offset: number,
+    readonly limit: number,
+    readonly orderBy: OrderByItem[]
+  ) { }
+}
+
+export class PaginationType {
 
   public static build(name: string, type: any): any {
-    
+
     return new graphql.GraphQLObjectType({
       name: name + 'Connection',
       description: 'Connecton object that connects ' + name + ' to the server',
