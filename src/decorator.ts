@@ -26,6 +26,7 @@ export interface TypeMetadata {
 }
 
 export interface ArgumentMetadata extends TypeMetadata {
+    index?: number;
 }
 
 export interface ContextMetadata extends ArgumentMetadata {
@@ -298,13 +299,14 @@ export function Pagination() {
 
                 let metadata: FieldTypeMetadata = Reflect.getMetadata(GQ_FIELDS_KEY, target)[0];
                 let indexMap: { [name: string]: number; } = {};
-                let index = 0;
                 metadata.args.forEach((arg: ArgumentMetadata) => {
-                    indexMap[arg.name] = index;
-                    index++;
+                    indexMap[arg.name] = arg.index;
                 });
 
-                return new PaginationResponse(count, data, new PageInfo(count, indexMap['offset'], indexMap['limit']));
+                let limit = args[indexMap['limit']];
+                let offset = args[indexMap['offset']];
+
+                return new PaginationResponse(count, data, new PageInfo(count, offset, limit));
             },
         };
     } as Function;
@@ -330,6 +332,7 @@ export function Arg(option: ArgumentOption) {
         setArgumentMetadata(target, propertyKey, index, {
             name: option.name,
             explicitType: option.type,
+            index: index,
         });
     } as Function;
 }
