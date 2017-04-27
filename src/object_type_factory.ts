@@ -1,8 +1,8 @@
-import { FieldTypeMetadata , GQ_OBJECT_METADATA_KEY , GQ_FIELDS_KEY , ObjectTypeMetadata } from "./decorator";
-import { SchemaFactoryError , SchemaFactoryErrorType } from "./schema_factory";
-import { fieldTypeFactory } from "./field_type_factory";
-import * as graphql from "graphql";
-import { GraphQLObjectType } from "graphql";
+import { FieldTypeMetadata , GQ_OBJECT_METADATA_KEY , GQ_FIELDS_KEY , ObjectTypeMetadata } from './decorator';
+import { SchemaFactoryError , SchemaFactoryErrorType } from './schema_factory';
+import { fieldTypeFactory } from './field_type_factory';
+import * as graphql from 'graphql';
+import { GraphQLObjectType } from 'graphql';
 
 let objectTypeRepository: {[key: string]: any} = {};
 
@@ -18,10 +18,10 @@ export function objectTypeFactory(target: Function, isInput?: boolean) {
     }
     if (!!objectTypeMetadata.isInput !== !!isInput) {
         // TODO write test
-        throw new SchemaFactoryError("", SchemaFactoryErrorType.INVALID_OBJECT_TYPE_METADATA);
+        throw new SchemaFactoryError('', SchemaFactoryErrorType.INVALID_OBJECT_TYPE_METADATA);
     }
     if (!Reflect.hasMetadata(GQ_FIELDS_KEY, target.prototype)) {
-        throw new SchemaFactoryError("Class annotated by @ObjectType() should has one or more fields annotated by @Filed()", SchemaFactoryErrorType.NO_FIELD);
+        throw new SchemaFactoryError('Class annotated by @ObjectType() should has one or more fields annotated by @Filed()', SchemaFactoryErrorType.NO_FIELD);
     }
     const fieldMetadataList = Reflect.getMetadata(GQ_FIELDS_KEY, target.prototype) as FieldTypeMetadata[];
     const fields: {[key: string]: any} = {};
@@ -48,7 +48,7 @@ export function mutationObjectTypeFactory(fieldsDict: any) {
     let mutationRootObject = new graphql.GraphQLObjectType({
         name: 'Mutations',
         description: 'Perform actions over the backend',
-        fields: fieldsDict
+        fields: fieldsDict,
     });
 
     return mutationRootObject;
@@ -58,6 +58,6 @@ export function queryObjectTypeFactory(fieldsDict: any) {
     return new graphql.GraphQLObjectType({
         name: 'Queries',
         description: 'Reads from the backend',
-        fields: fieldsDict
+        fields: fieldsDict,
     });
 }

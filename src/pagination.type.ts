@@ -2,17 +2,21 @@ import * as graphql from 'graphql';
 import { OrderByItem } from './order-by-item';
 import { PageInfoType, PageInfo } from './page-info.type';
 
-export interface PaginationResponse<T> {
-  count: number;
-  nodes: T[];
-  pageInfo: PageInfo;
+export class PaginationResponse<T> {
+
+  constructor(
+    private readonly count: number,
+    private readonly nodes: T[],
+    private readonly pageInfo: PageInfo,
+  ) { }
+
 }
 
 export class PaginationRequest {
   constructor(
     readonly offset: number,
     readonly limit: number,
-    readonly orderBy: OrderByItem[]
+    readonly orderBy: OrderByItem[],
   ) { }
 }
 
@@ -27,18 +31,18 @@ export class PaginationType {
         return {
           count: {
             type: graphql.GraphQLInt,
-            description: 'Total number of elements'
+            description: 'Total number of elements',
           },
           nodes: {
             type: new graphql.GraphQLList(type),
-            description: 'Array of elements'
+            description: 'Array of elements',
           },
           pageInfo: {
             type: PageInfoType,
-            description: 'Page information'
-          }
-        }
-      }
+            description: 'Page information',
+          },
+        };
+      },
     });
   }
 

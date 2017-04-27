@@ -1,16 +1,18 @@
-import "reflect-metadata";
+import 'reflect-metadata';
 import { OrderByTypeFactory } from './order-by.type-factory';
-import { GraphQLType } from "graphql";
-import * as graphql from "graphql";
-import { IoCContainer } from "./ioc-container"
+import { GraphQLType } from 'graphql';
+import * as graphql from 'graphql';
+import { IoCContainer } from './ioc-container';
+import { PaginationResponse } from './pagination.type';
+import { PageInfo } from './page-info.type';
 
-export const GQ_QUERY_KEY                   = "gq_query";
-export const GQ_MUTATION_KEY                = "gq_mutation";
-export const GQ_FIELDS_KEY                  = "gq_fields";
-export const GQ_VALUES_KEY                  = "gq_values";
-export const GQ_OBJECT_METADATA_KEY         = "gq_object_type";
-export const GQ_ENUM_METADATA_KEY           = "gq_enum_type";
-export const GQ_DESCRIPTION_KEY             = "gq_description";
+export const GQ_QUERY_KEY = 'gq_query';
+export const GQ_MUTATION_KEY = 'gq_mutation';
+export const GQ_FIELDS_KEY = 'gq_fields';
+export const GQ_VALUES_KEY = 'gq_values';
+export const GQ_OBJECT_METADATA_KEY = 'gq_object_type';
+export const GQ_ENUM_METADATA_KEY = 'gq_enum_type';
+export const GQ_DESCRIPTION_KEY = 'gq_description';
 
 
 
@@ -140,7 +142,7 @@ function createOrSetFieldTypeMetadata(target: any, metadata: FieldTypeMetadata) 
             } else {
                 args = Object.assign([], def.args, metadata.args);
             }
-        } 
+        }
         Object.assign(def, metadata);
         def.args = args;
     }
@@ -149,7 +151,7 @@ function createOrSetFieldTypeMetadata(target: any, metadata: FieldTypeMetadata) 
 
 function createDescriptionMetadata(target: any, body: string) {
     let metadata = {
-        description: body
+        description: body,
     };
     Reflect.defineMetadata(GQ_DESCRIPTION_KEY, metadata, target.prototype);
 }
@@ -157,7 +159,7 @@ function createDescriptionMetadata(target: any, body: string) {
 function createPropertyDescriptionMetadata(target: any, body: string, propertyKey: string) {
     let metadata = {
         name: propertyKey,
-        description: body
+        description: body,
     };
     Reflect.defineMetadata(propertyKey, metadata, target);
 }
@@ -202,9 +204,9 @@ function setContextMetadata(target: any, propertyKey: any, index: number, metada
     if (fieldMetadata && fieldMetadata.context) {
         Object.assign(fieldMetadata.context, true);
     } else {
-        createOrSetFieldTypeMetadata(target, { 
+        createOrSetFieldTypeMetadata(target, {
             name: propertyKey,
-            context: { index: index }
+            context: { index: index },
         });
     }
 }
@@ -214,23 +216,23 @@ function setRootMetadata(target: any, propertyKey: any, index: number, metadata:
     if (fieldMetadata && fieldMetadata.root) {
         Object.assign(fieldMetadata.root, metadata);
     } else {
-        createOrSetFieldTypeMetadata(target, { 
+        createOrSetFieldTypeMetadata(target, {
             name: propertyKey,
-            root: { index: index }
+            root: { index: index },
         });
     }
 }
 
 export function EnumType() {
-    return function(target: any) {
+    return function (target: any) {
         createOrSetEnumTypeMetadata(target, {
-            name: target.name
+            name: target.name,
         });
     } as Function;
 }
 
 export function ObjectType() {
-    return function(target: any) {
+    return function (target: any) {
         createOrSetObjectTypeMetadata(target, {
             name: target.name,
             isInput: false,
@@ -239,7 +241,7 @@ export function ObjectType() {
 }
 
 export function InputObjectType() {
-    return function(target: any) {
+    return function (target: any) {
         createOrSetObjectTypeMetadata(target, {
             name: target.name,
             isInput: true,
@@ -248,7 +250,7 @@ export function InputObjectType() {
 }
 
 export function Field(option?: FieldOption) {
-    return function(target: any, propertyKey: any) {
+    return function (target: any, propertyKey: any) {
         createOrSetFieldTypeMetadata(target, {
             name: propertyKey,
             explicitType: option && option.type,
@@ -257,16 +259,16 @@ export function Field(option?: FieldOption) {
 }
 
 export function Value(value?: any) {
-    return function(target: any, propertyKey: any) {
+    return function (target: any, propertyKey: any) {
         createOrSetValueTypeMetadata(target, {
             name: propertyKey,
-            value: value
+            value: value,
         });
     } as Function;
 }
 
 export function NonNull() {
-    return function(target: any, propertyKey: any, index?: number) {
+    return function (target: any, propertyKey: any, index?: number) {
         if (index >= 0) {
             setArgumentMetadata(target, propertyKey, index, {
                 isNonNull: true,
@@ -281,22 +283,35 @@ export function NonNull() {
 }
 
 export function Pagination() {
-    return function(target: any, propertyKey: any, index?: number) {
-        if (index >= 0) {
-            setArgumentMetadata(target, propertyKey, index, {
-                isPagination: true,
-            });
-        } else {
-            createOrSetFieldTypeMetadata(target, {
-                name: propertyKey,
-                isPagination: true,
-            });
-        }
+    return function (target: any, propertyKey: any, methodDescriptor: any) {
+
+        createOrSetFieldTypeMetadata(target, {
+            name: propertyKey,
+            isPagination: true,
+        });
+
+        let originalMethod = methodDescriptor.value;
+
+        return {
+            value: async function (...args: any[]) {
+                let [data, count] = await originalMethod.apply(this, args);
+
+                let metadata: FieldTypeMetadata = Reflect.getMetadata(GQ_FIELDS_KEY, target)[0];
+                let indexMap: { [name: string]: number; } = {};
+                let index = 0;
+                metadata.args.forEach((arg: ArgumentMetadata) => {
+                    indexMap[arg.name] = index;
+                    index++;
+                });
+
+                return new PaginationResponse(count, data, new PageInfo(count, indexMap['offset'], indexMap['limit']));
+            },
+        };
     } as Function;
 }
 
 export function List() {
-    return function(target: any, propertyKey: any, index?: number) {
+    return function (target: any, propertyKey: any, index?: number) {
         if (index >= 0) {
             setArgumentMetadata(target, propertyKey, index, {
                 isList: true,
@@ -311,7 +326,7 @@ export function List() {
 }
 
 export function Arg(option: ArgumentOption) {
-    return function(target: any, propertyKey: any, index: number) {
+    return function (target: any, propertyKey: any, index: number) {
         setArgumentMetadata(target, propertyKey, index, {
             name: option.name,
             explicitType: option.type,
@@ -320,27 +335,27 @@ export function Arg(option: ArgumentOption) {
 }
 
 export function Root() {
-    return function(target: any, propertyKey: any, index: number) {
-        setRootMetadata(target, propertyKey, index, { });
+    return function (target: any, propertyKey: any, index: number) {
+        setRootMetadata(target, propertyKey, index, {});
     } as Function;
 }
 
 export function Ctx() {
-    return function(target: any, propertyKey: any, index: number) {
-        setContextMetadata(target, propertyKey, index, { });
+    return function (target: any, propertyKey: any, index: number) {
+        setContextMetadata(target, propertyKey, index, {});
     } as Function;
 }
 
 export function OrderBy() {
-    return function(target: any, propertyKey: any, index: number) {
+    return function (target: any, propertyKey: any, index: number) {
         setArgumentMetadata(target, propertyKey, index, {
-            name: "orderBy"
+            name: 'orderBy',
         });
     } as Function;
 }
 
 export function Description(body: string) {
-    return function(target: any, propertyKey?: any, index?: number) {
+    return function (target: any, propertyKey?: any, index?: number) {
         if (index >= 0) {
             setArgumentMetadata(target, propertyKey, index, {
                 description: body,
@@ -349,12 +364,12 @@ export function Description(body: string) {
             if (getFieldMetadata(target, propertyKey) != null) {
                 createOrSetFieldTypeMetadata(target, {
                     name: propertyKey,
-                    description: body
+                    description: body,
                 });
             } else if (getValueMetadata(target, propertyKey) != null) {
                 createOrSetValueTypeMetadata(target, {
                     name: propertyKey,
-                    description: body
+                    description: body,
                 });
             } else {
                 createPropertyDescriptionMetadata(target, body, propertyKey);
@@ -376,37 +391,37 @@ export function Description(body: string) {
 }
 
 export function Query(option?: any) {
-    return function(target: any, propertyKey: any) {
+    return function (target: any, propertyKey: any) {
         if (Reflect.hasMetadata(GQ_QUERY_KEY, target)) {
             let metadata = Reflect.getMetadata(GQ_QUERY_KEY, target);
-            metadata.push(propertyKey)
+            metadata.push(propertyKey);
             Reflect.defineMetadata(GQ_QUERY_KEY, metadata, target);
         } else {
-            Reflect.defineMetadata(GQ_QUERY_KEY, [ propertyKey ], target);
+            Reflect.defineMetadata(GQ_QUERY_KEY, [propertyKey], target);
         }
     } as Function;
 }
 
 export function Mutation(option?: any) {
-    return function(target: any, propertyKey: any) {
+    return function (target: any, propertyKey: any) {
         if (Reflect.hasMetadata(GQ_MUTATION_KEY, target)) {
             let metadata = Reflect.getMetadata(GQ_MUTATION_KEY, target);
-            metadata.push(propertyKey)
+            metadata.push(propertyKey);
             Reflect.defineMetadata(GQ_MUTATION_KEY, metadata, target);
         } else {
-            Reflect.defineMetadata(GQ_MUTATION_KEY, [ propertyKey ], target);
+            Reflect.defineMetadata(GQ_MUTATION_KEY, [propertyKey], target);
         }
     } as Function;
 }
 
 export function Schema() {
-    return function(target: Function) {
-        Reflect.defineMetadata("gq_schema", {}, target);
+    return function (target: Function) {
+        Reflect.defineMetadata('gq_schema', {}, target);
     } as Function;
 }
 
 export function UseContainer(container: any) {
-    return function(target: Function) {
+    return function (target: Function) {
         IoCContainer.INSTANCE = container;
     };
 }
