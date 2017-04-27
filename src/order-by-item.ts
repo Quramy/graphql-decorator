@@ -1,6 +1,6 @@
 export interface OrderByItem {
-	
+
 	sort: string;
-	direction: string
-	
+	direction: string;
+
 }

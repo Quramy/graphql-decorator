@@ -1,5 +1,5 @@
-import { FieldTypeMetadata , GQ_OBJECT_METADATA_KEY , GQ_FIELDS_KEY , ObjectTypeMetadata } from "./decorator";
-import { SchemaFactoryError , SchemaFactoryErrorType } from "./schema_factory";
+import { FieldTypeMetadata , GQ_OBJECT_METADATA_KEY , GQ_FIELDS_KEY , ObjectTypeMetadata } from './decorator';
+import { SchemaFactoryError , SchemaFactoryErrorType } from './schema_factory';
 import { GraphQLInputObjectType, GraphQLInputObjectTypeConfig, GraphQLList, GraphQLEnumType } from 'graphql';
 
 export class OrderByTypeFactory {
@@ -8,25 +8,25 @@ export class OrderByTypeFactory {
     let valuesDict: {[name: string]: any; } = {};
     values.forEach((value: any) => {
       valuesDict[value.name] = {
-        description: value.description && value.description
-      }
-    })
+        description: value.description && value.description,
+      };
+    });
     return new GraphQLEnumType({
       name: name + 'OrderByFieldEnum',
       description: 'List of available ordering fields.',
-      values: valuesDict
+      values: valuesDict,
     });
   }
 
-  private static orderByInputObjectFactory(name: string, orderBySortEnumObject: GraphQLEnumType, 
+  private static orderByInputObjectFactory(name: string, orderBySortEnumObject: GraphQLEnumType,
     orderByDirectionEnumObject: GraphQLEnumType): GraphQLInputObjectType {
     return new GraphQLInputObjectType({
       name: name + 'OrderingInputObjectType',
       description: 'Ordering object',
       fields: {
           sort: { type: orderBySortEnumObject },
-          direction: { type: orderByDirectionEnumObject }
-      }
+          direction: { type: orderByDirectionEnumObject },
+      },
     });
   }
 
@@ -40,18 +40,18 @@ export class OrderByTypeFactory {
         },
         DESC: {
           description: 'Descendant direction',
-        }
-      }
+        },
+      },
     });
   }
 
   static orderByFactory(metadata: FieldTypeMetadata, args: {[name: string]: any; }): {[name: string]: any; } {
     let orderByFieldArray: Array<{[name: string]: any; }> = [];
 
-    if (args && args["orderBy"] != null) {
+    if (args && args['orderBy'] != null) {
       if (metadata.isPagination) {
         if (metadata.explicitType == null) {
-          throw new SchemaFactoryError("The @Field related to @OrderBy should have its type explicitly defined.", 
+          throw new SchemaFactoryError('The @Field related to @OrderBy should have its type explicitly defined.',
             SchemaFactoryErrorType.NO_TYPE_ORDERBY_PARENT_FIELD);
         }
 
@@ -65,12 +65,12 @@ export class OrderByTypeFactory {
         });
         let orderBySortEnumObject = OrderByTypeFactory.orderByFieldEnumFactory(metadata.name, orderByFieldArray);
         let orderByDirectionEnumObject = OrderByTypeFactory.orderByDirectionEnumFactory(metadata.name);
-        let orderByInputObject = OrderByTypeFactory.orderByInputObjectFactory(metadata.name, orderBySortEnumObject, 
+        let orderByInputObject = OrderByTypeFactory.orderByInputObjectFactory(metadata.name, orderBySortEnumObject,
           orderByDirectionEnumObject);
         let orderByInputObjectArray = new GraphQLList(orderByInputObject);
-        args["orderBy"].type = orderByInputObjectArray;
+        args['orderBy'].type = orderByInputObjectArray;
       } else {
-          throw new SchemaFactoryError("@OrderBy decorator is only allowed inside a method decorated with @Pagination.", 
+          throw new SchemaFactoryError('@OrderBy decorator is only allowed inside a method decorated with @Pagination.',
                 SchemaFactoryErrorType.ORDER_BY_OUTSIDE_PAGINATION);
       }
     }

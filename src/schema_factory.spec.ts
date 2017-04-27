@@ -1,25 +1,25 @@
-import "reflect-metadata";
-import * as D from "./decorator";
-import { schemaFactory , SchemaFactoryError , SchemaFactoryErrorType } from "./schema_factory";
-import { clearObjectTypeRepository } from "./object_type_factory";
+import 'reflect-metadata';
+import * as D from './decorator';
+import { schemaFactory , SchemaFactoryError , SchemaFactoryErrorType } from './schema_factory';
+import { clearObjectTypeRepository } from './object_type_factory';
 
-import * as graphql from "graphql";
-import { parse } from "graphql/language";
-import { execute } from "graphql/execution";
-import { validate } from "graphql/validation";
+import * as graphql from 'graphql';
+import { parse } from 'graphql/language';
+import { execute } from 'graphql/execution';
+import { validate } from 'graphql/validation';
 
-const assert = require("assert");
+const assert = require('assert');
 
 // const parse = require("graphql/language").parse as (source: string) => any;
 // const validate = require("graphql/validation").validate as (schema: any, ast: any, ...args: any[]) => any[];
 // const execute = require("graphql/execution").execute as (schema: any, ast: any, ...args: any[]) => Promise<any>;
 
-describe("schemaFactory", function() {
+describe('schemaFactory', function() {
     beforeEach(function () {
         clearObjectTypeRepository();
     });
 
-    it("throws an error with Schema class not annotated", function() {
+    it('throws an error with Schema class not annotated', function() {
         class Schema { }
         try {
             schemaFactory(Schema);
@@ -29,7 +29,7 @@ describe("schemaFactory", function() {
         }
     });
 
-    it("throws an error with Schema class which has no field annotated by @Query()", function() {
+    it('throws an error with Schema class which has no field annotated by @Query()', function() {
         @D.Schema() class Schema { }
         try {
             schemaFactory(Schema);
@@ -39,12 +39,12 @@ describe("schemaFactory", function() {
         }
     });
 
-    it("throws an error with Schema class which has an invalid Query class", function() {
+    it('throws an error with Schema class which has an invalid Query class', function() {
         class Query { }
         @D.Schema() class Schema { @D.Query() query: Query; }
         try {
             schemaFactory(Schema);
-            assert(false, "Assertion Error");
+            assert(false, 'Assertion Error');
         } catch (e) {
             const err = e as SchemaFactoryError;
             // console.log(err.stack);
@@ -52,9 +52,9 @@ describe("schemaFactory", function() {
         }
     });
 
-    it("returns a GraphQL schema object with @Query", function() {
+    it('returns a GraphQL schema object with @Query', function() {
         @D.ObjectType() class Query {
-            @D.Field() title(): string { return "hello"; }
+            @D.Field() title(): string { return 'hello'; }
         }
         @D.Schema() class Schema { @D.Query() query: Query; }
         const schema = schemaFactory(Schema);
@@ -62,9 +62,9 @@ describe("schemaFactory", function() {
         assert.deepEqual(validate(schema, ast), []);
     });
 
-    it("returns a GraphQL schema object with @Mutation", function() {
+    it('returns a GraphQL schema object with @Mutation', function() {
         @D.ObjectType() class Query {
-            @D.Field() title(): string { return "hello"; }
+            @D.Field() title(): string { return 'hello'; }
         }
         @D.ObjectType() class Mutation {
             @D.Field() countup(): number { return 0; }
@@ -78,21 +78,21 @@ describe("schemaFactory", function() {
         assert.deepEqual(validate(schema, ast), []);
     });
 
-    it("returns a GraphQL schema object which is executable", async function(done: any) {
+    it('returns a GraphQL schema object which is executable', async function(done: any) {
         @D.ObjectType() class Query {
-            @D.Field() title(): string { return "hello"; }
+            @D.Field() title(): string { return 'hello'; }
         }
         @D.Schema() class Schema { @D.Query() query: Query; }
         const schema = schemaFactory(Schema);
         const ast = parse(`query { title }`);
         const actual = await execute(schema, ast) as {data: {title: string}};
-        assert(actual.data.title === "hello");
+        assert(actual.data.title === 'hello');
         done();
     });
 
-    it("returns a GraphQL schema object which is executable", async function(done: any) {
+    it('returns a GraphQL schema object which is executable', async function(done: any) {
         @D.ObjectType() class Query {
-            @D.Field() twice( @D.Arg({name: "input"}) input: number): number {
+            @D.Field() twice( @D.Arg({name: 'input'}) input: number): number {
                 return input * 2;
             }
         }
@@ -105,13 +105,13 @@ describe("schemaFactory", function() {
         done();
     });
 
-    it("returns a GraphQL schema object which is executable", async function(done: any) {
+    it('returns a GraphQL schema object which is executable', async function(done: any) {
         @D.InputObjectType() class Input {
             @D.Field() a: number;
             @D.Field() b: number;
         }
         @D.ObjectType() class Query {
-            @D.Field() add( @D.Arg({name: "input"}) input: Input): number {
+            @D.Field() add( @D.Arg({name: 'input'}) input: Input): number {
                 return input.a + input.b;
             }
         }
@@ -120,7 +120,7 @@ describe("schemaFactory", function() {
         const ast = parse(
             `query {
                 add(input: {a: 1, b: 1})
-            }`
+            }`,
         );
         assert.deepEqual(validate(schema, ast), []);
         const actual = await execute(schema, ast) as {data: {add: number}};

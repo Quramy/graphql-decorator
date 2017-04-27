@@ -1,12 +1,12 @@
-import { FieldTypeMetadata , RootMetadata, ArgumentMetadata, ContextMetadata,  
-    GQ_OBJECT_METADATA_KEY , GQ_FIELDS_KEY, GQ_ENUM_METADATA_KEY, TypeMetadata } from "./decorator";
-import { objectTypeFactory } from "./object_type_factory";
-import { enumTypeFactory } from "./enum.type-factory";
-import { OrderByTypeFactory } from "./order-by.type-factory";
-import { SchemaFactoryError , SchemaFactoryErrorType } from "./schema_factory";
-import { PaginationType } from './pagination.type'
-import * as graphql from "graphql";
-import { IoCContainer } from "./ioc-container"
+import { FieldTypeMetadata , RootMetadata, ArgumentMetadata, ContextMetadata,
+    GQ_OBJECT_METADATA_KEY , GQ_FIELDS_KEY, GQ_ENUM_METADATA_KEY, TypeMetadata } from './decorator';
+import { objectTypeFactory } from './object_type_factory';
+import { enumTypeFactory } from './enum.type-factory';
+import { OrderByTypeFactory } from './order-by.type-factory';
+import { SchemaFactoryError , SchemaFactoryErrorType } from './schema_factory';
+import { PaginationType } from './pagination.type';
+import * as graphql from 'graphql';
+import { IoCContainer } from './ioc-container';
 
 export interface ResolverHolder {
     fn: Function;
@@ -52,19 +52,19 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean,
     return returnType;
 }
 
-export function resolverFactory(target: Function, name: string, argumentMetadataList: ArgumentMetadata[], 
+export function resolverFactory(target: Function, name: string, argumentMetadataList: ArgumentMetadata[],
     rootMetadata?: RootMetadata, contextMetadata?: ContextMetadata, fieldParentClass?: any): ResolverHolder {
-    const params = Reflect.getMetadata("design:paramtypes", target.prototype, name) as Function[];
+    const params = Reflect.getMetadata('design:paramtypes', target.prototype, name) as Function[];
     const argumentConfigMap: {[name: string]: any; } = {};
     const indexMap: {[name: string]: number; } = {};
 
     params.forEach((paramFn, index) => {
         if (argumentMetadataList == null || argumentMetadataList[index] == null) {
             if (contextMetadata) {
-                indexMap["context"] = contextMetadata.index;
+                indexMap['context'] = contextMetadata.index;
             }
             if (rootMetadata) {
-                indexMap["root"] = rootMetadata.index;
+                indexMap['root'] = rootMetadata.index;
             }
         } else {
             const metadata = argumentMetadataList[index];
@@ -87,14 +87,14 @@ export function resolverFactory(target: Function, name: string, argumentMetadata
         });
 
         if (contextMetadata) {
-            const index = indexMap["context"];
+            const index = indexMap['context'];
             if (index >= 0) {
                 rest[index] = context;
             }
         }
 
         if (rootMetadata) {
-            const index = indexMap["root"]
+            const index = indexMap['root'];
             if (index >= 0) {
                 rest[index] = root;
             }
@@ -108,23 +108,23 @@ export function resolverFactory(target: Function, name: string, argumentMetadata
 }
 
 export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, isInput?: boolean) {
-    let typeFn = Reflect.getMetadata("design:type", target.prototype, metadata.name) as Function;
+    let typeFn = Reflect.getMetadata('design:type', target.prototype, metadata.name) as Function;
     let resolveFn: Function, args: {[name: string]: any; };
 
     const description = metadata.description;
-    const isFunctionType = Reflect.getMetadata("design:type", target.prototype, metadata.name) === Function;
+    const isFunctionType = Reflect.getMetadata('design:type', target.prototype, metadata.name) === Function;
 
     if (isInput && isFunctionType) {
         // TODO write test
-        throw new SchemaFactoryError("Field declared in a class annotated by @InputObjectType should not be a function", 
+        throw new SchemaFactoryError('Field declared in a class annotated by @InputObjectType should not be a function',
             SchemaFactoryErrorType.INPUT_FIELD_SHOULD_NOT_BE_FUNC);
     }
 
     if (isFunctionType) {
         if (!metadata.explicitType) {
-            typeFn = Reflect.getMetadata("design:returntype", target.prototype, metadata.name) as Function;
+            typeFn = Reflect.getMetadata('design:returntype', target.prototype, metadata.name) as Function;
         }
-        
+
         let fieldParentClass;
         if (IoCContainer.INSTANCE != null) {
             fieldParentClass = IoCContainer.INSTANCE.get(target);
