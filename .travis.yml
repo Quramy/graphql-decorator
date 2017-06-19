@@ -1,22 +1,9 @@
-env:
-  global:
-  - GIT_COMMITTER_NAME=y-kurami
-  - GIT_COMMITTER_EMAIL=yosuke.kurami@gmail.com
-  - GIT_AUTHOR_NAME=Quramy
-  - GIT_AUTHOR_EMAIL=yosuke.kurami@gmail.com
 language: node_js
 node_js:
 - 4.4.5
+- 6.10
 before_install:
 - npm install
 - npm run typings
 script:
 - sh ./runtest.sh
-deploy:
-  provider: npm
-  email: yosuke.kurami@gmail.com
-  on:
-    tags: true
-    repo: Quramy/graphql-decorator
-  api_key:
-    secure: SxTGxhW3pMa0+8pb6StVIRtfhr1s4Ei72HMCLNZU84vvqrIOBx7aFAM1hemUOI+hmlV13cv2ljz1pap0jfUoH/DYx1d2h2fF3vcdHVor8sYPG+SATZ7VKXJNoBVIPZZFgX1EScvPcEUSW79dVRZDT7DKOj3Zlive5sLOJyGeeCtwkGwAmIl2KM7mB9DK/HSmlEsyNVAXoavcb4ZIjQtl5iEnnqAgyMchei7/VVK+QMEPEzjOFWgXlwbv2x4e4U23dvDNxKaMHpRp9l2dt+EzfNK8E23CPvbqSfOSBNaFESPNxsvjf/i3BDyJVyI1t6ii1CfIjASTP0EEWKeunGgFnHNpRJX6ic+3G8jC8JgPrDDAJKlrTqSBjaojZP2zv3/MsuCZmyU+abbmmQWne8ze/+AkLUHGSl8YuDnaqJxnqckj/T49leTvw498Bxy+3NVYwoLCFFehN0VMALT6lAPs6DFqISTLxfZabtCHBjpVcXcll/UzjAM+lOh+415KpdA58RYrraDSea9s0l0IQ3jGPclJucw5lSGRPNz5LQCCGJqQbylGFi6GcVdDe0a3ATOxdN+Sf+QKPr+5L2vkP1NIvTwZyLXv1xyBCIWyVdi4IotfazpHlnxsz7FoisccyoRrlihpr68OWh8x/BEQfpXfZ5t+98KCbQi8NLY0zaUUnPg=
