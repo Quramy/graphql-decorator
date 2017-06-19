@@ -90,10 +90,10 @@ export function resolverFactory(target: Function, name: string, argumentMetadata
     const fn = !fieldParentClass ? null : function(root: any, args: {[name: string]: any; }, context: any, info: any) {
         const rest: any[] = [];
         // TODO inject info to rest arguments
-        Object.keys(args).forEach(name => {
-            const index = indexMap[name];
+        Object.keys(args).forEach(key => {
+            const index = indexMap[key];
             if (index >= 0) {
-                rest[index] = args[name];
+                rest[index] = args[key];
             }
         });
 

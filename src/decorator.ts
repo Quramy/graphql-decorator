@@ -1,10 +1,12 @@
 import 'reflect-metadata';
-import { OrderByTypeFactory } from './order-by.type-factory';
-import { GraphQLType } from 'graphql';
+
 import * as graphql from 'graphql';
+
+import { GraphQLType } from 'graphql';
 import { IoCContainer } from './ioc-container';
-import { PaginationResponse } from './pagination.type';
+import { OrderByTypeFactory } from './order-by.type-factory';
 import { PageInfo } from './page-info.type';
+import { PaginationResponse } from './pagination.type';
 
 export const GQ_QUERY_KEY = 'gq_query';
 export const GQ_MUTATION_KEY = 'gq_mutation';
@@ -114,7 +116,7 @@ function createOrSetValueTypeMetadata(target: any, metadata: EnumValueMetadata) 
     } else {
         valueDefs = Reflect.getMetadata(GQ_VALUES_KEY, target);
     }
-    const def = valueDefs.find(def => def.name === metadata.name);
+    const def = valueDefs.find(d => d.name === metadata.name);
     if (!def) {
         let propertyDescriptionMetadata = getPropertyDescriptionMetadata(target, metadata.name);
         Object.assign(metadata, propertyDescriptionMetadata);
@@ -130,7 +132,7 @@ function createOrSetFieldTypeMetadata(target: any, metadata: FieldTypeMetadata) 
     } else {
         fieldDefs = Reflect.getMetadata(GQ_FIELDS_KEY, target);
     }
-    const def = fieldDefs.find(def => def.name === metadata.name);
+    const def = fieldDefs.find(d => d.name === metadata.name);
     if (!def) {
         let propertyDescriptionMetadata = getPropertyDescriptionMetadata(target, metadata.name);
         Object.assign(metadata, propertyDescriptionMetadata);

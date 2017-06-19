@@ -23,6 +23,7 @@ export function objectTypeFactory(target: Function, isInput?: boolean) {
         throw new SchemaFactoryError('', SchemaFactoryErrorType.INVALID_OBJECT_TYPE_METADATA);
     }
     if (!Reflect.hasMetadata(GQ_FIELDS_KEY, target.prototype)) {
+        // tslint:disable-next-line:max-line-length
         throw new SchemaFactoryError('Class annotated by @ObjectType() should has one or more fields annotated by @Filed()', SchemaFactoryErrorType.NO_FIELD);
     }
     const fieldMetadataList = Reflect.getMetadata(GQ_FIELDS_KEY, target.prototype) as FieldTypeMetadata[];
