@@ -1,20 +1,21 @@
 import {
-    schemaFactory,
-    Schema,
-    Query,
-    Mutation,
-    ObjectType,
-    InputObjectType,
-    Field,
-    List,
-    NonNull,
     Arg,
     Description,
-} from "graphql-decorator";
+    Field,
+    InputObjectType,
+    List,
+    Mutation,
+    NonNull,
+    ObjectType,
+    Query,
+    Schema,
+    schemaFactory,
+} from "graphql-schema-decorator";
+
+import { createHash } from "crypto";
+import {users as data} from "./data";
 
 const graphql = require("graphql");
-import {users as data} from "./data";
-import { createHash } from "crypto";
 
 let users = data.slice();
 

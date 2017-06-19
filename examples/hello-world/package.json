@@ -8,9 +8,9 @@
     "start": "node .built/main.js"
   },
   "dependencies": {
-    "graphql": "^0.6.0",
+    "graphql": "0.9.1",
     "graphql-decorator": "file:../../",
-    "typescript": "^1.8.10"
+    "typescript": "2.1.5"
   },
   "keywords": [],
   "author": "Quramy",
@@ -20,6 +20,6 @@
   },
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^4.0.22-alpha"
+    "@types/node": "7.0.5"
   }
 }
