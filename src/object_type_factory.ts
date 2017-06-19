@@ -1,7 +1,10 @@
-import { FieldTypeMetadata , GQ_OBJECT_METADATA_KEY , GQ_FIELDS_KEY , ObjectTypeMetadata } from "./decorator";
-import { SchemaFactoryError , SchemaFactoryErrorType } from "./schema_factory";
-import { fieldTypeFactory } from "./field_type_factory";
-const graphql = require("graphql");
+import * as graphql from 'graphql';
+
+import { FieldTypeMetadata, GQ_FIELDS_KEY, GQ_OBJECT_METADATA_KEY, ObjectTypeMetadata } from './decorator';
+import { SchemaFactoryError, SchemaFactoryErrorType } from './schema_factory';
+
+import { GraphQLObjectType } from 'graphql';
+import { fieldTypeFactory } from './field_type_factory';
 
 let objectTypeRepository: {[key: string]: any} = {};
 
@@ -17,15 +20,16 @@ export function objectTypeFactory(target: Function, isInput?: boolean) {
     }
     if (!!objectTypeMetadata.isInput !== !!isInput) {
         // TODO write test
-        throw new SchemaFactoryError("", SchemaFactoryErrorType.INVALID_OBJECT_TYPE_METADATA);
+        throw new SchemaFactoryError('', SchemaFactoryErrorType.INVALID_OBJECT_TYPE_METADATA);
     }
     if (!Reflect.hasMetadata(GQ_FIELDS_KEY, target.prototype)) {
-        throw new SchemaFactoryError("Class annotated by @ObjectType() should has one or more fields annotated by @Filed()", SchemaFactoryErrorType.NO_FIELD);
+        // tslint:disable-next-line:max-line-length
+        throw new SchemaFactoryError('Class annotated by @ObjectType() should has one or more fields annotated by @Filed()', SchemaFactoryErrorType.NO_FIELD);
     }
     const fieldMetadataList = Reflect.getMetadata(GQ_FIELDS_KEY, target.prototype) as FieldTypeMetadata[];
     const fields: {[key: string]: any} = {};
     fieldMetadataList.forEach(def => {
-        fields[def.name] = fieldTypeFactory(target, def);
+        fields[def.name] = fieldTypeFactory(target, def, isInput);
     });
     if (!!isInput) {
         objectTypeRepository[objectTypeMetadata.name] = new graphql.GraphQLInputObjectType({
@@ -41,4 +45,22 @@ export function objectTypeFactory(target: Function, isInput?: boolean) {
         });
     }
     return objectTypeRepository[objectTypeMetadata.name];
+}
+
+export function mutationObjectTypeFactory(fieldsDict: any) {
+    let mutationRootObject = new graphql.GraphQLObjectType({
+        name: 'Mutations',
+        description: 'Perform actions over the backend',
+        fields: fieldsDict,
+    });
+
+    return mutationRootObject;
+}
+
+export function queryObjectTypeFactory(fieldsDict: any) {
+    return new graphql.GraphQLObjectType({
+        name: 'Queries',
+        description: 'Reads from the backend',
+        fields: fieldsDict,
+    });
 }

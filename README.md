@@ -1,4 +1,207 @@
-# graphql-decorator [![Build Status](https://travis-ci.org/Quramy/graphql-decorator.svg?branch=master)](https://travis-ci.org/Quramy/graphql-decorator) [![npm version](https://badge.fury.io/js/graphql-decorator.svg)](https://badge.fury.io/js/graphql-decorator)
+
+## Differences from graphql-decorator
+
+This package makes possible the use of decorators to define a GraphQL schema. Note that this package is a fork, we have added some new features to the original package.  
+Apart from the decorators listed on the original documentation, we have added six new and changed the behavior for two others.
+
+- @Ctx: Injects GraphQL context object into annotated method parameter.
+- @Root: Injects GraphQL root object into annotated method parameter.
+- @Pagination: Wraps the type into a pagination model (http://graphql.org/learn/pagination/). For clarification, see examples below.
+- @OrderBy: It creates an `orderBy` input object to the related @Connection query. The available fields for ordering, comes the the type declared on the related @Field. Examples should make this clearer.
+- @EnumType: It can be used just like @ObjectType in order to create `GraphQLEnumType` objects.
+- @Value: Should be used on classes decorated with @EnumType. It creates values for enums. Accepts an object of type `any` as parameter. This paremeter will be the enum value. If none is passed, the enum value is the enum itself. See example below.
+- @Query: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
+- @Mutation: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
+- @UseContainer: Sets the IoC container to be used in order to instantiate the decorated clas.
+
+#### GraphQL Decorator Examples
+
+Use of modified @Query and @Mutation. @Schema stayed the same as on the original repo.
+```typescript
+import { Schema, Query, Mutation } from "graphql-schema-decorator";
+import * as AnswerMutations from 'graphql/answer/mutations/index';
+import * as AnswerQueries from 'graphql/answer/queries/index';
+import * as UserQueries from 'graphql/user/queries/index';
+import * as UserMutations from 'graphql/user/mutations/index';
+
+@Schema()
+export class RootSchema {
+
+  @Query() 
+  answerQuery: AnswerQueries.AnswerQuery;
+
+  @Query() 
+  answersQuery: AnswerQueries.AnswersQuery;
+
+  @Mutation()
+  answerCreateMutation: AnswerMutations.AnswerCreateMutation;
+
+  @Mutation()
+  answerUpvoteMutation: AnswerMutations.AnswerUpvoteMutation;
+}
+```
+
+
+Example usage of @Ctx and @Root.
+```typescript
+import { NonNull, ObjectType, Ctx, List, Field, Description, Root } from 'graphql-decorator';
+import { GraphQLID, GraphQLString, GraphQLList } from 'graphql';
+import * as AnswerTypes from 'graphql/answer/types/index';
+
+@ObjectType()
+@Description('An user')
+export class UserType {
+
+    @NonNull()
+    @Field({type: GraphQLID})
+    id: number;
+    
+    @NonNull()
+    @Field({type: GraphQLString})
+    name: string;
+    
+    @NonNull()
+    @Field({type: GraphQLString})
+    avatarUrl: string;
+
+    @NonNull()
+    @Field({type: GraphQLString})
+    email: string;
+
+    @List() 
+    @Field({type: AnswerTypes.AnswerType}) 
+    answers(@Ctx() context: any, @Root() root: any) {
+        // Get answers using ctx and root.
+    }
+
+}
+```
+
+Use of @Pagination with @OrderBy
+```typescript
+import { ObjectType, Arg, Pagination, Ctx, List, Field, Description } from 'graphql-decorator';
+
+@ObjectType()
+@Description("Get all users query.")
+export class UsersQuery {
+
+  @Pagination()
+  @Field({type: UserType}) 
+  users(@Ctx() context: any, @Arg({name: "offset"}) offset: number, @Arg({name: "limit"}) limit: number, @OrderBy() orderBy: orderByItem[])  {
+    // Get users
+  }
+
+@ObjectType()
+@Description("An user.")
+export class UserType {
+
+    @NonNull()
+    @Description("User id")
+    @Field({type: GraphQLID})
+    id: number;
+    
+    @NonNull()
+    @Description("User name")
+    @Field({type: GraphQLString})
+    name: string;
+}
+
+}
+```
+
+The `orderByType` interface
+```typescript
+export interface orderByItem {
+
+  sort: string;
+  direction: string;
+
+}
+```
+
+`nodes`, `count` and `pageInfo` comes with the @Pagination decorator. @OrderBy accepts an array of `orderByItem`
+```
+{
+  users(orderBy: [{sort: id, direction: DESC}, {sort: title, direction: ASC}]) {
+    nodes {
+      id,
+      name
+    },
+    count,
+    pageInfo {
+      hasNextPage
+    }
+  }
+}
+```
+
+Use of @EnumType and @Value
+```typescript
+import { EnumType, Description, Value } from 'graphql-schema-decorator';
+
+@EnumType()
+@Description('An user role. Either ADMIN or DEFAULT')
+export class UserRoleType {
+
+    @Value(0)
+    @Description("Admin role")
+    ADMIN: string;
+    
+    @Value("value")
+    @Description("Default role")
+    DEFAULT: string;
+
+    @Value()
+    @Description("God role")
+    GOD: string;
+
+}
+```
+And you can use the just declared enum like this.
+```typescript
+import { ObjectType, Arg, Pagination, Field, Description } from 'graphql-schema-decorator';
+import * as UserTypes from 'graphql-schema/user/type';
+
+@ObjectType()
+@Description("Get all users query.")
+export class UsersQuery {
+  
+  @Pagination()
+  @Field({type: UserTypes.UserType}) 
+  users(@Arg({name: "role", type: UserTypes.UserRoleType }) role: any) {
+    // The role value will either be 0, "value" or GOD.
+    // Get users by role.
+  }
+}
+```
+
+Use of `UseContainer` along with `typedi` container. Note that `bannerRepository` will be injected through the constructor.
+
+```typescript
+import { ObjectType, Field, Description, List, UseContainer } from 'graphql-schema-decorator';
+import { Container, Inject, Service } from 'typedi';
+import * as BannerTypes from 'graphql-schema/banner/type/banner.type';
+import { BannerRepository, BannerLocalDataSource } from 'data/source/banner';
+import { ModuleRepository } from 'data/source/module';
+
+@ObjectType()
+@Description("Get a list of banners.")
+@UseContainer(Container)
+@Service()
+export class BannersQuery {
+	
+	constructor(
+		private readonly bannerRepository: BannerRepository
+	) { }
+
+	@List()
+	@Field({type: BannerTypes.BannerType}) 
+	banners()  {
+		return this.bannerRepository.getBanners();
+	}
+
+}
+```
 
 Helps to build [GraphQL](http://graphql.org/) schema with TypeScript.
 
