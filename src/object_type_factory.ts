@@ -1,8 +1,10 @@
-import { FieldTypeMetadata , GQ_OBJECT_METADATA_KEY , GQ_FIELDS_KEY , ObjectTypeMetadata } from './decorator';
-import { SchemaFactoryError , SchemaFactoryErrorType } from './schema_factory';
-import { fieldTypeFactory } from './field_type_factory';
 import * as graphql from 'graphql';
+
+import { FieldTypeMetadata, GQ_FIELDS_KEY, GQ_OBJECT_METADATA_KEY, ObjectTypeMetadata } from './decorator';
+import { SchemaFactoryError, SchemaFactoryErrorType } from './schema_factory';
+
 import { GraphQLObjectType } from 'graphql';
+import { fieldTypeFactory } from './field_type_factory';
 
 let objectTypeRepository: {[key: string]: any} = {};
 
@@ -26,7 +28,7 @@ export function objectTypeFactory(target: Function, isInput?: boolean) {
     const fieldMetadataList = Reflect.getMetadata(GQ_FIELDS_KEY, target.prototype) as FieldTypeMetadata[];
     const fields: {[key: string]: any} = {};
     fieldMetadataList.forEach(def => {
-        fields[def.name] = fieldTypeFactory(target, def);
+        fields[def.name] = fieldTypeFactory(target, def, isInput);
     });
     if (!!isInput) {
         objectTypeRepository[objectTypeMetadata.name] = new graphql.GraphQLInputObjectType({
