@@ -13,7 +13,7 @@
     "express-graphql": "^0.5.3",
     "graphql": "0.9.1",
     "graphql-decorator": "file:../../",
-    "typescript": "2.1.5"
+    "typescript": "2.3.4"
   },
   "keywords": [],
   "author": "Quramy",
