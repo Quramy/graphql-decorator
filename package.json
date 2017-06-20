@@ -4,10 +4,9 @@
   "description": "Creates GraphQL Schema from decorated TypeScript Class",
   "main": "lib/index.js",
   "engines": {
-    "node": ">=4.4.0"
+    "node": ">=6.10.0"
   },
   "scripts": {
-    "typings": "dtsm install",
     "build": "rimraf lib && tsc",
     "lint": "tslint \"src/**/*.ts\"",
     "test": "npm run build && npm run lint && mocha lib/**/*.spec.js",
@@ -33,15 +32,13 @@
   },
   "devDependencies": {
     "graphql": "0.9.1",
-    "dtsm": "1.1.0",
     "mocha": "2.5.3",
     "assert": "1.4.1",
     "rimraf": "2.5.2",
     "tslint": "5.1.0",
-    "typescript": "2.1.5",
+    "typescript": "2.3.4",
     "@types/graphql": "0.8.6",
     "@types/mocha": "2.2.39",
     "@types/node": "7.0.5"
-  },
-  "typings": "lib/index.d.ts"
+  }
 }

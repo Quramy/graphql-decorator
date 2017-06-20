@@ -1,6 +1,6 @@
 /* main.ts */
 
-import { Schema, Query, ObjectType, Field, schemaFactory } from "graphql-decorator";
+import { Field, ObjectType, Query, Schema, schemaFactory } from "graphql-schema-decorator";
 const graphql = require("graphql").graphql;
 
 // @ObjectType creates GraphQLObjectType from a class

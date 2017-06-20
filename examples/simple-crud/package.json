@@ -4,7 +4,6 @@
   "description": "CRUD example of graphql-decortor",
   "main": "index.js",
   "scripts": {
-    "postinstall": "dtsm install",
     "compile": "tsc",
     "start": "npm run compile && node .built/server.js",
     "print": "npm run compile && node .built/print.js"
@@ -12,16 +11,15 @@
   "dependencies": {
     "express": "^4.14.0",
     "express-graphql": "^0.5.3",
-    "graphql": "^0.6.0",
+    "graphql": "0.9.1",
     "graphql-decorator": "file:../../",
-    "typescript": "^1.8.10"
+    "typescript": "2.3.4"
   },
   "keywords": [],
   "author": "Quramy",
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^4.0.23-alpha",
-    "@types/node": "^4.0.22-alpha",
-    "dtsm": "^1.1.0"
+    "@types/node": "7.0.5"
   }
 }

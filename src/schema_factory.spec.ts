@@ -1,11 +1,13 @@
 import 'reflect-metadata';
-import * as D from './decorator';
-import { schemaFactory , SchemaFactoryError , SchemaFactoryErrorType } from './schema_factory';
-import { clearObjectTypeRepository } from './object_type_factory';
 
+import * as D from './decorator';
 import * as graphql from 'graphql';
-import { parse } from 'graphql/language';
+
+import { SchemaFactoryError, SchemaFactoryErrorType, schemaFactory } from './schema_factory';
+
+import { clearObjectTypeRepository } from './object_type_factory';
 import { execute } from 'graphql/execution';
+import { parse } from 'graphql/language';
 import { validate } from 'graphql/validation';
 
 const assert = require('assert');
@@ -127,4 +129,5 @@ describe('schemaFactory', function() {
         assert(actual.data.add === 2);
         done();
     });
+
 });

@@ -1,7 +1,10 @@
 import * as D from './decorator';
-import { clearObjectTypeRepository } from './object_type_factory';
-import { fieldTypeFactory , resolverFactory } from './field_type_factory';
 import * as graphql from 'graphql';
+
+import { fieldTypeFactory, resolverFactory } from './field_type_factory';
+
+import { clearObjectTypeRepository } from './object_type_factory';
+
 const assert = require('assert');
 
 describe('resolverFactory', function() {
@@ -11,49 +14,49 @@ describe('resolverFactory', function() {
 
     it('returns argumentConfigMap. The map has GraphQLInt type with a function which has number argument', function () {
         class Obj { @D.Field() m(input: number): void {} }
-        const actual = resolverFactory(Obj, 'm', [{name: 'input'}]).argumentConfigMap;
+        const actual = resolverFactory(Obj, 'm', [{name: 'input'}], null, null, new Obj()).argumentConfigMap;
         assert(actual['input'].type === graphql.GraphQLInt);
     });
 
     it('returns argumentConfigMap. The map has GraphQLInt type with a function which has Number argument', function () {
         class Obj { @D.Field() m(input: Number): void {} }
-        const actual = resolverFactory(Obj, 'm', [{name: 'input'}]).argumentConfigMap;
+        const actual = resolverFactory(Obj, 'm', [{name: 'input'}], null, null, new Obj()).argumentConfigMap;
         assert(actual['input'].type === graphql.GraphQLInt);
     });
 
     it('returns argumentConfigMap. The map has GraphQLString type with a function which has string argument', function () {
         class Obj { @D.Field() m(input: string): void {} }
-        const actual = resolverFactory(Obj, 'm', [{name: 'input'}]).argumentConfigMap;
+        const actual = resolverFactory(Obj, 'm', [{name: 'input'}], null, null, new Obj()).argumentConfigMap;
         assert(actual['input'].type === graphql.GraphQLString);
     });
 
     it('returns argumentConfigMap. The map has GraphQLString type with a function which has String argument', function () {
         class Obj { @D.Field() m(input: String): void {} }
-        const actual = resolverFactory(Obj, 'm', [{name: 'input'}]).argumentConfigMap;
+        const actual = resolverFactory(Obj, 'm', [{name: 'input'}], null, null, new Obj()).argumentConfigMap;
         assert(actual['input'].type === graphql.GraphQLString);
     });
 
     it('returns argumentConfigMap. The map has GraphQLBoolean type with a function which has boolean argument', function () {
         class Obj { @D.Field() m(input: boolean): void {} }
-        const actual = resolverFactory(Obj, 'm', [{name: 'input'}]).argumentConfigMap;
+        const actual = resolverFactory(Obj, 'm', [{name: 'input'}], null, null, new Obj()).argumentConfigMap;
         assert(actual['input'].type === graphql.GraphQLBoolean);
     });
 
     it('returns argumentConfigMap. The map has GraphQLBoolean type with a function which has Boolean argument', function () {
         class Obj { @D.Field() m(input: Boolean): void {} }
-        const actual = resolverFactory(Obj, 'm', [{name: 'input'}]).argumentConfigMap;
+        const actual = resolverFactory(Obj, 'm', [{name: 'input'}], null, null, new Obj()).argumentConfigMap;
         assert(actual['input'].type === graphql.GraphQLBoolean);
     });
 
     it('returns argumentConfigMap. The map has GraphQLObjectType with a function which has argument', function () {
         class Obj { @D.Field() m(input: Boolean): void {} }
-        const actual = resolverFactory(Obj, 'm', [{name: 'input'}]).argumentConfigMap;
+        const actual = resolverFactory(Obj, 'm', [{name: 'input'}], null, null, new Obj()).argumentConfigMap;
         assert(actual['input'].type === graphql.GraphQLBoolean);
     });
 
     it('returns fn which is executable', function() {
         class Obj { @D.Field() twice(input: number): number { return input * 2; } }
-        const fn = resolverFactory(Obj, 'twice', [{name: 'input'}]).fn;
+        const fn = resolverFactory(Obj, 'twice', [{name: 'input'}], null, null, new Obj()).fn;
         const actual = fn(new Obj(), {input: 1});
         assert(actual === 2);
     });

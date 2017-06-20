@@ -1,12 +1,22 @@
-import { FieldTypeMetadata , RootMetadata, ArgumentMetadata, ContextMetadata,
-    GQ_OBJECT_METADATA_KEY , GQ_FIELDS_KEY, GQ_ENUM_METADATA_KEY, TypeMetadata } from './decorator';
-import { objectTypeFactory } from './object_type_factory';
-import { enumTypeFactory } from './enum.type-factory';
-import { OrderByTypeFactory } from './order-by.type-factory';
-import { SchemaFactoryError , SchemaFactoryErrorType } from './schema_factory';
-import { PaginationType } from './pagination.type';
 import * as graphql from 'graphql';
+
+import {
+    ArgumentMetadata,
+    ContextMetadata,
+    FieldTypeMetadata,
+    GQ_ENUM_METADATA_KEY,
+    GQ_FIELDS_KEY,
+    GQ_OBJECT_METADATA_KEY,
+    RootMetadata,
+    TypeMetadata,
+} from './decorator';
+import { SchemaFactoryError, SchemaFactoryErrorType } from './schema_factory';
+
 import { IoCContainer } from './ioc-container';
+import { OrderByTypeFactory } from './order-by.type-factory';
+import { PaginationType } from './pagination.type';
+import { enumTypeFactory } from './enum.type-factory';
+import { objectTypeFactory } from './object_type_factory';
 
 export interface ResolverHolder {
     fn: Function;
@@ -75,14 +85,15 @@ export function resolverFactory(target: Function, name: string, argumentMetadata
             indexMap[metadata.name] = index;
         }
     });
-    const originalFn = fieldParentClass[name] as Function;
-    const fn = function(root: any, args: {[name: string]: any; }, context: any, info: any) {
+
+    const originalFn = fieldParentClass ? fieldParentClass[name] as Function : null;
+    const fn = !fieldParentClass ? null : function(root: any, args: {[name: string]: any; }, context: any, info: any) {
         const rest: any[] = [];
         // TODO inject info to rest arguments
-        Object.keys(args).forEach(name => {
-            const index = indexMap[name];
+        Object.keys(args).forEach(key => {
+            const index = indexMap[key];
             if (index >= 0) {
-                rest[index] = args[name];
+                rest[index] = args[key];
             }
         });
 
