@@ -29,7 +29,12 @@ export function objectTypeFactory(target: Function, isInput?: boolean) {
     const fieldMetadataList = Reflect.getMetadata(GQ_FIELDS_KEY, target.prototype) as FieldTypeMetadata[];
     const fields: {[key: string]: any} = {};
     fieldMetadataList.forEach(def => {
-        fields[def.name] = fieldTypeFactory(target, def, isInput);
+        let field = fieldTypeFactory(target, def, isInput);
+        if (!field) {
+            // tslint:disable-next-line:max-line-length
+            throw new SchemaFactoryError(`@ObjectType()'s ${def.name} is annotated by @Filed() but no type could be inferred`, SchemaFactoryErrorType.NO_FIELD);
+        }
+        fields[def.name] = field;
     });
     if (!!isInput) {
         objectTypeRepository[objectTypeMetadata.name] = new graphql.GraphQLInputObjectType({
