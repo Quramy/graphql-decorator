@@ -1,13 +1,17 @@
 import * as graphql from 'graphql';
+
 import { GraphQLObjectType } from 'graphql';
 
 export class PageInfo {
 
-  private readonly hasNextPage: boolean;
-  private readonly hasPreviousPage: boolean;
+  public readonly hasNextPage: boolean;
+  public readonly hasPreviousPage: boolean;
 
   constructor(count: number, offset: number, limit: number) {
-    this.hasNextPage = offset !== null && limit !== null && count > (offset + limit);
+    count = count || 0;
+    offset = offset || 0;
+    limit = limit > 0 ? limit : count;
+    this.hasNextPage = count > (offset + limit);
     this.hasPreviousPage = offset > 0;
   }
 
