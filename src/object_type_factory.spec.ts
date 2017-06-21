@@ -50,13 +50,26 @@ describe('objectTypeFactory', function() {
         assert(GQLType._typeConfig.name === 'Obj');
     });
 
-      it('returns GraphQLInputObjectType with a class annotated by nested @InputObjectType objects', function() {
-        @D.InputObjectType()
-        class Nested { @D.Field() title: string; }
+    it('returns GraphQLInputObjectType with a class annotated by nested @InputObjectType objects', function() {
+      @D.InputObjectType()
+      class Nested { @D.Field() title: string; }
 
-        @D.InputObjectType()
-        class Obj { @D.Field() title: string; @D.Field({type: Nested }) nested: Nested; }
+      @D.InputObjectType()
+      class Obj { @D.Field() title: string; @D.Field({type: Nested }) nested: Nested; }
+      const GQLType = objectTypeFactory(Obj, true);
+      assert(GQLType._typeConfig.name === 'Obj');
+    });
+
+    it('raises exception if nested @InputObjectType is undefined', function() {
+      // this can be caused when order of `import` is messed up and/or nested type can not be infered
+      @D.InputObjectType()
+      class Obj { @D.Field() title: string; @D.Field({type: undefined }) nested: {}; }
+      try {
         const GQLType = objectTypeFactory(Obj, true);
-        assert(GQLType._typeConfig.name === 'Obj');
+        assert.fail();
+      } catch (e) {
+          const err = e as SchemaFactoryError;
+          assert(err.type === SchemaFactoryErrorType.NO_FIELD);
+        }
     });
 });
