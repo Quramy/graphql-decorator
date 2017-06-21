@@ -1,20 +1,6 @@
-import 'reflect-metadata';
-
-import * as D from './decorator';
-import * as graphql from 'graphql';
-
-import { SchemaFactoryError, SchemaFactoryErrorType, schemaFactory } from './schema_factory';
-
 import { PageInfo } from './page-info.type';
-import { execute } from 'graphql/execution';
-import { parse } from 'graphql/language';
-import { validate } from 'graphql/validation';
 
 const assert = require('assert');
-
-// const parse = require("graphql/language").parse as (source: string) => any;
-// const validate = require("graphql/validation").validate as (schema: any, ast: any, ...args: any[]) => any[];
-// const execute = require("graphql/execution").execute as (schema: any, ast: any, ...args: any[]) => Promise<any>;
 
 describe('PageInfo', function () {
 
