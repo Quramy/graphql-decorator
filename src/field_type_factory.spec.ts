@@ -60,6 +60,44 @@ describe('resolverFactory', function() {
         const actual = fn(new Obj(), {input: 1});
         assert(actual === 2);
     });
+
+    describe('Before Middleware', () => {
+
+      it('makes sure Before is executed before resolving', function(done) {
+
+        let middleware: D.Middleware = (context: any, args: { [key: string]: any }, next: (error?: Error, value?: any) => any): any => {
+          assert(true);
+          done();
+        };
+        class Obj { @D.Field() @D.Before(middleware) twice(input: number): number { console.log(input); return input * 2; } }
+        const fn = resolverFactory(Obj, 'twice', [{name: 'input'}], null, null, new Obj(), middleware).fn;
+        const actual = fn(new Obj(), {input: 1});
+      });
+
+      it('makes sure middleware can override function execution if next is called with a value', function() {
+
+        let middleware: D.Middleware = (context: any, args: { [key: string]: any }, next: (error?: Error, value?: any) => any): any => {
+          next(null, 5);
+        };
+        class Obj { @D.Field() @D.Before(middleware) twice(input: number): number { return input * 2; } }
+        const fn = resolverFactory(Obj, 'twice', [{name: 'input'}], null, null, new Obj(), middleware).fn;
+        const actual = fn(new Obj(), {input: 1});
+        assert(actual === 5);
+      });
+
+      // tslint:disable-next-line:max-line-length
+      it('makes sure middleware can override function execution if next is called with a value even if it is null (as long it ir not undefined)', function() {
+
+        let middleware: D.Middleware = (context: any, args: { [key: string]: any }, next: (error?: Error, value?: any) => any): any => {
+          next(null, null);
+        };
+        class Obj { @D.Field() @D.Before(middleware) twice(input: number): number { return input * 2; } }
+        const fn = resolverFactory(Obj, 'twice', [{name: 'input'}], null, null, new Obj(), middleware).fn;
+        const actual = fn(new Obj(), {input: 1});
+        assert(actual === null);
+      });
+    });
+
 });
 
 describe('fieldTypeFactory', function() {

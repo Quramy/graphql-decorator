@@ -25,6 +25,7 @@ export interface TypeMetadata {
     isList?: boolean;
     isPagination?: boolean;
     explicitType?: any;
+    beforeMiddleware?: Middleware;
 }
 
 export interface ArgumentMetadata extends TypeMetadata {
@@ -78,6 +79,8 @@ export interface DescriptionMetadata {
 export interface PropertyDescriptionMetadata extends DescriptionMetadata {
     name: string;
 }
+
+export type Middleware = (context: any, args: { [key: string]: any }, next: (error?: Error, value?: any) => any) => Promise<any> | any;
 
 function mergeDescriptionMetadata(target: any, sourceMetadata: any): any {
     if (target.prototype != null && Reflect.hasMetadata(GQ_DESCRIPTION_KEY, target.prototype)) {
@@ -280,6 +283,21 @@ export function NonNull() {
             createOrSetFieldTypeMetadata(target, {
                 name: propertyKey,
                 isNonNull: true,
+            });
+        }
+    } as Function;
+}
+
+export function Before(middleware: Middleware) {
+    return function (target: any, propertyKey: any, index?: number) {
+        if (index >= 0) {
+            setArgumentMetadata(target, propertyKey, index, {
+                beforeMiddleware: middleware,
+            });
+        } else {
+            createOrSetFieldTypeMetadata(target, {
+                name: propertyKey,
+                beforeMiddleware: middleware,
             });
         }
     } as Function;
