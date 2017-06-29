@@ -7,6 +7,7 @@ import {
     GQ_ENUM_METADATA_KEY,
     GQ_FIELDS_KEY,
     GQ_OBJECT_METADATA_KEY,
+    Middleware,
     RootMetadata,
     TypeMetadata,
 } from './decorator';
@@ -63,7 +64,7 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean,
 }
 
 export function resolverFactory(target: Function, name: string, argumentMetadataList: ArgumentMetadata[],
-    rootMetadata?: RootMetadata, contextMetadata?: ContextMetadata, fieldParentClass?: any): ResolverHolder {
+    rootMetadata?: RootMetadata, contextMetadata?: ContextMetadata, fieldParentClass?: any, beforeMiddleware?: Middleware): ResolverHolder {
     const params = Reflect.getMetadata('design:paramtypes', target.prototype, name) as Function[];
     const argumentConfigMap: {[name: string]: any; } = {};
     const indexMap: {[name: string]: number; } = {};
@@ -110,8 +111,23 @@ export function resolverFactory(target: Function, name: string, argumentMetadata
                 rest[index] = root;
             }
         }
+        if (beforeMiddleware) {
 
-        return originalFn.apply(fieldParentClass, rest);
+          // TODO: This whole chain should be promise based but this would impact the whole `schemaFactory` call chain.
+          //  So Promise will be added as a future feature/enhancement
+          let result: any = null;
+          let next: (error?: Error) => void = (error?: Error, value?: any): any => {
+            if (typeof(value) !== 'undefined') {
+              result = value;
+            } else {
+              result = originalFn.apply(fieldParentClass, rest);
+            }
+          };
+          beforeMiddleware.call(fieldParentClass, context, args, next);
+          return result;
+        } else {
+          return originalFn.apply(fieldParentClass, rest);
+        }
     };
     return {
         fn, argumentConfigMap,
@@ -143,7 +159,13 @@ export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, 
             fieldParentClass = new (target as any);
         }
 
-        const resolverHolder = resolverFactory(target, metadata.name, metadata.args, metadata.root, metadata.context, fieldParentClass);
+        const resolverHolder = resolverFactory(target,
+          metadata.name,
+          metadata.args,
+          metadata.root,
+          metadata.context,
+          fieldParentClass,
+          metadata.beforeMiddleware);
 
         resolveFn = resolverHolder.fn;
         args = resolverHolder.argumentConfigMap;
@@ -154,6 +176,7 @@ export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, 
     args = OrderByTypeFactory.orderByFactory(metadata, args);
 
     if (!fieldType) return null;
+
     return {
         type: fieldType,
         description: description && description,
