@@ -1,6 +1,6 @@
-import { FieldTypeMetadata , GQ_OBJECT_METADATA_KEY , GQ_FIELDS_KEY , ObjectTypeMetadata } from './decorator';
-import { SchemaFactoryError , SchemaFactoryErrorType } from './schema_factory';
-import { GraphQLInputObjectType, GraphQLInputObjectTypeConfig, GraphQLList, GraphQLEnumType } from 'graphql';
+import { FieldTypeMetadata, GQ_FIELDS_KEY, GQ_OBJECT_METADATA_KEY, ObjectTypeMetadata } from './decorator';
+import { GraphQLEnumType, GraphQLInputObjectType, GraphQLInputObjectTypeConfig, GraphQLList, GraphQLNonNull } from 'graphql';
+import { SchemaFactoryError, SchemaFactoryErrorType } from './schema_factory';
 
 export class OrderByTypeFactory {
 
@@ -24,7 +24,7 @@ export class OrderByTypeFactory {
       name: name + 'OrderingInputObjectType',
       description: 'Ordering object',
       fields: {
-          sort: { type: orderBySortEnumObject },
+          sort: { type: new GraphQLNonNull(orderBySortEnumObject) },
           direction: { type: orderByDirectionEnumObject },
       },
     });
