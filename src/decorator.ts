@@ -26,6 +26,7 @@ export interface TypeMetadata {
     isPagination?: boolean;
     explicitType?: any;
     beforeMiddleware?: Middleware;
+    extraParams?: any;
 }
 
 export interface ArgumentMetadata extends TypeMetadata {
@@ -369,10 +370,11 @@ export function Ctx() {
     } as Function;
 }
 
-export function OrderBy() {
+export function OrderBy(extraColumnsToSortBy: string[] = []) {
     return function (target: any, propertyKey: any, index: number) {
         setArgumentMetadata(target, propertyKey, index, {
             name: 'orderBy',
+            extraParams: extraColumnsToSortBy,
         });
     } as Function;
 }

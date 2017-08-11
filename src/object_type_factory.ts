@@ -24,7 +24,7 @@ export function objectTypeFactory(target: Function, isInput?: boolean) {
     }
     if (!Reflect.hasMetadata(GQ_FIELDS_KEY, target.prototype)) {
         // tslint:disable-next-line:max-line-length
-        throw new SchemaFactoryError('Class annotated by @ObjectType() should has one or more fields annotated by @Filed()', SchemaFactoryErrorType.NO_FIELD);
+        throw new SchemaFactoryError('Class annotated by @ObjectType() should has one or more fields annotated by @Field()', SchemaFactoryErrorType.NO_FIELD);
     }
     const fieldMetadataList = Reflect.getMetadata(GQ_FIELDS_KEY, target.prototype) as FieldTypeMetadata[];
     const fields: {[key: string]: any} = {};
@@ -32,7 +32,7 @@ export function objectTypeFactory(target: Function, isInput?: boolean) {
         let field = fieldTypeFactory(target, def, isInput);
         if (!field) {
             // tslint:disable-next-line:max-line-length
-            throw new SchemaFactoryError(`@ObjectType()'s ${def.name} is annotated by @Filed() but no type could be inferred`, SchemaFactoryErrorType.NO_FIELD);
+            throw new SchemaFactoryError(`@ObjectType()'s ${def.name} is annotated by @Field() but no type could be inferred`, SchemaFactoryErrorType.NO_FIELD);
         }
         fields[def.name] = field;
     });

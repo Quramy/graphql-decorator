@@ -5,6 +5,8 @@ import * as graphql from 'graphql';
 
 import { SchemaFactoryError, SchemaFactoryErrorType, schemaFactory } from './schema_factory';
 
+import { GraphQLString } from 'graphql';
+import { OrderByItem } from './order-by-item';
 import { clearObjectTypeRepository } from './object_type_factory';
 import { execute } from 'graphql/execution';
 import { parse } from 'graphql/language';
@@ -128,6 +130,39 @@ describe('schemaFactory', function() {
         const actual = await execute(schema, ast) as {data: {add: number}};
         assert(actual.data.add === 2);
         done();
+    });
+
+    describe('Pagination', function() {
+
+      it('returns a GraphQL Pagination object with custom @OrberBy fields', async function() {
+
+          @D.ObjectType()
+          class Obj {
+            @D.Description('a field')
+            @D.Field({ type: GraphQLString })
+            aField: string;
+          }
+
+          @D.ObjectType() class Query {
+              @D.Field({ type: Obj })
+              @D.Pagination()
+              async paginate(
+                  @D.OrderBy(['extraField']) orderBy?: OrderByItem[],
+              ): Promise<[Obj, number]> {
+                return [{ aField: null }, 0];
+              }
+          }
+          @D.Schema() class Schema { @D.Query() query: Query; }
+          const schema = schemaFactory(Schema);
+          const ast = parse(`
+            query {
+              paginate(orderBy: [{sort: aField, direction: ASC}, {sort: extraField, direction: DESC}]) {
+                count
+              }
+            }`);
+          assert.deepEqual(validate(schema, ast), []);
+      });
+
     });
 
 });
