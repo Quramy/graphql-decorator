@@ -68,8 +68,17 @@ export class OrderByTypeFactory {
             metadata.args.length > 0) {
 
           let sortArg = metadata.args.filter(arg => arg.name === 'orderBy')[0];
-          if ( sortArg && sortArg.extraParams && sortArg.extraParams.constructor === Array) {
-            sortArg.extraParams.filter((item: any) => item && item.constructor === String)
+          if ( sortArg &&
+              sortArg.extraParams &&
+              sortArg.extraParams.extraColumns &&
+              sortArg.extraParams.extraColumns.constructor === Array) {
+
+            if (sortArg.extraParams.shouldIgnoreSchemaFields) {
+              // remove all previous items from `orderByFieldArray`
+              orderByFieldArray.splice(0, Number.POSITIVE_INFINITY);
+            }
+
+            sortArg.extraParams.extraColumns.filter((item: any) => item && item.constructor === String)
             .forEach((item: string) => orderByFieldArray.push({
               name: item,
               description: item,
