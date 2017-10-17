@@ -135,34 +135,98 @@ describe('schemaFactory', function() {
     describe('Pagination', function() {
 
       it('returns a GraphQL Pagination object with custom @OrberBy fields', async function() {
+        @D.ObjectType()
+        class Obj {
+          @D.Description('a field')
+          @D.Field({ type: GraphQLString })
+          aField: string;
+        }
 
-          @D.ObjectType()
-          class Obj {
-            @D.Description('a field')
-            @D.Field({ type: GraphQLString })
-            aField: string;
-          }
+        @D.ObjectType() class Query {
+            @D.Field({ type: Obj })
+            @D.Pagination()
+            async paginate(
+                @D.OrderBy({extraColumns: ['extraField']}) orderBy?: OrderByItem[],
+            ): Promise<[Obj, number]> {
+              return [{ aField: null }, 0];
+            }
+        }
+        @D.Schema() class Schema { @D.Query() query: Query; }
+        const schema = schemaFactory(Schema);
+        const ast = parse(`
+          query {
+            paginate(orderBy: [{sort: aField, direction: ASC}, {sort: extraField, direction: DESC}]) {
+              count
+            }
+          }`);
+        assert.deepEqual(validate(schema, ast), []);
+    });
 
-          @D.ObjectType() class Query {
-              @D.Field({ type: Obj })
-              @D.Pagination()
-              async paginate(
-                  @D.OrderBy(['extraField']) orderBy?: OrderByItem[],
-              ): Promise<[Obj, number]> {
-                return [{ aField: null }, 0];
-              }
+    it('returns a GraphQL Pagination object with custom @OrberBy fields (backwards compatibility)', async function() {
+      @D.ObjectType()
+      class Obj {
+        @D.Description('a field')
+        @D.Field({ type: GraphQLString })
+        aField: string;
+      }
+
+      @D.ObjectType() class Query {
+          @D.Field({ type: Obj })
+          @D.Pagination()
+          async paginate(
+              @D.OrderBy(['extraField']) orderBy?: OrderByItem[],
+          ): Promise<[Obj, number]> {
+            return [{ aField: null }, 0];
           }
-          @D.Schema() class Schema { @D.Query() query: Query; }
-          const schema = schemaFactory(Schema);
-          const ast = parse(`
-            query {
-              paginate(orderBy: [{sort: aField, direction: ASC}, {sort: extraField, direction: DESC}]) {
-                count
-              }
-            }`);
-          assert.deepEqual(validate(schema, ast), []);
-      });
+      }
+      @D.Schema() class Schema { @D.Query() query: Query; }
+      const schema = schemaFactory(Schema);
+      const ast = parse(`
+        query {
+          paginate(orderBy: [{sort: aField, direction: ASC}, {sort: extraField, direction: DESC}]) {
+            count
+          }
+        }`);
+      assert.deepEqual(validate(schema, ast), []);
+  });
+
+    it('returns a GraphQL Pagination object with custom @OrberBy fields ignoring schema fields', async function() {
+
+      @D.ObjectType()
+      class Obj {
+        @D.Description('a field')
+        @D.Field({ type: GraphQLString })
+        aField: string;
+      }
+
+      @D.ObjectType() class Query {
+          @D.Field({ type: Obj })
+          @D.Pagination()
+          async paginate(
+              @D.OrderBy({extraColumns: ['extraField'], shouldIgnoreSchemaFields: true}) orderBy?: OrderByItem[],
+          ): Promise<[Obj, number]> {
+            return [{ aField: null }, 0];
+          }
+      }
+      @D.Schema() class Schema { @D.Query() query: Query; }
+      const schema = schemaFactory(Schema);
+      const astToIgnore = parse(`
+        query {
+          paginate(orderBy: [{sort: extraField, direction: DESC}]) {
+            count
+          }
+        }`);
+      const astToError = parse(`
+        query {
+          paginate(orderBy: [{sort: aField, direction: ASC}, {sort: extraField, direction: DESC}]) {
+            count
+          }
+        }`);
+      assert.deepEqual(validate(schema, astToIgnore), [], 'should ignore schema fields');
+      assert.equal(validate(schema, astToError).length, 1, 'should error if an schema fields is provided');
 
     });
+
+  });
 
 });

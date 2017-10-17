@@ -370,11 +370,11 @@ export function Ctx() {
     } as Function;
 }
 
-export function OrderBy(extraColumnsToSortBy: string[] = []) {
+export function OrderBy(params?: {extraColumns: string[], shouldIgnoreSchemaFields?: boolean } | string[]) {
     return function (target: any, propertyKey: any, index: number) {
         setArgumentMetadata(target, propertyKey, index, {
             name: 'orderBy',
-            extraParams: extraColumnsToSortBy,
+            extraParams: params.constructor === Array ? { extraColumns: params } : params,
         });
     } as Function;
 }
