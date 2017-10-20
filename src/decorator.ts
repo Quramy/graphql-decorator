@@ -66,6 +66,7 @@ export interface EnumValueMetadata {
 
 export interface FieldOption {
     type?: any;
+    description?: string;
 }
 
 export interface ArgumentOption {
@@ -230,6 +231,41 @@ function setRootMetadata(target: any, propertyKey: any, index: number, metadata:
     }
 }
 
+function setDescriptionMetadata(description: string, target: any, propertyKey: string, index: number) {
+    if (index >= 0) {
+        setArgumentMetadata(target, propertyKey, index, {
+            description: description,
+        });
+    } else if (propertyKey) {
+        if (getFieldMetadata(target, propertyKey) != null) {
+            createOrSetFieldTypeMetadata(target, {
+                name: propertyKey,
+                description: description,
+            });
+        } else if (getValueMetadata(target, propertyKey) != null) {
+            createOrSetValueTypeMetadata(target, {
+                name: propertyKey,
+                description: description,
+            });
+        } else {
+            createPropertyDescriptionMetadata(target, description, propertyKey);
+        }
+    } else {
+        if (Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, target.prototype)) {
+            createOrSetObjectTypeMetadata(target, {
+                description: description,
+            });
+        } else if (Reflect.hasMetadata(GQ_ENUM_METADATA_KEY, target.prototype)) {
+            createOrSetEnumTypeMetadata(target, {
+                description: description,
+            });
+        } else {
+            createDescriptionMetadata(target, description);
+        }
+    }
+}
+
+
 export function EnumType() {
     return function (target: any) {
         createOrSetEnumTypeMetadata(target, {
@@ -262,6 +298,12 @@ export function Field(option?: FieldOption) {
             name: propertyKey,
             explicitType: option && option.type,
         });
+
+        // description
+        if (option.description) {
+            setDescriptionMetadata(option.description, target, propertyKey, 0);
+        }
+
     } as Function;
 }
 
@@ -370,7 +412,7 @@ export function Ctx() {
     } as Function;
 }
 
-export function OrderBy(params?: {extraColumns: string[], shouldIgnoreSchemaFields?: boolean } | string[]) {
+export function OrderBy(params?: { extraColumns: string[], shouldIgnoreSchemaFields?: boolean } | string[]) {
     return function (target: any, propertyKey: any, index: number) {
         setArgumentMetadata(target, propertyKey, index, {
             name: 'orderBy',
@@ -381,37 +423,7 @@ export function OrderBy(params?: {extraColumns: string[], shouldIgnoreSchemaFiel
 
 export function Description(body: string) {
     return function (target: any, propertyKey?: any, index?: number) {
-        if (index >= 0) {
-            setArgumentMetadata(target, propertyKey, index, {
-                description: body,
-            });
-        } else if (propertyKey) {
-            if (getFieldMetadata(target, propertyKey) != null) {
-                createOrSetFieldTypeMetadata(target, {
-                    name: propertyKey,
-                    description: body,
-                });
-            } else if (getValueMetadata(target, propertyKey) != null) {
-                createOrSetValueTypeMetadata(target, {
-                    name: propertyKey,
-                    description: body,
-                });
-            } else {
-                createPropertyDescriptionMetadata(target, body, propertyKey);
-            }
-        } else {
-            if (Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, target.prototype)) {
-                createOrSetObjectTypeMetadata(target, {
-                    description: body,
-                });
-            } else if (Reflect.hasMetadata(GQ_ENUM_METADATA_KEY, target.prototype)) {
-                createOrSetEnumTypeMetadata(target, {
-                    description: body,
-                });
-            } else {
-                createDescriptionMetadata(target, body);
-            }
-        }
+        setDescriptionMetadata(body, target, propertyKey, index);
     } as Function;
 }
 
