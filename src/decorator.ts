@@ -79,6 +79,14 @@ export interface ListOption {
     description?: string;
 }
 
+export interface ObjectTypeOption {
+    description?: string;
+}
+
+export interface InputObjectTypeOption {
+    description?: string;
+}
+
 export interface QueryOption {
     description?: string;
 }
@@ -333,21 +341,35 @@ export function EnumType() {
     } as Function;
 }
 
-export function ObjectType() {
+export function ObjectType(option?: ObjectTypeOption) {
     return function (target: any) {
         createOrSetObjectTypeMetadata(target, {
             name: target.name,
             isInput: false,
         });
+
+        if (option) {
+            // description
+            if (option.description) {
+                setDescriptionMetadata(option.description, target, null, 0);
+            }
+        }
     } as Function;
 }
 
-export function InputObjectType() {
+export function InputObjectType(option?: InputObjectTypeOption) {
     return function (target: any) {
         createOrSetObjectTypeMetadata(target, {
             name: target.name,
             isInput: true,
         });
+
+        if (option) {
+            // description
+            if (option.description) {
+                setDescriptionMetadata(option.description, target, null, 0);
+            }
+        }
     } as Function;
 }
 
@@ -427,7 +449,7 @@ export function List(option?: ListOption) {
         if (option) {
             // description
             if (option.description) {
-                setDescriptionMetadata(option.description, target, null, 0);
+                setDescriptionMetadata(option.description, target, propertyKey, index);
             }
         }
 
@@ -484,7 +506,7 @@ export function Query(option?: QueryOption) {
         if (option) {
             // description
             if (option.description) {
-                setDescriptionMetadata(option.description, target, null, 0);
+                setDescriptionMetadata(option.description, target, propertyKey, 0);
             }
         }
 
@@ -504,7 +526,7 @@ export function Mutation(option?: MutationOption) {
         if (option) {
             // description
             if (option.description) {
-                setDescriptionMetadata(option.description, target, null, 0);
+                setDescriptionMetadata(option.description, target, propertyKey, 0);
             }
         }
 
