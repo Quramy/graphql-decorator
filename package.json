@@ -40,5 +40,6 @@
     "@types/graphql": "0.8.6",
     "@types/mocha": "2.2.39",
     "@types/node": "7.0.5"
-  }
+  },
+  "typings": "lib/index.d.ts"
 }

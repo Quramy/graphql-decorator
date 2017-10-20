@@ -13,6 +13,8 @@
         "outDir": "lib"
     },
     "exclude": [
-        "node_modules", "lib", "examples"
+        "node_modules",
+        "lib",
+        "examples"
     ]
 }
