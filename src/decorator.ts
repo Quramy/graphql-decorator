@@ -75,6 +75,12 @@ export interface ArgumentOption {
     type?: any;
 }
 
+export interface SchemaOption {
+    description?: string;
+    type?: any;
+}
+
+
 export interface DescriptionMetadata {
     description: string;
 }
@@ -313,13 +319,16 @@ export function Field(option?: FieldOption) {
             explicitType: option && option.type,
         });
 
-        // description
-        if (option.description) {
-            setDescriptionMetadata(option.description, target, propertyKey, 0);
-        }
+        if (option) {
+            // description
+            if (option.description) {
+                setDescriptionMetadata(option.description, target, propertyKey, 0);
+            }
 
-        if (option.nonNull) {
-            setNonNullMetadata(target, propertyKey, 0);
+            // nonNull
+            if (option.nonNull) {
+                setNonNullMetadata(target, propertyKey, 0);
+            }
         }
 
     } as Function;
@@ -460,9 +469,16 @@ export function Mutation(option?: any) {
     } as Function;
 }
 
-export function Schema() {
+export function Schema(option?: SchemaOption) {
     return function (target: Function) {
         Reflect.defineMetadata('gq_schema', {}, target);
+
+        if (option) {
+            // description
+            if (option.description) {
+                setDescriptionMetadata(option.description, target, null, 0);
+            }
+        }
     } as Function;
 }
 
