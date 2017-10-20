@@ -75,6 +75,10 @@ export interface ArgumentOption {
     type?: any;
 }
 
+export interface ListOption {
+    description?: string;
+}
+
 export interface QueryOption {
     description?: string;
 }
@@ -293,6 +297,33 @@ function setNonNullMetadata(target: any, propertyKey: string, index: number) {
     }
 }
 
+function setPaginationMetadata(target: any, propertyKey: string, methodDescriptor: TypedPropertyDescriptor<any>) {
+
+    createOrSetFieldTypeMetadata(target, {
+        name: propertyKey,
+        isPagination: true,
+    });
+
+    let originalMethod = methodDescriptor.value;
+
+    return {
+        value: async function (...args: any[]) {
+            let [data, count] = await originalMethod.apply(this, args);
+
+            let metadata: FieldTypeMetadata = Reflect.getMetadata(GQ_FIELDS_KEY, target)[0];
+            let indexMap: { [name: string]: number; } = {};
+            metadata.args.forEach((arg: ArgumentMetadata) => {
+                indexMap[arg.name] = arg.index;
+            });
+
+            let limit = args[indexMap['limit']];
+            let offset = args[indexMap['offset']];
+
+            return new PaginationResponse(count, data, new PageInfo(count, offset, limit));
+        },
+    };
+}
+
 
 export function EnumType() {
     return function (target: any) {
@@ -375,33 +406,12 @@ export function Before(middleware: Middleware) {
 export function Pagination() {
     return function (target: any, propertyKey: any, methodDescriptor: any) {
 
-        createOrSetFieldTypeMetadata(target, {
-            name: propertyKey,
-            isPagination: true,
-        });
+        setPaginationMetadata(target, propertyKey, methodDescriptor);
 
-        let originalMethod = methodDescriptor.value;
-
-        return {
-            value: async function (...args: any[]) {
-                let [data, count] = await originalMethod.apply(this, args);
-
-                let metadata: FieldTypeMetadata = Reflect.getMetadata(GQ_FIELDS_KEY, target)[0];
-                let indexMap: { [name: string]: number; } = {};
-                metadata.args.forEach((arg: ArgumentMetadata) => {
-                    indexMap[arg.name] = arg.index;
-                });
-
-                let limit = args[indexMap['limit']];
-                let offset = args[indexMap['offset']];
-
-                return new PaginationResponse(count, data, new PageInfo(count, offset, limit));
-            },
-        };
     } as Function;
 }
 
-export function List() {
+export function List(option: ListOption) {
     return function (target: any, propertyKey: any, index?: number) {
         if (index >= 0) {
             setArgumentMetadata(target, propertyKey, index, {
@@ -413,6 +423,14 @@ export function List() {
                 isList: true,
             });
         }
+
+        if (option) {
+            // description
+            if (option.description) {
+                setDescriptionMetadata(option.description, target, null, 0);
+            }
+        }
+
     } as Function;
 }
 
