@@ -67,6 +67,7 @@ export interface EnumValueMetadata {
 export interface FieldOption {
     type?: any;
     description?: string;
+    nonNull?: boolean;
 }
 
 export interface ArgumentOption {
@@ -265,6 +266,19 @@ function setDescriptionMetadata(description: string, target: any, propertyKey: s
     }
 }
 
+function setNonNullMetadata(target: any, propertyKey: string, index: number) {
+    if (index >= 0) {
+        setArgumentMetadata(target, propertyKey, index, {
+            isNonNull: true,
+        });
+    } else {
+        createOrSetFieldTypeMetadata(target, {
+            name: propertyKey,
+            isNonNull: true,
+        });
+    }
+}
+
 
 export function EnumType() {
     return function (target: any) {
@@ -304,6 +318,10 @@ export function Field(option?: FieldOption) {
             setDescriptionMetadata(option.description, target, propertyKey, 0);
         }
 
+        if (option.nonNull) {
+            setNonNullMetadata(target, propertyKey, 0);
+        }
+
     } as Function;
 }
 
@@ -318,16 +336,7 @@ export function Value(value?: any) {
 
 export function NonNull() {
     return function (target: any, propertyKey: any, index?: number) {
-        if (index >= 0) {
-            setArgumentMetadata(target, propertyKey, index, {
-                isNonNull: true,
-            });
-        } else {
-            createOrSetFieldTypeMetadata(target, {
-                name: propertyKey,
-                isNonNull: true,
-            });
-        }
+        setNonNullMetadata(target, propertyKey, index);
     } as Function;
 }
 
