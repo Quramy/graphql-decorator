@@ -75,6 +75,14 @@ export interface ArgumentOption {
     type?: any;
 }
 
+export interface QueryOption {
+    description?: string;
+}
+
+export interface MutationOption {
+    description?: string;
+}
+
 export interface SchemaOption {
     description?: string;
     type?: any;
@@ -445,7 +453,7 @@ export function Description(body: string) {
     } as Function;
 }
 
-export function Query(option?: any) {
+export function Query(option?: QueryOption) {
     return function (target: any, propertyKey: any) {
         if (Reflect.hasMetadata(GQ_QUERY_KEY, target)) {
             let metadata = Reflect.getMetadata(GQ_QUERY_KEY, target);
@@ -454,10 +462,18 @@ export function Query(option?: any) {
         } else {
             Reflect.defineMetadata(GQ_QUERY_KEY, [propertyKey], target);
         }
+
+        if (option) {
+            // description
+            if (option.description) {
+                setDescriptionMetadata(option.description, target, null, 0);
+            }
+        }
+
     } as Function;
 }
 
-export function Mutation(option?: any) {
+export function Mutation(option?: MutationOption) {
     return function (target: any, propertyKey: any) {
         if (Reflect.hasMetadata(GQ_MUTATION_KEY, target)) {
             let metadata = Reflect.getMetadata(GQ_MUTATION_KEY, target);
@@ -466,6 +482,14 @@ export function Mutation(option?: any) {
         } else {
             Reflect.defineMetadata(GQ_MUTATION_KEY, [propertyKey], target);
         }
+
+        if (option) {
+            // description
+            if (option.description) {
+                setDescriptionMetadata(option.description, target, null, 0);
+            }
+        }
+
     } as Function;
 }
 
