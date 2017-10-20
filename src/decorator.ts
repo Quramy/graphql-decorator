@@ -411,7 +411,7 @@ export function Pagination() {
     } as Function;
 }
 
-export function List(option: ListOption) {
+export function List(option?: ListOption) {
     return function (target: any, propertyKey: any, index?: number) {
         if (index >= 0) {
             setArgumentMetadata(target, propertyKey, index, {
