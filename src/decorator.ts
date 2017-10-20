@@ -258,7 +258,7 @@ function setRootMetadata(target: any, propertyKey: any, index: number, metadata:
     }
 }
 
-function setDescriptionMetadata(description: string, target: any, propertyKey: string, index: number) {
+function setDescriptionMetadata(description: string, target: any, propertyKey: string = undefined, index: number = undefined) {
     if (index >= 0) {
         setArgumentMetadata(target, propertyKey, index, {
             description: description,
@@ -351,7 +351,7 @@ export function ObjectType(option?: ObjectTypeOption) {
         if (option) {
             // description
             if (option.description) {
-                setDescriptionMetadata(option.description, target, null, 0);
+                setDescriptionMetadata(option.description, target);
             }
         }
     } as Function;
@@ -367,7 +367,7 @@ export function InputObjectType(option?: InputObjectTypeOption) {
         if (option) {
             // description
             if (option.description) {
-                setDescriptionMetadata(option.description, target, null, 0);
+                setDescriptionMetadata(option.description, target);
             }
         }
     } as Function;
@@ -383,7 +383,7 @@ export function Field(option?: FieldOption) {
         if (option) {
             // description
             if (option.description) {
-                setDescriptionMetadata(option.description, target, propertyKey, 0);
+                setDescriptionMetadata(option.description, target, propertyKey);
             }
 
             // nonNull
@@ -506,7 +506,7 @@ export function Query(option?: QueryOption) {
         if (option) {
             // description
             if (option.description) {
-                setDescriptionMetadata(option.description, target, propertyKey, 0);
+                setDescriptionMetadata(option.description, target, propertyKey);
             }
         }
 
@@ -526,7 +526,7 @@ export function Mutation(option?: MutationOption) {
         if (option) {
             // description
             if (option.description) {
-                setDescriptionMetadata(option.description, target, propertyKey, 0);
+                setDescriptionMetadata(option.description, target, propertyKey);
             }
         }
 
@@ -540,7 +540,7 @@ export function Schema(option?: SchemaOption) {
         if (option) {
             // description
             if (option.description) {
-                setDescriptionMetadata(option.description, target, null, 0);
+                setDescriptionMetadata(option.description, target);
             }
         }
     } as Function;
