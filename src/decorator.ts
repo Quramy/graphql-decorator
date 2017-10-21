@@ -64,39 +64,22 @@ export interface EnumValueMetadata {
     description?: string;
 }
 
+export interface DefaultOption {
+    description?: string;
+}
+
 export interface FieldOption {
     type?: any;
     description?: string;
     nonNull?: boolean;
 }
 
-export interface ArgumentOption {
+export interface ArgumentOption extends DefaultOption {
     name: string;
     type?: any;
 }
 
-export interface ListOption {
-    description?: string;
-}
-
-export interface ObjectTypeOption {
-    description?: string;
-}
-
-export interface InputObjectTypeOption {
-    description?: string;
-}
-
-export interface QueryOption {
-    description?: string;
-}
-
-export interface MutationOption {
-    description?: string;
-}
-
-export interface SchemaOption {
-    description?: string;
+export interface SchemaOption extends DefaultOption {
     type?: any;
 }
 
@@ -292,7 +275,7 @@ function setDescriptionMetadata(description: string, target: any, propertyKey: s
     }
 }
 
-function setNonNullMetadata(target: any, propertyKey: string, index: number) {
+function setNonNullMetadata(target: any, propertyKey: string, index: number = undefined) {
     if (index >= 0) {
         setArgumentMetadata(target, propertyKey, index, {
             isNonNull: true,
@@ -341,7 +324,7 @@ export function EnumType() {
     } as Function;
 }
 
-export function ObjectType(option?: ObjectTypeOption) {
+export function ObjectType(option?: DefaultOption) {
     return function (target: any) {
         createOrSetObjectTypeMetadata(target, {
             name: target.name,
@@ -357,7 +340,7 @@ export function ObjectType(option?: ObjectTypeOption) {
     } as Function;
 }
 
-export function InputObjectType(option?: InputObjectTypeOption) {
+export function InputObjectType(option?: DefaultOption) {
     return function (target: any) {
         createOrSetObjectTypeMetadata(target, {
             name: target.name,
@@ -388,7 +371,7 @@ export function Field(option?: FieldOption) {
 
             // nonNull
             if (option.nonNull) {
-                setNonNullMetadata(target, propertyKey, 0);
+                setNonNullMetadata(target, propertyKey);
             }
         }
 
@@ -433,7 +416,7 @@ export function Pagination() {
     } as Function;
 }
 
-export function List(option?: ListOption) {
+export function List(option?: DefaultOption) {
     return function (target: any, propertyKey: any, index?: number) {
         if (index >= 0) {
             setArgumentMetadata(target, propertyKey, index, {
@@ -493,7 +476,7 @@ export function Description(body: string) {
     } as Function;
 }
 
-export function Query(option?: QueryOption) {
+export function Query(option?: DefaultOption) {
     return function (target: any, propertyKey: any) {
         if (Reflect.hasMetadata(GQ_QUERY_KEY, target)) {
             let metadata = Reflect.getMetadata(GQ_QUERY_KEY, target);
@@ -513,7 +496,7 @@ export function Query(option?: QueryOption) {
     } as Function;
 }
 
-export function Mutation(option?: MutationOption) {
+export function Mutation(option?: DefaultOption) {
     return function (target: any, propertyKey: any) {
         if (Reflect.hasMetadata(GQ_MUTATION_KEY, target)) {
             let metadata = Reflect.getMetadata(GQ_MUTATION_KEY, target);
