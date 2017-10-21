@@ -44,32 +44,26 @@ export class RootSchema {
 
 Example usage of @Ctx and @Root.
 ```typescript
-import { NonNull, ObjectType, Ctx, List, Field, Description, Root } from 'graphql-decorator';
+import { ObjectType, Ctx, Field, Root } from 'graphql-decorator';
 import { GraphQLID, GraphQLString, GraphQLList } from 'graphql';
 import * as AnswerTypes from 'graphql/answer/types/index';
 
-@ObjectType()
-@Description('An user')
+@ObjectType({description: 'An user'})
 export class UserType {
 
-    @NonNull()
-    @Field({type: GraphQLID})
+    @Field({type: GraphQLID, nonNull: true})
     id: number;
     
-    @NonNull()
-    @Field({type: GraphQLString})
+    @Field({type: GraphQLString, })
     name: string;
     
-    @NonNull()
-    @Field({type: GraphQLString})
+    @Field({type: GraphQLString, nonNull: true})
     avatarUrl: string;
 
-    @NonNull()
-    @Field({type: GraphQLString})
+    @Field({type: GraphQLString, nonNull: true})
     email: string;
 
-    @List() 
-    @Field({type: AnswerTypes.AnswerType}) 
+    @Field({type: AnswerTypes.AnswerType, isList: true}) 
     answers(@Ctx() context: any, @Root() root: any) {
         // Get answers using ctx and root.
     }
@@ -79,30 +73,28 @@ export class UserType {
 
 Use of @Pagination with @OrderBy
 ```typescript
-import { ObjectType, Arg, Pagination, Ctx, List, Field, Description } from 'graphql-decorator';
+import { ObjectType, Arg, Ctx, List, Field } from 'graphql-decorator';
 
-@ObjectType()
-@Description("Get all users query.")
+@ObjectType({description: 'Get all users query.'})
 export class UsersQuery {
 
-  @Pagination()
-  @Field({type: UserType}) 
-  users(@Ctx() context: any, @Arg({name: "offset"}) offset: number, @Arg({name: "limit"}) limit: number, @OrderBy() orderBy: orderByItem[])  {
+  @Field({type: UserType, pagination: true}) 
+  users(
+    @Ctx() context: any, 
+    @Arg({name: "offset"}) offset: number, 
+    @Arg({name: "limit"}) limit: number, 
+    @OrderBy() orderBy: orderByItem[]
+  )  {
     // Get users
   }
 
-@ObjectType()
-@Description("An user.")
+@ObjectType({description: 'An user.'})
 export class UserType {
 
-    @NonNull()
-    @Description("User id")
-    @Field({type: GraphQLID})
+    @Field({type: GraphQLID, description: 'User id', nonNull: true})
     id: number;
     
-    @NonNull()
-    @Description("User name")
-    @Field({type: GraphQLString})
+    @Field({type: GraphQLString, description: 'User name', nonNull: true})
     name: string;
 }
 
@@ -139,20 +131,16 @@ Use of @EnumType and @Value
 ```typescript
 import { EnumType, Description, Value } from 'graphql-schema-decorator';
 
-@EnumType()
-@Description('An user role. Either ADMIN or DEFAULT')
+@EnumType({description: 'An user role. Either ADMIN or DEFAULT'})
 export class UserRoleType {
 
-    @Value(0)
-    @Description("Admin role")
+    @Value(0, {description: 'Admin role'})
     ADMIN: string;
     
-    @Value("value")
-    @Description("Default role")
+    @Value('value', {description: 'Default role'})
     DEFAULT: string;
 
     @Value()
-    @Description("God role")
     GOD: string;
 
 }
@@ -162,12 +150,10 @@ And you can use the just declared enum like this.
 import { ObjectType, Arg, Pagination, Field, Description } from 'graphql-schema-decorator';
 import * as UserTypes from 'graphql-schema/user/type';
 
-@ObjectType()
-@Description("Get all users query.")
+@ObjectType({description: 'Get all users query.'})
 export class UsersQuery {
   
-  @Pagination()
-  @Field({type: UserTypes.UserType}) 
+  @Field({type: UserTypes.UserType, pagination: true}) 
   users(@Arg({name: "role", type: UserTypes.UserRoleType }) role: any) {
     // The role value will either be 0, "value" or GOD.
     // Get users by role.
@@ -184,8 +170,7 @@ import * as BannerTypes from 'graphql-schema/banner/type/banner.type';
 import { BannerRepository, BannerLocalDataSource } from 'data/source/banner';
 import { ModuleRepository } from 'data/source/module';
 
-@ObjectType()
-@Description("Get a list of banners.")
+@ObjectType({description: 'Get a list of banners.'})
 @UseContainer(Container)
 @Service()
 export class BannersQuery {
@@ -194,8 +179,7 @@ export class BannersQuery {
 		private readonly bannerRepository: BannerRepository
 	) { }
 
-	@List()
-	@Field({type: BannerTypes.BannerType}) 
+	@Field({type: BannerTypes.BannerType, isList: true}) 
 	banners()  {
 		return this.bannerRepository.getBanners();
 	}
@@ -343,13 +327,13 @@ You can use `@NonNull` and `@List` decorator. For example:
 ```ts
 @ObjectType()
 class User {
-  @NonNull() @Field({type: graphql.GraphQLID})
+  @Field({type: graphql.GraphQLID, nonNull: true})
   id: string;
 }
 
 @ObjectType()
 class Query {
-  @List() @Field({type: User}) getAllUsers(): Promise<User[]> {
+  @Field({type: User, isList: true}) getAllUsers(): Promise<User[]> {
     /* implementation for fetch all users */
   }
 }

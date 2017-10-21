@@ -1,4 +1,4 @@
-import { ObjectType, Field, Arg, InputObjectType, NonNull, Mutation } from 'graphql-schema-decorator';
+import { ObjectType, Field, Arg, InputObjectType, Mutation, EnumType, Value } from 'graphql-schema-decorator';
 import { User } from './user.type';
 import { users } from '../data';
 
@@ -12,13 +12,27 @@ class UserForCreate {
 }
 
 
+@EnumType({ description: 'An user role. Either ADMIN or DEFAULT' })
+export class UserRoleType {
+
+	@Value(0, { description: 'Admin role' })
+	ADMIN: string;
+
+	@Value('value', { description: 'Default role' })
+	DEFAULT: string;
+
+	@Value(null, { description: 'God role' })
+	GOD: string;
+
+}
+
 
 export default class UserMutation {
 
 	@Field({ type: User, description: 'Create a user and return the created user.' })
 	addUser(
-		@NonNull() @Arg({ name: 'input' })
-		input: UserForCreate,
+		@Arg({ name: 'input', nonNull: true }) input: UserForCreate,
+		// @Arg({ name: 'type', type: UserRoleType }) type: UserRoleType,
 	) {
 		const newUser = new User();
 		// const shasum = createHash('sha1');
@@ -31,8 +45,7 @@ export default class UserMutation {
 
 	@Field({ type: User, description: 'Delete a user and return the removed user.' })
 	deleteUser(
-		@NonNull() @Arg({ name: 'id' })
-		id: string,
+		@Arg({ name: 'id', nonNull: true }) id: string,
 	) {
 		const user = users.find(u => u.id === id) as User;
 		if (!user) return null;
@@ -43,6 +56,17 @@ export default class UserMutation {
 
 		users.splice(index, 1);
 		return user;
+	}
+
+
+
+	@Field({ type: User, description: 'Delete a user and return the removed user.' })
+	enumTest(
+		@Arg({ name: 'type2', type: UserRoleType }) type: UserRoleType,
+	) {
+		return {
+			name: type,
+		};
 	}
 }
 

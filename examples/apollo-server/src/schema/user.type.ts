@@ -1,5 +1,7 @@
-import { ObjectType, Field } from 'graphql-schema-decorator';
+import { ObjectType, Field, EnumType, Value } from 'graphql-schema-decorator';
 import * as gql from 'graphql';
+
+
 
 
 @ObjectType({ description: 'A user type.' })
