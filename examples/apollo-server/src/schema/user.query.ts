@@ -4,9 +4,8 @@ import { users } from '../data';
 
 
 export default class UserQuery {
-	@List()
-	@Field({ type: User, description: 'return all users.' })
-	Users() {
+	@Field({ type: User, description: 'return all users.', isList: true })
+	users() {
 		return users;
 	}
 }

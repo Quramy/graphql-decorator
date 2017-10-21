@@ -4,10 +4,10 @@ import UserMutation from './user.mutation';
 
 @Schema()
 class RootSchema {
-	@Query({ description: 'User Query' })
+	@Query()
 	UserQuery: UserQuery;
 
-	@Mutation({ description: 'User Actions' })
+	@Mutation()
 	UserMutation: UserMutation;
 }
 
