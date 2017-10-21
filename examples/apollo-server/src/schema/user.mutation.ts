@@ -13,7 +13,6 @@ class UserForCreate {
 
 
 
-@ObjectType({ description: 'User Mutations.' })
 export default class UserMutation {
 
 	@Field({ type: User, description: 'Create a user and return the created user.' })
