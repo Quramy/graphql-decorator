@@ -79,6 +79,7 @@ export interface FieldOption {
 export interface ArgumentOption extends DefaultOption {
     name: string;
     type?: any;
+    nonNull?: boolean;
 }
 
 export interface SchemaOption extends DefaultOption {
@@ -318,11 +319,18 @@ function setPaginationMetadata(target: any, propertyKey: string, methodDescripto
 }
 
 
-export function EnumType() {
+export function EnumType(option?: DefaultOption) {
     return function (target: any) {
         createOrSetEnumTypeMetadata(target, {
             name: target.name,
         });
+
+        if (option) {
+            // description
+            if (option.description) {
+                setDescriptionMetadata(option.description, target);
+            }
+        }
     } as Function;
 }
 
@@ -404,12 +412,19 @@ export function Field(option?: FieldOption) {
     } as Function;
 }
 
-export function Value(value?: any) {
+export function Value(value?: any, option?: DefaultOption) {
     return function (target: any, propertyKey: any) {
         createOrSetValueTypeMetadata(target, {
             name: propertyKey,
             value: value,
         });
+
+        if (option) {
+            // description
+            if (option.description) {
+                setDescriptionMetadata(option.description, target, propertyKey);
+            }
+        }
     } as Function;
 }
 
@@ -477,6 +492,11 @@ export function Arg(option: ArgumentOption) {
             // description
             if (option.description) {
                 setDescriptionMetadata(option.description, target, propertyKey, index);
+            }
+
+            // nonNull
+            if (option.nonNull) {
+                setNonNullMetadata(target, propertyKey, index);
             }
         }
     } as Function;

@@ -139,6 +139,13 @@ describe('Decorators', function () {
             assert(actual.isNonNull === true);
         });
 
+        it('sets isNonNull to ArgumentMetadata with nonNull option', function () {
+            class Obj { @D.Field() someFunction( @D.Arg({ name: 'input', nonNull: true }) input: any) { } }
+            const actual = getFieldMetadata(Obj.prototype, 'someFunction').args[0];
+            assert(actual.name === 'input');
+            assert(actual.isNonNull === true);
+        });
+
         it('sets isNonNull to ArgumentMetadata with @List', function () {
             class Obj { @D.Field() someFunction( @D.List() @D.Arg({ name: 'input' }) input: any) { } }
             const actual = getFieldMetadata(Obj.prototype, 'someFunction').args[0];
