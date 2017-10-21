@@ -72,6 +72,8 @@ export interface FieldOption {
     type?: any;
     description?: string;
     nonNull?: boolean;
+    isList?: boolean;
+    pagination?: boolean;
 }
 
 export interface ArgumentOption extends DefaultOption {
@@ -357,7 +359,7 @@ export function InputObjectType(option?: DefaultOption) {
 }
 
 export function Field(option?: FieldOption) {
-    return function (target: any, propertyKey: any) {
+    return function (target: any, propertyKey: any, methodDescriptor?: any) {
         createOrSetFieldTypeMetadata(target, {
             name: propertyKey,
             explicitType: option && option.type,
@@ -372,6 +374,30 @@ export function Field(option?: FieldOption) {
             // nonNull
             if (option.nonNull) {
                 setNonNullMetadata(target, propertyKey);
+            }
+
+            // isList
+            if (option.isList) {
+                const index = methodDescriptor;
+                if (index >= 0) {
+                    setArgumentMetadata(target, propertyKey, index, {
+                        isList: true,
+                    });
+                } else {
+                    createOrSetFieldTypeMetadata(target, {
+                        name: propertyKey,
+                        isList: true,
+                    });
+                }
+            }
+
+            // pagination
+            if (option.pagination) {
+                if (!methodDescriptor || !methodDescriptor.value) {
+                    console.warn('Field can\'t be pagination enabled', propertyKey);
+                    return;
+                }
+                setPaginationMetadata(target, propertyKey, methodDescriptor);
             }
         }
 
@@ -446,6 +472,13 @@ export function Arg(option: ArgumentOption) {
             explicitType: option.type,
             index: index,
         });
+
+        if (option) {
+            // description
+            if (option.description) {
+                setDescriptionMetadata(option.description, target, propertyKey, index);
+            }
+        }
     } as Function;
 }
 
