@@ -9,12 +9,12 @@ import * as cors from 'cors';
 
 export default function startGraphQLServer(schema, domain = 'localhost', port = process.env.PORT) {
 	const PORT = port;
-	const myGraphQLSchema: any = schema; // ... define or import your schema here!
+	// const myGraphQLSchema: any = schema; // ... define or import your schema here!
 
 	const app: express.Express = express();
 
 	// bodyParser is needed just for POST.
-	app.use('/graphql', cors(), bodyParser.json(), graphqlExpress({ schema: myGraphQLSchema }));
+	app.use('/graphql', cors(), bodyParser.json(), graphqlExpress({ schema }));
 	app.get('/graphiql', graphiqlExpress({
 		endpointURL: '/graphql',
 		subscriptionsEndpoint: `ws://${domain}:${PORT}/subscriptions`,

@@ -6,7 +6,7 @@ import * as gql from 'graphql';
 
 @ObjectType({ description: 'A user type.' })
 export class User {
-	@Field({ type: gql.GraphQLID, nonNull: true })
+	@Field({ type: gql.GraphQLID })
 	id: string;
 
 	@Field()

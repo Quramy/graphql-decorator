@@ -1,6 +1,7 @@
-import { Query, Mutation, Schema, schemaFactory } from 'graphql-schema-decorator';
+import { Query, Mutation, Schema, schemaFactory, Subscription } from 'graphql-schema-decorator';
 import UserQuery from './user.query';
 import UserMutation from './user.mutation';
+import UserSubscription from './user.subscription';
 
 @Schema()
 class RootSchema {
@@ -9,8 +10,14 @@ class RootSchema {
 
 	@Mutation()
 	UserMutation: UserMutation;
+
+	@Subscription()
+	UserSubscription: UserSubscription;
 }
 
 
-const schema = schemaFactory(RootSchema);
+const schema: any = schemaFactory(RootSchema);
+
+import * as fs from 'fs';
+
 export default schema;

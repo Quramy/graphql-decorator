@@ -4,5 +4,5 @@ import schema from './schema';
 startGraphQLServer(
 	schema,			// our schema
 	'localhost',	// for GraphiQL subscriptions
-	3000, 			// development port
+	3001, 			// development port
 );

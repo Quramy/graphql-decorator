@@ -31,7 +31,7 @@
     "graphql": "0.9.1"
   },
   "devDependencies": {
-    "graphql": "0.9.1",
+    "graphql": "0.11.6",
     "mocha": "2.5.3",
     "assert": "1.4.1",
     "rimraf": "2.5.2",

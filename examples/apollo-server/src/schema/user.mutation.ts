@@ -1,6 +1,8 @@
 import { ObjectType, Field, Arg, InputObjectType, Mutation, EnumType, Value } from 'graphql-schema-decorator';
 import { User } from './user.type';
 import { users } from '../data';
+import { pubsub } from './common';
+
 
 @InputObjectType({ description: 'A input object to create a user.' })
 class UserForCreate {
@@ -40,6 +42,11 @@ export default class UserMutation {
 		// newUser.id = shasum.digest('hex');
 		// Object.assign(newUser, input);
 		users.push(newUser);
+
+		pubsub.publish('userAdded', {
+			userAdded: newUser,
+		});
+
 		return newUser;
 	}
 
@@ -53,6 +60,10 @@ export default class UserMutation {
 		const index = users.indexOf(user);
 		if (index === -1)
 			return null;
+
+		pubsub.publish('userDeleted', {
+			userDeleted: user,
+		});
 
 		users.splice(index, 1);
 		return user;

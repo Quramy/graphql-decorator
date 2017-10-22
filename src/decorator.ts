@@ -10,6 +10,7 @@ import { PaginationResponse } from './pagination.type';
 
 export const GQ_QUERY_KEY = 'gq_query';
 export const GQ_MUTATION_KEY = 'gq_mutation';
+export const GQ_SUBSCRIPTION_KEY = 'gq_subscription';
 export const GQ_FIELDS_KEY = 'gq_fields';
 export const GQ_VALUES_KEY = 'gq_values';
 export const GQ_OBJECT_METADATA_KEY = 'gq_object_type';
@@ -557,6 +558,26 @@ export function Mutation(option?: DefaultOption) {
             Reflect.defineMetadata(GQ_MUTATION_KEY, metadata, target);
         } else {
             Reflect.defineMetadata(GQ_MUTATION_KEY, [propertyKey], target);
+        }
+
+        if (option) {
+            // description
+            if (option.description) {
+                setDescriptionMetadata(option.description, target, propertyKey);
+            }
+        }
+
+    } as Function;
+}
+
+export function Subscription(option?: DefaultOption) {
+    return function (target: any, propertyKey: any) {
+        if (Reflect.hasMetadata(GQ_SUBSCRIPTION_KEY, target)) {
+            let metadata = Reflect.getMetadata(GQ_SUBSCRIPTION_KEY, target);
+            metadata.push(propertyKey);
+            Reflect.defineMetadata(GQ_SUBSCRIPTION_KEY, metadata, target);
+        } else {
+            Reflect.defineMetadata(GQ_SUBSCRIPTION_KEY, [propertyKey], target);
         }
 
         if (option) {
