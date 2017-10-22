@@ -49,6 +49,14 @@ export default function serverHapi(
 		options: graphiqlOptions,
 	});
 
+	server.route({
+		method: 'GET',
+		path: '/schema',
+		handler: (request, reply) =>
+			reply.response(printSchema(schema)).type('text/plain'),
+	});
+
+
 
 	server.start((err) => {
 		if (err) {

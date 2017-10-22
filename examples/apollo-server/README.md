@@ -36,3 +36,9 @@ mutation {
 }
 ```
 
+
+##### View Generated Schema
+```
+http://localhost:3000/schema
+```
+
