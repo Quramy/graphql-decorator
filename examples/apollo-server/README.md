@@ -12,7 +12,7 @@ npm i
 npm start
 ```
 
-And open localhost:3000/graphiql in your browser. 
+And open http://localhost:3000/ in your browser. 
 
 
 ##### Subscribe
