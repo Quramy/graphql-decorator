@@ -1,46 +1,23 @@
 import { ObjectType, Field, Arg, InputObjectType, Mutation, EnumType, Value } from 'graphql-schema-decorator';
-import { User } from './user.type';
+import { User } from './types/user.type';
 import { users } from '../data';
 import { pubsub } from './common';
-
-
-@InputObjectType({ description: 'A input object to create a user.' })
-class UserForCreate {
-	@Field()
-	name: string;
-
-	@Field({ nonNull: true })
-	email: string;
-}
-
-
-@EnumType({ description: 'An user role. Either ADMIN or DEFAULT' })
-export class UserRoleType {
-
-	@Value(0, { description: 'Admin role' })
-	ADMIN: string;
-
-	@Value('value', { description: 'Default role' })
-	DEFAULT: string;
-
-	@Value(null, { description: 'God role' })
-	GOD: string;
-
-}
+import { UserCreate } from './inputs/user-create.input';
+import { UserRoleType } from './inputs/user-role-type.enum';
 
 
 export default class UserMutation {
 
 	@Field({ type: User, description: 'Create a user and return the created user.' })
 	addUser(
-		@Arg({ name: 'input', nonNull: true }) input: UserForCreate,
-		// @Arg({ name: 'type', type: UserRoleType }) type: UserRoleType,
+		@Arg({ name: 'input', nonNull: true }) input: UserCreate,
 	) {
-		const newUser = new User();
-		// const shasum = createHash('sha1');
-		// shasum.update('usr' + Date.now());
-		// newUser.id = shasum.digest('hex');
-		// Object.assign(newUser, input);
+		const newUser: User = {
+			id: (users.length + 1).toString(),
+			name: input.name,
+			email: input.email,
+		};
+
 		users.push(newUser);
 
 		pubsub.publish('userAdded', {

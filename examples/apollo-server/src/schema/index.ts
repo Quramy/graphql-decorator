@@ -16,8 +16,6 @@ class RootSchema {
 }
 
 
-const schema: any = schemaFactory(RootSchema);
-
-let t = schema._subscriptionType._fields.userAdded.subscribe.toString();
+const schema = schemaFactory(RootSchema);
 
 export default schema;

@@ -1,6 +1,6 @@
 import { ObjectType, Field, Arg, InputObjectType, Mutation, EnumType, Value } from 'graphql-schema-decorator';
 import { withFilter } from 'graphql-subscriptions';
-import { User } from './user.type';
+import { User } from './types/user.type';
 import { users } from '../data';
 import { pubsub } from './common';
 import { GraphQLObjectType } from 'graphql';

@@ -12,4 +12,27 @@ npm i
 npm start
 ```
 
-And open localhost:3000/graphql in your browser. 
+And open localhost:3000/graphiql in your browser. 
+
+
+##### Subscribe
+```gql
+subscription {
+  userAdded {
+    id
+    name
+    email
+  }
+}
+```
+
+
+##### Push
+```gql
+mutation {
+  addUser(input: {name: "Ezeki", email: "ez@jok.io"}) {
+    id
+  }
+}
+```
+

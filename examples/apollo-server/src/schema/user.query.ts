@@ -1,5 +1,5 @@
 import { List, Field, ObjectType } from 'graphql-schema-decorator';
-import { User } from './user.type';
+import { User } from './types/user.type';
 import { users } from '../data';
 
 
