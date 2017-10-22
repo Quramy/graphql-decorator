@@ -519,7 +519,7 @@ export function OrderBy(params?: { extraColumns: string[], shouldIgnoreSchemaFie
     return function (target: any, propertyKey: any, index: number) {
         setArgumentMetadata(target, propertyKey, index, {
             name: 'orderBy',
-            extraParams: params.constructor === Array ? { extraColumns: params } : params,
+            extraParams: (params && params.constructor === Array) ? { extraColumns: params } : params,
         });
     } as Function;
 }
