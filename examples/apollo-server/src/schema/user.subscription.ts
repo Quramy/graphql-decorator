@@ -9,25 +9,19 @@ import { GraphQLObjectType } from 'graphql';
 export default class UserSubscription {
 
 	@Field({ type: User, description: 'Create a user and return the created user.' })
-	userAdded() {
-		return {
-			subscribe: function () {
-				return pubsub.asyncIterator('userAdded');
-			},
-		};
-	}
+	userAdded = {
+		subscribe: () => pubsub.asyncIterator('userAdded'),
+	};
 
 	@Field({ type: User, description: 'Delete a user and return the removed user.' })
-	userDeleted() {
-		return {
-			subscribe: withFilter(
-				() => pubsub.asyncIterator('userDeleted'),
-				(payload, variables) => {
-					// the `messageAdded` channel includes events for all channels, so we filter to only
-					// pass through events for the channel specified in the query
-					return true;
-				},
-			),
-		};
-	}
+	userDeleted = {
+		subscribe: withFilter(
+			() => pubsub.asyncIterator('userDeleted'),
+			(payload, variables) => {
+				// the `messageAdded` channel includes events for all channels, so we filter to only
+				// pass through events for the channel specified in the query
+				return true;
+			},
+		),
+	};
 }

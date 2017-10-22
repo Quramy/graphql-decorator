@@ -3,7 +3,7 @@ import * as bodyParser from 'body-parser';
 import { createServer, Server } from 'http';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
-import * as graphql from 'graphql';
+import { execute, subscribe } from 'graphql';
 import * as cors from 'cors';
 
 
@@ -27,8 +27,8 @@ export default function startGraphQLServer(schema, domain = 'localhost', port = 
 
 		// set up the WebSocket for handling GraphQL subscriptions
 		const sub: SubscriptionServer = new SubscriptionServer({
-			execute: graphql.execute,
-			subscribe: graphql.subscribe,
+			execute,
+			subscribe,
 			schema,
 		}, { server: ws, path: '/subscriptions' });
 	});

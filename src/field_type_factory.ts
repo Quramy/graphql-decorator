@@ -21,7 +21,6 @@ import { objectTypeFactory } from './object_type_factory';
 
 export interface ResolverHolder {
     fn: Function;
-    subscribeFn: Function;
     argumentConfigMap: { [name: string]: any; };
 }
 
@@ -72,7 +71,6 @@ export function resolverFactory(
     contextMetadata?: ContextMetadata,
     fieldParentClass?: any,
     beforeMiddleware?: Middleware,
-    isSubscription?: boolean,
 ): ResolverHolder {
     const params = Reflect.getMetadata('design:paramtypes', target.prototype, name) as Function[];
     const argumentConfigMap: { [name: string]: any; } = {};
@@ -95,21 +93,6 @@ export function resolverFactory(
             indexMap[metadata.name] = index;
         }
     });
-
-    let subscribe;
-    if (isSubscription) {
-        const instance = fieldParentClass[name]();
-        if (instance == null) {
-            throw new Error('Invalid object, ' + name);
-        }
-        if (!instance.subscribe) {
-            throw new Error('Invalid object, no subscribe method found, ' + name);
-        }
-
-        subscribe = instance.subscribe;
-        console.log('OPP', subscribe);
-
-    }
 
     const originalFn = (fieldParentClass ? fieldParentClass[name] as Function : null);
     const fn = !fieldParentClass ? null : function (root: any, args: { [name: string]: any; }, context: any, info: any) {
@@ -155,11 +138,9 @@ export function resolverFactory(
     };
 
 
-    console.log('OMG', subscribe);
     return {
         fn,
         argumentConfigMap,
-        subscribeFn: subscribe,
     };
 }
 
@@ -194,17 +175,23 @@ export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, 
             metadata.root,
             metadata.context,
             fieldParentClass,
-            metadata.beforeMiddleware,
-            isSubscription);
+            metadata.beforeMiddleware);
 
 
 
         resolveFn = resolverHolder.fn;
-        subscribeFn = resolverHolder.subscribeFn;
-
-        console.log('XXXX', isSubscription, subscribeFn);
 
         args = resolverHolder.argumentConfigMap;
+    }
+
+    if (isSubscription) {
+        const fieldParentClass = target as any;
+        const instance = new fieldParentClass();
+
+        if (!instance || !instance[metadata.name] || !instance[metadata.name].subscribe)
+            throw new Error('invalid subscription object ' + metadata.name);
+
+        subscribeFn = instance[metadata.name].subscribe;
     }
 
     const fieldType = convertType(typeFn, metadata, isInput, metadata.name);

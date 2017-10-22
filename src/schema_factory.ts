@@ -41,7 +41,6 @@ function getRootObject(
             typeFn = Reflect.getMetadata('design:type', target.prototype, key) as Function;
             fieldMetadataList = Reflect.getMetadata(GQ_FIELDS_KEY, typeFn.prototype) as FieldTypeMetadata[];
             fieldMetadataList.forEach(def => {
-                console.log(def.name);
                 fields[def.name] = fieldTypeFactory(typeFn, def, undefined, isSubscription);
             });
         });

@@ -18,6 +18,6 @@ class RootSchema {
 
 const schema: any = schemaFactory(RootSchema);
 
-import * as fs from 'fs';
+let t = schema._subscriptionType._fields.userAdded.subscribe.toString();
 
 export default schema;
