@@ -1,7 +1,7 @@
 import { ObjectType, Field, Arg, InputObjectType, Mutation, EnumType, Value } from 'graphql-schema-decorator';
 import { User } from './types/user.type';
 import { users } from '../data';
-import { pubsub } from './common';
+import { pubsub } from '../common/pubsub';
 import { UserCreate } from './inputs/user-create.input';
 import { UserRoleType } from './inputs/user-role-type.enum';
 

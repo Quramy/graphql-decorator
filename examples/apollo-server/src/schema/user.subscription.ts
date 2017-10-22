@@ -2,7 +2,7 @@ import { ObjectType, Field, Arg, InputObjectType, Mutation, EnumType, Value } fr
 import { withFilter } from 'graphql-subscriptions';
 import { User } from './types/user.type';
 import { users } from '../data';
-import { pubsub } from './common';
+import { pubsub } from '../common/pubsub';
 import { GraphQLObjectType } from 'graphql';
 
 
