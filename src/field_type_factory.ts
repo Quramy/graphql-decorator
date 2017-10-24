@@ -24,6 +24,14 @@ export interface ResolverHolder {
     argumentConfigMap: {[name: string]: any; };
 }
 
+let fieldTypeCache: { [key: string]: any} = {};
+
+export function clearFieldTypeCache() {
+  // remove all keys without losing reference
+  Object.keys(fieldTypeCache)
+    .forEach(key => delete fieldTypeCache[key]);
+}
+
 function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean, name?: string) {
     let returnType: any;
 
@@ -51,6 +59,14 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean,
 
     if (!returnType) return null;
 
+    // Avoid duplicated type names in schema
+    //  An example of the error ocurring is using the same enum in several input or object fields
+    //  Similar issue description at https://github.com/graphql/graphql-js/issues/146
+    if (returnType.name && !fieldTypeCache[returnType.name]) {
+      fieldTypeCache[returnType.name] = returnType;
+    }
+    returnType = fieldTypeCache[returnType.name] || returnType;
+
     if (metadata.isList) {
         returnType = new graphql.GraphQLList(returnType);
     }
@@ -60,7 +76,9 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean,
     if (metadata.isPagination) {
         returnType = PaginationType.build(name, returnType);
     }
+
     return returnType;
+
 }
 
 export function resolverFactory(target: Function, name: string, argumentMetadataList: ArgumentMetadata[],

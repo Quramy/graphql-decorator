@@ -1,7 +1,7 @@
 import * as D from './decorator';
 import * as graphql from 'graphql';
 
-import { fieldTypeFactory, resolverFactory } from './field_type_factory';
+import { fieldTypeFactory, resolverFactory, clearFieldTypeCache } from './field_type_factory';
 
 import { clearObjectTypeRepository } from './object_type_factory';
 
@@ -10,6 +10,7 @@ const assert = require('assert');
 describe('resolverFactory', function() {
     beforeEach(function() {
         clearObjectTypeRepository();
+        clearFieldTypeCache();
     });
 
     it('returns argumentConfigMap. The map has GraphQLInt type with a function which has number argument', function () {
@@ -101,6 +102,10 @@ describe('resolverFactory', function() {
 });
 
 describe('fieldTypeFactory', function() {
+    beforeEach(function() {
+        clearObjectTypeRepository();
+        clearFieldTypeCache();
+    });
     describe('with implicit type', function() {
         it('returns null with a class which has no field', function() {
             class Obj {}

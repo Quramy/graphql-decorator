@@ -7,6 +7,7 @@ import { SchemaFactoryError, SchemaFactoryErrorType, schemaFactory } from './sch
 
 import { GraphQLString } from 'graphql';
 import { OrderByItem } from './order-by-item';
+import { clearFieldTypeCache } from './field_type_factory';
 import { clearObjectTypeRepository } from './object_type_factory';
 import { execute } from 'graphql/execution';
 import { parse } from 'graphql/language';
@@ -21,6 +22,7 @@ const assert = require('assert');
 describe('schemaFactory', function() {
     beforeEach(function () {
         clearObjectTypeRepository();
+        clearFieldTypeCache();
     });
 
     it('throws an error with Schema class not annotated', function() {
@@ -130,6 +132,129 @@ describe('schemaFactory', function() {
         const actual = await execute(schema, ast) as {data: {add: number}};
         assert(actual.data.add === 2);
         done();
+    });
+
+    describe('Field type name duplication', async function() {
+
+      @D.EnumType()
+      class EnumObj {
+        @D.Value('A')
+        @D.Field({ type: GraphQLString })
+        A: string;
+
+        @D.Value('B')
+        @D.Field({ type: GraphQLString })
+        B: string;
+      }
+
+      @D.InputObjectType()
+      class AnInputObj {
+        @D.Description('a field')
+        @D.Field({ type: EnumObj })
+        anInputField: string;
+      }
+
+      it('Does not fail for enum being used on input and object types simultaneously', async function() {
+
+        @D.ObjectType()
+        class JustAnObj {
+          @D.Description('another field')
+          @D.Field({ type: EnumObj })
+          anObjectField: string;
+        }
+
+        @D.ObjectType() class Query {
+            @D.Field({type: JustAnObj}) twice( @D.Arg({name: 'input', type: AnInputObj}) input: AnInputObj): JustAnObj {
+                return {
+                  anObjectField: 'B',
+                };
+            }
+        }
+
+        @D.Schema() class Schema { @D.Query() query: Query; }
+        const schema = schemaFactory(Schema);
+        const ast = parse(`query { twice(input: {anInputField: A}) { anObjectField } }`);
+        assert.deepEqual(validate(schema, ast), []);
+
+      });
+
+      it('Does not fail for enum being used on input and object types simultaneously even with @NonNull', async function() {
+
+        @D.ObjectType()
+        class JustAnObj {
+          @D.NonNull()
+          @D.Description('another field')
+          @D.Field({ type: EnumObj })
+          anObjectField: string;
+        }
+
+        @D.ObjectType() class Query {
+            @D.Field({type: JustAnObj}) twice( @D.Arg({name: 'input', type: AnInputObj}) input: AnInputObj): JustAnObj {
+                return {
+                  anObjectField: 'B',
+                };
+            }
+        }
+
+        @D.Schema() class Schema { @D.Query() query: Query; }
+        const schema = schemaFactory(Schema);
+        const ast = parse(`query { twice(input: {anInputField: A}) { anObjectField } }`);
+        assert.deepEqual(validate(schema, ast), []);
+
+      });
+
+      it('Does not fail for enum being used on input and object types simultaneously even with @List', async function() {
+
+          @D.ObjectType()
+          class JustAnObj {
+            @D.List()
+            @D.Description('another field')
+            @D.Field({ type: EnumObj })
+            anObjectField: string[];
+          }
+
+          @D.ObjectType() class Query {
+              @D.Field({type: JustAnObj}) twice( @D.Arg({name: 'input', type: AnInputObj}) input: AnInputObj): JustAnObj {
+                  return {
+                    anObjectField: ['B'],
+                  };
+              }
+          }
+
+          @D.Schema() class Schema { @D.Query() query: Query; }
+          const schema = schemaFactory(Schema);
+          const ast = parse(`query { twice(input: {anInputField: A}) { anObjectField } }`);
+          assert.deepEqual(validate(schema, ast), []);
+
+        });
+
+
+      it('Does not fail for enum being used on input and object types simultaneously even with @List and @NonNull', async function() {
+
+        @D.ObjectType()
+        class JustAnObj {
+          @D.List()
+          @D.NonNull()
+          @D.Description('another field')
+          @D.Field({ type: EnumObj })
+          anObjectField: string[];
+        }
+
+        @D.ObjectType() class Query {
+            @D.Field({type: JustAnObj}) twice( @D.Arg({name: 'input', type: AnInputObj}) input: AnInputObj): JustAnObj {
+                return {
+                  anObjectField: ['B'],
+                };
+            }
+        }
+
+        @D.Schema() class Schema { @D.Query() query: Query; }
+        const schema = schemaFactory(Schema);
+        const ast = parse(`query { twice(input: {anInputField: A}) { anObjectField } }`);
+        assert.deepEqual(validate(schema, ast), []);
+
+      });
+
     });
 
     describe('Pagination', function() {
