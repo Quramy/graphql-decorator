@@ -10,9 +10,14 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "rootDir": "src",
-        "outDir": "lib"
+        "outDir": "lib",
+        "lib": [
+            "esnext"
+        ]
     },
     "exclude": [
-        "node_modules", "lib", "examples"
+        "node_modules",
+        "lib",
+        "examples"
     ]
 }

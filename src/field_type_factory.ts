@@ -21,7 +21,7 @@ import { objectTypeFactory } from './object_type_factory';
 
 export interface ResolverHolder {
     fn: Function;
-    argumentConfigMap: {[name: string]: any; };
+    argumentConfigMap: { [name: string]: any; };
 }
 
 let fieldTypeCache: { [key: string]: any} = {};
@@ -39,9 +39,9 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean,
         if (typeFn === Number) {
             returnType = graphql.GraphQLInt;     // FIXME or float?
         } else if (typeFn === String) {
-             returnType = graphql.GraphQLString;
+            returnType = graphql.GraphQLString;
         } else if (typeFn === Boolean) {
-             returnType = graphql.GraphQLBoolean;
+            returnType = graphql.GraphQLBoolean;
         } else if (typeFn && typeFn.prototype && Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, typeFn.prototype)) {
             // recursively call objectFactory
             returnType = objectTypeFactory(typeFn, isInput);
@@ -81,11 +81,18 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean,
 
 }
 
-export function resolverFactory(target: Function, name: string, argumentMetadataList: ArgumentMetadata[],
-    rootMetadata?: RootMetadata, contextMetadata?: ContextMetadata, fieldParentClass?: any, beforeMiddleware?: Middleware): ResolverHolder {
+export function resolverFactory(
+    target: Function,
+    name: string,
+    argumentMetadataList: ArgumentMetadata[],
+    rootMetadata?: RootMetadata,
+    contextMetadata?: ContextMetadata,
+    fieldParentClass?: any,
+    beforeMiddleware?: Middleware,
+): ResolverHolder {
     const params = Reflect.getMetadata('design:paramtypes', target.prototype, name) as Function[];
-    const argumentConfigMap: {[name: string]: any; } = {};
-    const indexMap: {[name: string]: number; } = {};
+    const argumentConfigMap: { [name: string]: any; } = {};
+    const indexMap: { [name: string]: number; } = {};
 
     params.forEach((paramFn, index) => {
         if (argumentMetadataList == null || argumentMetadataList[index] == null) {
@@ -105,8 +112,8 @@ export function resolverFactory(target: Function, name: string, argumentMetadata
         }
     });
 
-    const originalFn = fieldParentClass ? fieldParentClass[name] as Function : null;
-    const fn = !fieldParentClass ? null : function(root: any, args: {[name: string]: any; }, context: any, info: any) {
+    const originalFn = (fieldParentClass ? fieldParentClass[name] as Function : null);
+    const fn = !fieldParentClass ? null : function (root: any, args: { [name: string]: any; }, context: any, info: any) {
         const rest: any[] = [];
         // TODO inject info to rest arguments
         Object.keys(args).forEach(key => {
@@ -131,30 +138,33 @@ export function resolverFactory(target: Function, name: string, argumentMetadata
         }
         if (beforeMiddleware) {
 
-          // TODO: This whole chain should be promise based but this would impact the whole `schemaFactory` call chain.
-          //  So Promise will be added as a future feature/enhancement
-          let result: any = null;
-          let next: (error?: Error) => void = (error?: Error, value?: any): any => {
-            if (typeof(value) !== 'undefined') {
-              result = value;
-            } else {
-              result = originalFn.apply(fieldParentClass, rest);
-            }
-          };
-          beforeMiddleware.call(fieldParentClass, context, args, next);
-          return result;
+            // TODO: This whole chain should be promise based but this would impact the whole `schemaFactory` call chain.
+            //  So Promise will be added as a future feature/enhancement
+            let result: any = null;
+            let next: (error?: Error) => void = (error?: Error, value?: any): any => {
+                if (typeof (value) !== 'undefined') {
+                    result = value;
+                } else {
+                    result = originalFn.apply(fieldParentClass, rest);
+                }
+            };
+            beforeMiddleware.call(fieldParentClass, context, args, next);
+            return result;
         } else {
-          return originalFn.apply(fieldParentClass, rest);
+            return originalFn.apply(fieldParentClass, rest);
         }
     };
+
+
     return {
-        fn, argumentConfigMap,
+        fn,
+        argumentConfigMap,
     };
 }
 
-export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, isInput?: boolean) {
+export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, isInput?: boolean, isSubscription?: boolean) {
     let typeFn = Reflect.getMetadata('design:type', target.prototype, metadata.name) as Function;
-    let resolveFn: Function, args: {[name: string]: any; };
+    let resolveFn: Function, subscribeFn: Function, args: { [name: string]: any; };
 
     const description = metadata.description;
     const isFunctionType = Reflect.getMetadata('design:type', target.prototype, metadata.name) === Function;
@@ -178,15 +188,28 @@ export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, 
         }
 
         const resolverHolder = resolverFactory(target,
-          metadata.name,
-          metadata.args,
-          metadata.root,
-          metadata.context,
-          fieldParentClass,
-          metadata.beforeMiddleware);
+            metadata.name,
+            metadata.args,
+            metadata.root,
+            metadata.context,
+            fieldParentClass,
+            metadata.beforeMiddleware);
+
+
 
         resolveFn = resolverHolder.fn;
+
         args = resolverHolder.argumentConfigMap;
+    }
+
+    if (isSubscription) {
+        const fieldParentClass = target as any;
+        const instance = new fieldParentClass();
+
+        if (!instance || !instance[metadata.name] || !instance[metadata.name].subscribe)
+            throw new Error('invalid subscription object ' + metadata.name);
+
+        subscribeFn = instance[metadata.name].subscribe;
     }
 
     const fieldType = convertType(typeFn, metadata, isInput, metadata.name);
@@ -200,5 +223,6 @@ export function fieldTypeFactory(target: Function, metadata: FieldTypeMetadata, 
         description: description && description,
         args: args && args,
         resolve: resolveFn,
+        subscribe: subscribeFn,
     };
 }
