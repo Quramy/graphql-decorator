@@ -163,11 +163,11 @@ describe('Decorators', function () {
         });
 
         it('sets isNonNull to ArgumentMetadata with isList', function () {
-          class Obj { @D.Field() someFunction( @D.Arg({ name: 'input', isList: true }) input: any) { } }
-          const actual = getFieldMetadata(Obj.prototype, 'someFunction').args[0];
-          assert(actual.name === 'input');
-          assert(typeof actual.isNonNull === 'undefined');
-          assert(actual.isList === true);
+            class Obj { @D.Field() someFunction( @D.Arg({ name: 'input', isList: true }) input: any) { } }
+            const actual = getFieldMetadata(Obj.prototype, 'someFunction').args[0];
+            assert(actual.name === 'input');
+            assert(typeof actual.isNonNull === 'undefined');
+            assert(actual.isList === true);
       });
     });
 });
