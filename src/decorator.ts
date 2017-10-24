@@ -406,7 +406,7 @@ export function Field(option?: FieldOption) {
                     console.warn('Field can\'t be pagination enabled', propertyKey);
                     return;
                 }
-                setPaginationMetadata(target, propertyKey, methodDescriptor);
+                return setPaginationMetadata(target, propertyKey, methodDescriptor);
             }
         }
 
@@ -453,7 +453,7 @@ export function Before(middleware: Middleware) {
 export function Pagination() {
     return function (target: any, propertyKey: any, methodDescriptor: any) {
 
-        setPaginationMetadata(target, propertyKey, methodDescriptor);
+        return setPaginationMetadata(target, propertyKey, methodDescriptor);
 
     } as Function;
 }
