@@ -5,7 +5,7 @@ import * as graphql from 'graphql';
 
 import { SchemaFactoryError, SchemaFactoryErrorType, schemaFactory } from './schema_factory';
 
-import { GraphQLString } from 'graphql';
+import { GraphQLString, printSchema } from 'graphql';
 import { OrderByItem } from './order-by-item';
 import { clearFieldTypeCache } from './field_type_factory';
 import { clearObjectTypeRepository } from './object_type_factory';
@@ -353,5 +353,55 @@ describe('schemaFactory', function() {
     });
 
   });
+
+    describe('UnionType', () => {
+
+        it('creates schema with union type', () => {
+
+          @D.ObjectType()
+          class ObjA { @D.Field() fieldA: string; }
+
+          @D.ObjectType()
+          class ObjB { @D.Field() fieldB: string; }
+
+          type MyType = ObjA | ObjB;
+          @D.UnionType<MyType>({
+            types: [ObjA, ObjB],
+            resolver: (obj: any): string | null => {
+              if (obj.fieldA) { return 'ObjA'; }
+              if (obj.fieldB) { return 'ObjB'; }
+              return null;
+            },
+          })
+          class MyUnionType { }
+
+
+          @D.ObjectType() class Query {
+            @D.Field({ type: MyUnionType })
+            async aQuery(): Promise<MyType> {
+              return { fieldA: '' };
+            }
+          }
+          @D.Schema() class Schema { @D.Query() query: Query; }
+          const schema = schemaFactory(Schema);
+          const ast = parse(`
+            query {
+              aQuery {
+                ...on ObjA {
+                  fieldA
+                }
+                ...on ObjB {
+                  fieldB
+                }
+              }
+            }`);
+
+          assert.deepEqual(validate(schema, ast), []);
+
+        });
+
+    });
+
+
 
 });

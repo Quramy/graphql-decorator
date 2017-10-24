@@ -4,9 +4,11 @@ import * as graphql from 'graphql';
 
 import { GraphQLType } from 'graphql';
 import { IoCContainer } from './ioc-container';
+import MetadataStorage from './metadata-storage';
 import { OrderByTypeFactory } from './order-by.type-factory';
 import { PageInfo } from './page-info.type';
 import { PaginationResponse } from './pagination.type';
+import { UnionTypeMetadata } from './metadatas';
 
 export const GQ_QUERY_KEY = 'gq_query';
 export const GQ_MUTATION_KEY = 'gq_mutation';
@@ -16,8 +18,7 @@ export const GQ_VALUES_KEY = 'gq_values';
 export const GQ_OBJECT_METADATA_KEY = 'gq_object_type';
 export const GQ_ENUM_METADATA_KEY = 'gq_enum_type';
 export const GQ_DESCRIPTION_KEY = 'gq_description';
-
-
+export const GQ_UNION_KEY = 'gq_union';
 
 export interface TypeMetadata {
     name?: string;
@@ -87,6 +88,11 @@ export interface SchemaOption extends DefaultOption {
     type?: any;
 }
 
+export interface UnionOpton<T> extends DefaultOption {
+  description?: string;
+  types: any[];
+  resolver: (obj: T, context: any, info: any) => Promise<string> | string | null;
+}
 
 export interface DescriptionMetadata {
     description: string;
@@ -115,6 +121,16 @@ function createOrSetObjectTypeMetadata(target: any, metadata: ObjectTypeMetadata
         const originalMetadata = Reflect.getMetadata(GQ_OBJECT_METADATA_KEY, target.prototype) as ObjectTypeMetadata;
         Object.assign(originalMetadata, metadata);
     }
+}
+
+function createOrSetUnionTypeMetadata(target: any, metadata: UnionTypeMetadata) {
+  if (!Reflect.hasMetadata(GQ_UNION_KEY, target.prototype)) {
+      let mergedMetadata = mergeDescriptionMetadata(target, metadata);
+      Reflect.defineMetadata(GQ_UNION_KEY, mergedMetadata, target.prototype);
+  } else {
+      const originalMetadata = Reflect.getMetadata(GQ_UNION_KEY, target.prototype) as UnionTypeMetadata;
+      Object.assign(originalMetadata, metadata);
+  }
 }
 
 function createOrSetEnumTypeMetadata(target: any, metadata: EnumTypeMetadata) {
@@ -349,6 +365,18 @@ export function ObjectType(option?: DefaultOption) {
             }
         }
     } as Function;
+}
+
+
+export function UnionType<T>(option: UnionOpton<T>) {
+  return function (target: any) {
+      MetadataStorage.addUnionMetadata({
+          name: target.name,
+          types: option.types,
+          resolver: option.resolver,
+          description: option.description,
+      });
+  } as Function;
 }
 
 export function InputObjectType(option?: DefaultOption) {
