@@ -68,24 +68,9 @@ export function schemaFactory(target: Function) {
     let rootMutationObject = getRootObject(target, GQ_MUTATION_KEY, false, mutationObjectTypeFactory);
     let rootSubscriptionObject = getRootObject(target, GQ_SUBSCRIPTION_KEY, false, subscriptionObjectTypeFactory, true);
 
-
-    // let result: any = {
-    //     query: rootQueryObject,
-    // };
-
-    // if (rootMutationObject) {
-    //     result.mutation = rootMutationObject;
-    // }
-
-    // if (rootSubscriptionObject) {
-    //     result.subscription = rootSubscriptionObject;
-    // }
-
-    const result = new graphql.GraphQLSchema({
+    return new graphql.GraphQLSchema({
         query: rootQueryObject,
         mutation: rootMutationObject,
         subscription: rootSubscriptionObject,
     });
-
-    return result;
 }
