@@ -116,6 +116,8 @@ describe('Decorators', function () {
             class Obj { @D.Field() someFunction( @D.Arg({ name: 'input' }) input: any) { } }
             const actual = getFieldMetadata(Obj.prototype, 'someFunction').args[0];
             assert(actual.name === 'input');
+            assert(typeof actual.isNonNull === 'undefined');
+            assert(typeof actual.isList === 'undefined');
         });
 
         it('sets description to ArgumentMetadata with @Description', function () {
@@ -123,6 +125,8 @@ describe('Decorators', function () {
             const actual = getFieldMetadata(Obj.prototype, 'someFunction').args[0];
             assert(actual.name === 'input');
             assert(actual.description === 'some input');
+            assert(typeof actual.isNonNull === 'undefined');
+            assert(typeof actual.isList === 'undefined');
         });
 
         it('sets description to ArgumentMetadata with description option', function () {
@@ -130,6 +134,8 @@ describe('Decorators', function () {
             const actual = getFieldMetadata(Obj.prototype, 'someFunction').args[0];
             assert(actual.name === 'input');
             assert(actual.description === 'some input');
+            assert(typeof actual.isNonNull === 'undefined');
+            assert(typeof actual.isList === 'undefined');
         });
 
         it('sets isNonNull to ArgumentMetadata with @NonNull', function () {
@@ -137,6 +143,7 @@ describe('Decorators', function () {
             const actual = getFieldMetadata(Obj.prototype, 'someFunction').args[0];
             assert(actual.name === 'input');
             assert(actual.isNonNull === true);
+            assert(typeof actual.isList === 'undefined');
         });
 
         it('sets isNonNull to ArgumentMetadata with nonNull option', function () {
@@ -144,13 +151,23 @@ describe('Decorators', function () {
             const actual = getFieldMetadata(Obj.prototype, 'someFunction').args[0];
             assert(actual.name === 'input');
             assert(actual.isNonNull === true);
+            assert(typeof actual.isList === 'undefined');
         });
 
         it('sets isNonNull to ArgumentMetadata with @List', function () {
             class Obj { @D.Field() someFunction( @D.List() @D.Arg({ name: 'input' }) input: any) { } }
             const actual = getFieldMetadata(Obj.prototype, 'someFunction').args[0];
             assert(actual.name === 'input');
+            assert(typeof actual.isNonNull === 'undefined');
             assert(actual.isList === true);
         });
+
+        it('sets isNonNull to ArgumentMetadata with isList', function () {
+          class Obj { @D.Field() someFunction( @D.Arg({ name: 'input', isList: true }) input: any) { } }
+          const actual = getFieldMetadata(Obj.prototype, 'someFunction').args[0];
+          assert(actual.name === 'input');
+          assert(typeof actual.isNonNull === 'undefined');
+          assert(actual.isList === true);
+      });
     });
 });

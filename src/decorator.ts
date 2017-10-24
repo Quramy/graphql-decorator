@@ -81,6 +81,7 @@ export interface ArgumentOption extends DefaultOption {
     name: string;
     type?: any;
     nonNull?: boolean;
+    isList?: boolean;
 }
 
 export interface SchemaOption extends DefaultOption {
@@ -499,6 +500,20 @@ export function Arg(option: ArgumentOption) {
             if (option.nonNull) {
                 setNonNullMetadata(target, propertyKey, index);
             }
+
+            // isList
+            if (option.isList) {
+              if (index >= 0) {
+                  setArgumentMetadata(target, propertyKey, index, {
+                      isList: true,
+                  });
+              } else {
+                  createOrSetFieldTypeMetadata(target, {
+                      name: propertyKey,
+                      isList: true,
+                  });
+              }
+          }
         }
     } as Function;
 }
