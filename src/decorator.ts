@@ -8,6 +8,9 @@ import { OrderByTypeFactory } from './order-by.type-factory';
 import { PageInfo } from './page-info.type';
 import { PaginationResponse } from './pagination.type';
 
+export * from './decorator/';
+export * from './metadata/options';
+
 export const GQ_QUERY_KEY = 'gq_query';
 export const GQ_MUTATION_KEY = 'gq_mutation';
 export const GQ_SUBSCRIPTION_KEY = 'gq_subscription';
@@ -16,8 +19,6 @@ export const GQ_VALUES_KEY = 'gq_values';
 export const GQ_OBJECT_METADATA_KEY = 'gq_object_type';
 export const GQ_ENUM_METADATA_KEY = 'gq_enum_type';
 export const GQ_DESCRIPTION_KEY = 'gq_description';
-
-
 
 export interface TypeMetadata {
     name?: string;

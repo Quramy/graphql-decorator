@@ -11,6 +11,8 @@ import {
     RootMetadata,
     TypeMetadata,
 } from './decorator';
+import { MetadataStorage } from './metadata-storage';
+
 import { SchemaFactoryError, SchemaFactoryErrorType } from './schema_factory';
 
 import { IoCContainer } from './ioc-container';
@@ -18,6 +20,8 @@ import { OrderByTypeFactory } from './order-by.type-factory';
 import { PaginationType } from './pagination.type';
 import { enumTypeFactory } from './enum.type-factory';
 import { objectTypeFactory } from './object_type_factory';
+import { unionTypeFactory } from './type-factory';
+
 
 export interface ResolverHolder {
     fn: Function;
@@ -43,12 +47,15 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean,
         } else if (typeFn === Boolean) {
             returnType = graphql.GraphQLBoolean;
         } else if (typeFn && typeFn.prototype && Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, typeFn.prototype)) {
-            // recursively call objectFactory
-            returnType = objectTypeFactory(typeFn, isInput);
+          // recursively call objectFactory
+          returnType = objectTypeFactory(typeFn, isInput);
         }
-    } else {
+      } else {
         returnType = metadata.explicitType;
-        if (returnType && returnType.prototype && Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, returnType.prototype)) {
+
+        if (returnType && returnType.prototype && MetadataStorage.containsUnionMetadata(returnType.name)) {
+            returnType = unionTypeFactory(returnType.name, isInput);
+        } else if (returnType && returnType.prototype && Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, returnType.prototype)) {
             // recursively call objectFactory
             returnType = objectTypeFactory(returnType, isInput);
         } else if (returnType && returnType.prototype && Reflect.hasMetadata(GQ_ENUM_METADATA_KEY, returnType.prototype)) {
