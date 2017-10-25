@@ -1,3 +1,7 @@
+# Graphql-Schema-Decorator
+
+[![Build Status](https://travis-ci.org/indigotech/graphql-schema-decorator.svg?branch=bugfix%2Fnested-input-field)](https://travis-ci.org/indigotech/graphql-schema-decorator)
+[![npm version](https://badge.fury.io/js/graphql-schema-decorator.svg)](https://badge.fury.io/js/graphql-schema-decorator)
 
 ## Differences from graphql-decorator
 
