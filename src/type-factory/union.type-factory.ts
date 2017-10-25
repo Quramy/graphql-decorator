@@ -1,8 +1,7 @@
 import * as graphql from 'graphql';
-import MetadataStorage from './metadata-storage';
-import { UnionTypeMetadata } from './metadatas';
-import { GQ_OBJECT_METADATA_KEY } from './decorator';
-import { objectTypeFactory } from './object_type_factory';
+import { MetadataStorage } from '../metadata-storage';
+import { UnionTypeMetadata } from '../metadata';
+import { objectTypeFactory } from '../object_type_factory';
 
 export function unionTypeFactory(name: string, isInput: boolean): graphql.GraphQLUnionType {
   return MetadataStorage.getUnionMetadata()

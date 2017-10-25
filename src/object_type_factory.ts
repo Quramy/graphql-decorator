@@ -12,10 +12,6 @@ export function clearObjectTypeRepository() {
     objectTypeRepository = {};
 }
 
-export function objectTypeByName(name: string): any {
-  return objectTypeRepository[name];
-}
-
 export function objectTypeFactory(target: Function, isInput?: boolean) {
     const objectTypeMetadata = Reflect.getMetadata(GQ_OBJECT_METADATA_KEY, target.prototype) as ObjectTypeMetadata;
     const typeFromRepository = objectTypeRepository[objectTypeMetadata.name];

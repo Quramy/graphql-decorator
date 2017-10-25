@@ -153,5 +153,4 @@ describe('Decorators', function () {
             assert(actual.isList === true);
         });
     });
-
 });

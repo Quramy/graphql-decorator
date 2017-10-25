@@ -1,11 +1,12 @@
 import 'reflect-metadata';
 
 import * as D from './decorator';
+import * as DD from './decorator/';
 import * as graphql from 'graphql';
 
 import { SchemaFactoryError, SchemaFactoryErrorType, schemaFactory } from './schema_factory';
 
-import { GraphQLString, printSchema } from 'graphql';
+import { GraphQLString } from 'graphql';
 import { OrderByItem } from './order-by-item';
 import { clearFieldTypeCache } from './field_type_factory';
 import { clearObjectTypeRepository } from './object_type_factory';
@@ -365,11 +366,11 @@ describe('schemaFactory', function() {
           class ObjB { @D.Field() fieldB: string; }
 
           type MyType = ObjA | ObjB;
-          @D.UnionType<MyType>({
+          @DD.UnionType<MyType>({
             types: [ObjA, ObjB],
             resolver: (obj: any): string | null => {
-              if (obj.fieldA) { return 'ObjA'; }
-              if (obj.fieldB) { return 'ObjB'; }
+              if (obj.fieldA) { return ObjA.name; }
+              if (obj.fieldB) { return ObjB.name; }
               return null;
             },
           })

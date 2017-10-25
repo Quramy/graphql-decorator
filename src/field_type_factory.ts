@@ -11,7 +11,7 @@ import {
     RootMetadata,
     TypeMetadata,
 } from './decorator';
-import MetadataStorage from './metadata-storage';
+import { MetadataStorage } from './metadata-storage';
 
 import { SchemaFactoryError, SchemaFactoryErrorType } from './schema_factory';
 
@@ -20,7 +20,8 @@ import { OrderByTypeFactory } from './order-by.type-factory';
 import { PaginationType } from './pagination.type';
 import { enumTypeFactory } from './enum.type-factory';
 import { objectTypeFactory } from './object_type_factory';
-import { unionTypeFactory } from './union.type-factory';
+import { unionTypeFactory } from './type-factory';
+
 
 export interface ResolverHolder {
     fn: Function;

@@ -1,4 +1,4 @@
-import { UnionTypeMetadata } from './metadatas';
+import { UnionTypeMetadata } from '../metadata/types/union.metadata';
 
 const unionMetadata: UnionTypeMetadata[] = [];
 
@@ -15,4 +15,4 @@ const MetadataStorage = {
     },
 };
 
-export default MetadataStorage;
+export { MetadataStorage };
