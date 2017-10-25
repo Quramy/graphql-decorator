@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 
 import * as D from './decorator';
-import * as DD from './decorator/';
 import * as graphql from 'graphql';
 
 import { SchemaFactoryError, SchemaFactoryErrorType, schemaFactory } from './schema_factory';
@@ -366,7 +365,7 @@ describe('schemaFactory', function() {
           class ObjB { @D.Field() fieldB: string; }
 
           type MyType = ObjA | ObjB;
-          @DD.UnionType<MyType>({
+          @D.UnionType<MyType>({
             types: [ObjA, ObjB],
             resolver: (obj: any): string | null => {
               if (obj.fieldA) { return ObjA.name; }

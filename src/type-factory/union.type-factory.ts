@@ -3,7 +3,7 @@ import { MetadataStorage } from '../metadata-storage';
 import { UnionTypeMetadata } from '../metadata';
 import { objectTypeFactory } from '../object_type_factory';
 
-export function unionTypeFactory(name: string, isInput: boolean): graphql.GraphQLUnionType {
+export function unionTypeFactory(name: string, isInput: boolean): graphql.GraphQLUnionType | undefined {
   return MetadataStorage.getUnionMetadata()
     .filter(union => union.name === name)
     .map(union => {
@@ -16,5 +16,5 @@ export function unionTypeFactory(name: string, isInput: boolean): graphql.GraphQ
           .filter(_ => _), //filter null values
       });
     })
-    .find((_, index) => index === 0) || null;
+    .find((_, index) => index === 0);
 }

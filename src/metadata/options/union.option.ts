@@ -1,7 +1,7 @@
 /**
  * Arguments for a Union type on graphql schema
  */
-export interface UnionOpton<T> {
+export interface UnionOption<T> {
   /**
    * (Optional) Description
    */
