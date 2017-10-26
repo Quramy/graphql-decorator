@@ -1,5 +1,5 @@
 /**
- * Arguments for a Union type on graphql schema
+ * Arguments for an Union type on graphql schema
  */
 export interface UnionOption<T> {
   /**
