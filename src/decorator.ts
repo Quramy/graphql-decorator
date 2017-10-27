@@ -15,7 +15,6 @@ export const GQ_QUERY_KEY = 'gq_query';
 export const GQ_MUTATION_KEY = 'gq_mutation';
 export const GQ_SUBSCRIPTION_KEY = 'gq_subscription';
 export const GQ_FIELDS_KEY = 'gq_fields';
-export const GQ_OBJECT_METADATA_KEY = 'gq_object_type';
 export const GQ_DESCRIPTION_KEY = 'gq_description';
 
 export interface TypeMetadata {
@@ -44,12 +43,6 @@ export interface FieldTypeMetadata extends RootMetadata {
     args?: ArgumentMetadata[];
     root?: RootMetadata;
     context?: ContextMetadata;
-}
-
-export interface ObjectTypeMetadata {
-    name?: string;
-    description?: string;
-    isInput?: boolean;
 }
 
 export interface DefaultOption {
@@ -93,16 +86,6 @@ function mergeDescriptionMetadata(target: any, sourceMetadata: any): any {
     }
 
     return sourceMetadata;
-}
-
-function createOrSetObjectTypeMetadata(target: any, metadata: ObjectTypeMetadata) {
-    if (!Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, target.prototype)) {
-        let mergedMetadata = mergeDescriptionMetadata(target, metadata);
-        Reflect.defineMetadata(GQ_OBJECT_METADATA_KEY, mergedMetadata, target.prototype);
-    } else {
-        const originalMetadata = Reflect.getMetadata(GQ_OBJECT_METADATA_KEY, target.prototype) as ObjectTypeMetadata;
-        Object.assign(originalMetadata, metadata);
-    }
 }
 
 function createOrSetFieldTypeMetadata(target: any, metadata: FieldTypeMetadata) {
@@ -215,13 +198,7 @@ function setDescriptionMetadata(description: string, target: any, propertyKey: s
             createPropertyDescriptionMetadata(target, description, propertyKey);
         }
     } else {
-        if (Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, target.prototype)) {
-            createOrSetObjectTypeMetadata(target, {
-                description: description,
-            });
-        } else {
-            createDescriptionMetadata(target, description);
-        }
+        createDescriptionMetadata(target, description);
     }
 }
 
@@ -263,38 +240,6 @@ function setPaginationMetadata(target: any, propertyKey: string, methodDescripto
             return new PaginationResponse(count, data, new PageInfo(count, offset, limit));
         },
     };
-}
-
-export function ObjectType(option?: DefaultOption) {
-    return function (target: any) {
-        createOrSetObjectTypeMetadata(target, {
-            name: target.name,
-            isInput: false,
-        });
-
-        if (option) {
-            // description
-            if (option.description) {
-                setDescriptionMetadata(option.description, target);
-            }
-        }
-    } as Function;
-}
-
-export function InputObjectType(option?: DefaultOption) {
-    return function (target: any) {
-        createOrSetObjectTypeMetadata(target, {
-            name: target.name,
-            isInput: true,
-        });
-
-        if (option) {
-            // description
-            if (option.description) {
-                setDescriptionMetadata(option.description, target);
-            }
-        }
-    } as Function;
 }
 
 export function Field(option?: FieldOption) {

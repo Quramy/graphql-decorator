@@ -1,39 +1,34 @@
 import 'reflect-metadata';
 import * as D from './decorator';
 import * as graphql from 'graphql';
-import { FieldTypeMetadata, GQ_FIELDS_KEY, getFieldMetadata, GQ_OBJECT_METADATA_KEY, ObjectTypeMetadata } from './decorator';
+import { FieldTypeMetadata, GQ_FIELDS_KEY, getFieldMetadata } from './decorator';
+import { ObjectTypeMetadata } from './metadata/types';
+import { getMetadataBuilder } from './metadata-builder';
+
 const assert = require('assert');
 
 describe('Decorators', function () {
     describe('@ObjectType', function () {
         it('creates a ObjectTypeMetadata which isInput is false', function () {
             @D.ObjectType() class Obj { @D.Field() someField: any; }
-            const actual = Reflect.getMetadata(GQ_OBJECT_METADATA_KEY, Obj.prototype) as ObjectTypeMetadata;
+            const actual = getMetadataBuilder().buildObjectTypeMetadata(Obj)[0];
             assert(actual.isInput === false);
             assert(actual.name === 'Obj');
         });
 
-        it('sets description to ObjectTypeMetadata with @Description', function () {
-            @D.Description('this is a object type') @D.ObjectType()
-            class Obj { @D.Field() someField: any; }
-            const actual = Reflect.getMetadata(GQ_OBJECT_METADATA_KEY, Obj.prototype) as ObjectTypeMetadata;
-            assert(actual.isInput === false);
-            assert(actual.name === 'Obj');
-            assert(actual.description === 'this is a object type');
-        });
     });
 
     describe('@InputObjectType', function () {
         it('creates a ObjectTypeMetadata which isInput is true', function () {
             @D.InputObjectType() class Obj { @D.Field() someField: any; }
-            const actual = Reflect.getMetadata(GQ_OBJECT_METADATA_KEY, Obj.prototype) as ObjectTypeMetadata;
+            const actual = getMetadataBuilder().buildObjectTypeMetadata(Obj)[0];
             assert(actual.isInput === true);
             assert(actual.name === 'Obj');
         });
 
         it('sets description to ObjectTypeMetadata which isInput is true with description option', function () {
             @D.InputObjectType({ description: 'some input' }) class Obj { }
-            const actual = Reflect.getMetadata(GQ_OBJECT_METADATA_KEY, Obj.prototype) as ObjectTypeMetadata;
+            const actual = getMetadataBuilder().buildObjectTypeMetadata(Obj)[0];
             assert(actual.isInput === true);
             assert(actual.description === 'some input');
         });

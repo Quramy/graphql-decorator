@@ -3,7 +3,7 @@ import * as graphql from 'graphql';
 
 import { fieldTypeFactory, resolverFactory, clearFieldTypeCache } from './field_type_factory';
 
-import { clearObjectTypeRepository } from './object_type_factory';
+import { clearObjectTypeRepository } from './type-factory';
 
 const assert = require('assert');
 

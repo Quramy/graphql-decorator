@@ -8,7 +8,7 @@ import { SchemaFactoryError, SchemaFactoryErrorType, schemaFactory } from './sch
 import { GraphQLString } from 'graphql';
 import { OrderByItem } from './order-by-item';
 import { clearFieldTypeCache } from './field_type_factory';
-import { clearObjectTypeRepository } from './object_type_factory';
+import { clearObjectTypeRepository } from './type-factory';
 import { execute } from 'graphql/execution';
 import { parse } from 'graphql/language';
 import { validate } from 'graphql/validation';

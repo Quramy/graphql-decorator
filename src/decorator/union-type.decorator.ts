@@ -5,7 +5,7 @@ import { UnionOption } from '../metadata';
  * Union Type.
  * See [GraphQL Documentation - Union Types]{@link http://graphql.org/learn/schema/#union-types}
  *
- * @param option Options for a Union Type
+ * @param option Options for an Union Type
  */
 export function UnionType<T>(option: UnionOption<T>) {
   return function (target: any) {
