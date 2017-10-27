@@ -3,7 +3,6 @@ import 'reflect-metadata';
 import * as graphql from 'graphql';
 
 import { GraphQLType } from 'graphql';
-import { IoCContainer } from './ioc-container';
 import { OrderByTypeFactory } from './order-by.type-factory';
 import { PageInfo } from './page-info.type';
 import { PaginationResponse } from './pagination.type';
@@ -398,11 +397,5 @@ export function Description(body: string) {
     return function (target: any, propertyKey?: any, index?: number) {
         setDescriptionMetadata(body, target, propertyKey, index);
     } as Function;
-}
-
-export function UseContainer(container: any) {
-    return function (target: Function) {
-        IoCContainer.INSTANCE = container;
-    };
 }
 
