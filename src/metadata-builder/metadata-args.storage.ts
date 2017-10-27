@@ -5,6 +5,7 @@ import {
   ObjectTypeArg,
   EntryTypeArg,
   EntryType,
+  SchemaArg,
 } from '../metadata/args';
 
 /**
@@ -25,6 +26,7 @@ export class MetadataArgsStorage {
   union: UnionTypeArg[] = [];
   objects: ObjectTypeArg[] = [];
   entries: EntryTypeArg[] = [];
+  schemas: SchemaArg[] = [];
 
   filterEnumsByClass(target: any): EnumTypeArg[] {
     return this.enums.filter(item => item.target === target);
@@ -44,6 +46,10 @@ export class MetadataArgsStorage {
 
   filterEntryTypesByClassAndType(target: any, type: EntryType): EntryTypeArg[] {
     return this.entries.filter(item => item.target === target.prototype && item.type === type);
+  }
+
+  filterSchemaByClass(target: any): SchemaArg[] {
+    return this.schemas.filter(item => item.target === target);
   }
 }
 

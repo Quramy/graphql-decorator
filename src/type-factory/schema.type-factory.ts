@@ -53,9 +53,9 @@ export class SchemaFactoryError extends Error {
 }
 
 export function schemaFactory(target: Function) {
-    if (!Reflect.hasMetadata('gq_schema', target)) {
-        // tslint:disable-next-line:max-line-length
-        throw new SchemaFactoryError('The argument of schemaFactory should be annotated @Schema() decorator', SchemaFactoryErrorType.NO_SCHEMA_ANNOTATION);
+    if (getMetadataBuilder().buildSchemaMetadata(target).length !== 1) {
+        throw new SchemaFactoryError('One and only one argument of schemaFactory should be annotated with @Schema() decorator',
+          SchemaFactoryErrorType.NO_SCHEMA_ANNOTATION);
     }
 
     let query = getEntryObject(target, EntryType.Query, true, queryObjectTypeFactory);

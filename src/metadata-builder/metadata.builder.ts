@@ -4,6 +4,7 @@ import {
   UnionTypeMetadata,
   ObjectTypeMetadata,
   EntryTypeMetadata,
+  SchemaMetadata,
 } from '../metadata/types';
 
 import { EntryType } from '../metadata/args';
@@ -67,6 +68,16 @@ export class MetadataBuilder {
         description: queryArg.description,
         property: queryArg.property,
         isSubscription: type === EntryType.Subscription,
+      }));
+  }
+
+  buildSchemaMetadata(target: any): SchemaMetadata[] | undefined {
+    return getMetadataArgsStorage()
+      .filterSchemaByClass(target)
+      .map(queryArg => ({
+        target: queryArg.target,
+        name: queryArg.name,
+        description: queryArg.description,
       }));
   }
 

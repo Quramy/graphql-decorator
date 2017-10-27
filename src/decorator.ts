@@ -400,19 +400,6 @@ export function Description(body: string) {
     } as Function;
 }
 
-export function Schema(option?: SchemaOption) {
-    return function (target: Function) {
-        Reflect.defineMetadata('gq_schema', {}, target);
-
-        if (option) {
-            // description
-            if (option.description) {
-                setDescriptionMetadata(option.description, target);
-            }
-        }
-    } as Function;
-}
-
 export function UseContainer(container: any) {
     return function (target: Function) {
         IoCContainer.INSTANCE = container;
