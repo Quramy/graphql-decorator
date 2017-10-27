@@ -4,23 +4,21 @@ import {
     ArgumentMetadata,
     ContextMetadata,
     FieldTypeMetadata,
-    GQ_ENUM_METADATA_KEY,
     GQ_FIELDS_KEY,
     GQ_OBJECT_METADATA_KEY,
     Middleware,
     RootMetadata,
     TypeMetadata,
 } from './decorator';
-import { MetadataStorage } from './metadata-storage';
+import { getMetadataArgsStorage } from './metadata-builder';
 
 import { SchemaFactoryError, SchemaFactoryErrorType } from './schema_factory';
 
 import { IoCContainer } from './ioc-container';
 import { OrderByTypeFactory } from './order-by.type-factory';
 import { PaginationType } from './pagination.type';
-import { enumTypeFactory } from './enum.type-factory';
 import { objectTypeFactory } from './object_type_factory';
-import { unionTypeFactory } from './type-factory';
+import { unionTypeFactory, enumTypeFactory } from './type-factory';
 
 
 export interface ResolverHolder {
@@ -53,13 +51,12 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean,
       } else {
         returnType = metadata.explicitType;
 
-        if (returnType && returnType.prototype && MetadataStorage.containsUnionMetadata(returnType.name)) {
-            returnType = unionTypeFactory(returnType.name, isInput);
+        if (returnType && returnType.prototype && getMetadataArgsStorage().filterUnionTypeByClass(returnType).length > 0) {
+            returnType = unionTypeFactory(returnType, isInput);
         } else if (returnType && returnType.prototype && Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, returnType.prototype)) {
             // recursively call objectFactory
             returnType = objectTypeFactory(returnType, isInput);
-        } else if (returnType && returnType.prototype && Reflect.hasMetadata(GQ_ENUM_METADATA_KEY, returnType.prototype)) {
-            let enumMetadata = Reflect.getMetadata(GQ_ENUM_METADATA_KEY, returnType.prototype);
+        } else if (returnType && returnType.prototype && getMetadataArgsStorage().filterEnumsByClass(returnType).length > 0) {
             returnType = enumTypeFactory(returnType);
         }
     }

@@ -12,6 +12,7 @@ import { clearObjectTypeRepository } from './object_type_factory';
 import { execute } from 'graphql/execution';
 import { parse } from 'graphql/language';
 import { validate } from 'graphql/validation';
+import { getMetadataArgsStorage } from './metadata-builder';
 
 const assert = require('assert');
 

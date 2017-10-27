@@ -1,8 +1,7 @@
-import { EnumValueMetadata } from './decorator';
-import { enumTypeFactory } from './enum.type-factory';
-import { SchemaFactoryError , SchemaFactoryErrorType } from './schema_factory';
+import { EnumValueMetadata } from '../metadata';
+import { SchemaFactoryError , SchemaFactoryErrorType } from '../schema_factory';
 
-export function valueTypeFactory(target: Function, metadata: EnumValueMetadata): any {
+export function enumValueTypeFactory(target: Function, metadata: EnumValueMetadata): any {
     let description = metadata.description;
     let value = metadata.value;
     let isFunctionType = Reflect.getMetadata('design:type', target.prototype, metadata.name) === Function;

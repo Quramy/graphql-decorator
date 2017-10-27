@@ -1,11 +1,10 @@
 import * as graphql from 'graphql';
-import { MetadataStorage } from '../metadata-storage';
+import { getMetadataBuilder } from '../metadata-builder';
 import { UnionTypeMetadata } from '../metadata';
 import { objectTypeFactory } from '../object_type_factory';
 
-export function unionTypeFactory(name: string, isInput: boolean): graphql.GraphQLUnionType | undefined {
-  return MetadataStorage.getUnionMetadata()
-    .filter(union => union.name === name)
+export function unionTypeFactory(target: any, isInput: boolean): graphql.GraphQLUnionType | undefined {
+  return getMetadataBuilder().buildUnionTypeMetadata(target)
     .map(union => {
       return new graphql.GraphQLUnionType({
         description: union.description,

@@ -1,4 +1,5 @@
 export interface UnionTypeMetadata {
+    target: any;
     name: string;
     description?: string;
     types: any[];
