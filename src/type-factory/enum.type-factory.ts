@@ -4,12 +4,6 @@ import { enumValueTypeFactory } from './enum-value.type-factory';
 import { GraphQLEnumType } from 'graphql';
 import { getMetadataBuilder } from '../metadata-builder';
 
-let objectTypeRepository: {[key: string]: any} = {};
-
-export function clearObjectTypeRepository() {
-    objectTypeRepository = {};
-}
-
 export function enumTypeFactory(target: any): any {
 
     const enumTypeMetadata = getMetadataBuilder()

@@ -1,4 +1,4 @@
-import { FieldTypeMetadata, GQ_FIELDS_KEY, GQ_OBJECT_METADATA_KEY, ObjectTypeMetadata } from './decorator';
+import { FieldTypeMetadata, GQ_FIELDS_KEY } from './decorator';
 import { GraphQLEnumType, GraphQLInputObjectType, GraphQLInputObjectTypeConfig, GraphQLList, GraphQLNonNull } from 'graphql';
 import { SchemaFactoryError, SchemaFactoryErrorType } from './schema_factory';
 

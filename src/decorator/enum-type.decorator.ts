@@ -5,7 +5,7 @@ import { getMetadataArgsStorage } from '../metadata-builder';
  * It can be used just like {@link ObjectType} in order to create {@link GraphQLEnumType} objects.
  * See [GraphQL Documentation - Enum Types]{@http://graphql.org/learn/schema/#enumeration-types}
  *
- * @param option Options for a Enum Type
+ * @param option Options for an Enum Type
  */
 export function EnumType(option?: EnumOption) {
   return function (target: any) {

@@ -1,8 +1,8 @@
 import * as graphql from 'graphql';
 
-import { FieldTypeMetadata, GQ_FIELDS_KEY, GQ_MUTATION_KEY, GQ_OBJECT_METADATA_KEY, GQ_QUERY_KEY, GQ_SUBSCRIPTION_KEY } from './decorator';
+import { FieldTypeMetadata, GQ_FIELDS_KEY, GQ_MUTATION_KEY, GQ_QUERY_KEY, GQ_SUBSCRIPTION_KEY } from './decorator';
 import { GraphQLObjectType, GraphQLSchema } from 'graphql';
-import { mutationObjectTypeFactory, queryObjectTypeFactory, subscriptionObjectTypeFactory } from './object_type_factory';
+import { mutationObjectTypeFactory, queryObjectTypeFactory, subscriptionObjectTypeFactory } from './type-factory';
 
 import { fieldTypeFactory } from './field_type_factory';
 

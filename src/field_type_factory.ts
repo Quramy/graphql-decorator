@@ -5,7 +5,6 @@ import {
     ContextMetadata,
     FieldTypeMetadata,
     GQ_FIELDS_KEY,
-    GQ_OBJECT_METADATA_KEY,
     Middleware,
     RootMetadata,
     TypeMetadata,
@@ -17,7 +16,7 @@ import { SchemaFactoryError, SchemaFactoryErrorType } from './schema_factory';
 import { IoCContainer } from './ioc-container';
 import { OrderByTypeFactory } from './order-by.type-factory';
 import { PaginationType } from './pagination.type';
-import { objectTypeFactory } from './object_type_factory';
+import { objectTypeFactory } from './type-factory';
 import { unionTypeFactory, enumTypeFactory } from './type-factory';
 
 
@@ -44,7 +43,7 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean,
             returnType = graphql.GraphQLString;
         } else if (typeFn === Boolean) {
             returnType = graphql.GraphQLBoolean;
-        } else if (typeFn && typeFn.prototype && Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, typeFn.prototype)) {
+        } else if (typeFn && typeFn.prototype && getMetadataArgsStorage().filterObjectTypeByClass(typeFn).length > 0) {
           // recursively call objectFactory
           returnType = objectTypeFactory(typeFn, isInput);
         }
@@ -53,7 +52,7 @@ function convertType(typeFn: Function, metadata: TypeMetadata, isInput: boolean,
 
         if (returnType && returnType.prototype && getMetadataArgsStorage().filterUnionTypeByClass(returnType).length > 0) {
             returnType = unionTypeFactory(returnType, isInput);
-        } else if (returnType && returnType.prototype && Reflect.hasMetadata(GQ_OBJECT_METADATA_KEY, returnType.prototype)) {
+        } else if (returnType && returnType.prototype && getMetadataArgsStorage().filterObjectTypeByClass(returnType).length > 0) {
             // recursively call objectFactory
             returnType = objectTypeFactory(returnType, isInput);
         } else if (returnType && returnType.prototype && getMetadataArgsStorage().filterEnumsByClass(returnType).length > 0) {

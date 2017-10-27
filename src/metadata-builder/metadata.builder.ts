@@ -2,6 +2,7 @@ import {
   EnumTypeMetadata,
   EnumValueMetadata,
   UnionTypeMetadata,
+  ObjectTypeMetadata,
 } from '../metadata/types';
 
 import { getMetadataArgsStorage } from './metadata-args.storage';
@@ -40,6 +41,17 @@ export class MetadataBuilder {
         resolver: unionArg.resolver,
         types: unionArg.types,
         description: unionArg.description,
+      }));
+  }
+
+  buildObjectTypeMetadata(target: any): ObjectTypeMetadata[] | undefined {
+    return getMetadataArgsStorage()
+      .filterObjectTypeByClass(target)
+      .map(objectArg => ({
+        target: objectArg.target,
+        name: objectArg.name,
+        description: objectArg.description,
+        isInput: objectArg.isInput,
       }));
   }
 
