@@ -3,8 +3,13 @@ import 'reflect-metadata';
 import * as D from '../decorator';
 import * as graphql from 'graphql';
 
-import { SchemaFactoryError, SchemaFactoryErrorType } from '../schema_factory';
-import { clearObjectTypeRepository, objectTypeFactory } from '../type-factory';
+import {  } from '../schema_factory';
+import {
+  clearObjectTypeRepository,
+  objectTypeFactory,
+  SchemaFactoryError,
+  SchemaFactoryErrorType,
+} from '../type-factory';
 
 import { execute } from 'graphql/execution';
 import { parse } from 'graphql/language';

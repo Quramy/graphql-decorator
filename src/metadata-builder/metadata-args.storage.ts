@@ -1,8 +1,10 @@
 import {
   EnumTypeArg,
   EnumValueArg,
-  UnionTypeArgs,
+  UnionTypeArg,
   ObjectTypeArg,
+  EntryTypeArg,
+  EntryType,
 } from '../metadata/args';
 
 /**
@@ -20,8 +22,9 @@ export function getMetadataArgsStorage(): MetadataArgsStorage {
 export class MetadataArgsStorage {
   enums: EnumTypeArg[] = [];
   enumValues: EnumValueArg[] = [];
-  union: UnionTypeArgs[] = [];
+  union: UnionTypeArg[] = [];
   objects: ObjectTypeArg[] = [];
+  entries: EntryTypeArg[] = [];
 
   filterEnumsByClass(target: any): EnumTypeArg[] {
     return this.enums.filter(item => item.target === target);
@@ -31,12 +34,16 @@ export class MetadataArgsStorage {
     return this.enumValues.filter(item => item.target === target.prototype);
   }
 
-  filterUnionTypeByClass(target: any): UnionTypeArgs[] {
+  filterUnionTypeByClass(target: any): UnionTypeArg[] {
     return this.union.filter(item => item.target === target);
   }
 
   filterObjectTypeByClass(target: any): ObjectTypeArg[] {
     return this.objects.filter(item => item.target === target);
+  }
+
+  filterEntryTypesByClassAndType(target: any, type: EntryType): EntryTypeArg[] {
+    return this.entries.filter(item => item.target === target.prototype && item.type === type);
   }
 }
 

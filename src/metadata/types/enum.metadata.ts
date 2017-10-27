@@ -1,13 +1,9 @@
-export interface EnumValueMetadata {
-  target: any;
-  name: string;
+import { DefaultMetadata } from './default.metadata';
+
+export interface EnumValueMetadata extends DefaultMetadata {
   value?: any;
-  description?: string;
 }
 
-export interface EnumTypeMetadata {
-  target: any;
-  name: string;
-  description?: string;
+export interface EnumTypeMetadata extends DefaultMetadata {
   values: EnumValueMetadata[];
 }

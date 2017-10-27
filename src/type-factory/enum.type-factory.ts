@@ -1,5 +1,5 @@
 import { EnumValueMetadata, EnumTypeMetadata } from '../metadata';
-import { SchemaFactoryError , SchemaFactoryErrorType } from '../schema_factory';
+import { SchemaFactoryError , SchemaFactoryErrorType } from './schema.type-factory';
 import { enumValueTypeFactory } from './enum-value.type-factory';
 import { GraphQLEnumType } from 'graphql';
 import { getMetadataBuilder } from '../metadata-builder';

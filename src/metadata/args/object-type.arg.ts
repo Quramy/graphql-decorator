@@ -1,6 +1,5 @@
-export interface ObjectTypeArg {
-  target: any;
-  name: string;
-  description?: string;
+import { DefaultArg } from './default.arg';
+
+export interface ObjectTypeArg extends DefaultArg {
   isInput: boolean;
 }

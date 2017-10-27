@@ -11,7 +11,7 @@ import {
 } from './decorator';
 import { getMetadataArgsStorage } from './metadata-builder';
 
-import { SchemaFactoryError, SchemaFactoryErrorType } from './schema_factory';
+import { SchemaFactoryError, SchemaFactoryErrorType } from './type-factory';
 
 import { IoCContainer } from './ioc-container';
 import { OrderByTypeFactory } from './order-by.type-factory';

@@ -1,12 +1,9 @@
+import { DefaultOption } from './default.option';
+
 /**
  * Arguments for an Union type on graphql schema
  */
-export interface UnionOption<T> {
-  /**
-   * (Optional) Description
-   */
-  description?: string;
-
+export interface UnionOption<T> extends DefaultOption {
   /**
    * Concrete object types
    */

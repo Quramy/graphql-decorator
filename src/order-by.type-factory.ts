@@ -1,6 +1,6 @@
 import { FieldTypeMetadata, GQ_FIELDS_KEY } from './decorator';
 import { GraphQLEnumType, GraphQLInputObjectType, GraphQLInputObjectTypeConfig, GraphQLList, GraphQLNonNull } from 'graphql';
-import { SchemaFactoryError, SchemaFactoryErrorType } from './schema_factory';
+import { SchemaFactoryError, SchemaFactoryErrorType } from './type-factory';
 
 export class OrderByTypeFactory {
 
