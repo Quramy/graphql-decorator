@@ -1,12 +1,12 @@
 import * as graphql from 'graphql';
 
+import { EntryType, EntryTypeMetadata } from '../metadata';
 import { FieldTypeMetadata, GQ_FIELDS_KEY } from '../decorator';
 import { GraphQLObjectType, GraphQLSchema } from 'graphql';
 import { mutationObjectTypeFactory, queryObjectTypeFactory, subscriptionObjectTypeFactory } from './object.type-factory';
-import { EntryTypeMetadata, EntryType } from '../metadata';
-import { getMetadataBuilder } from '../metadata-builder';
 
 import { fieldTypeFactory } from '../field_type_factory';
+import { getMetadataBuilder } from '../metadata-builder';
 
 export enum SchemaFactoryErrorType {
     NO_SCHEMA_ANNOTATION,
@@ -27,7 +27,7 @@ function getEntryObject(
   objectTypeFactory: (fieldsDict: any) => GraphQLObjectType,
 ) {
 
-  const metadatas: EntryTypeMetadata[] = getMetadataBuilder().buildEntrytypeMetadata(target, type);
+  const metadatas: EntryTypeMetadata[] = getMetadataBuilder().buildEntryTypeMetadata(target, type);
   if (mandatory && (!metadatas || metadatas.length === 0)) {
       throw new SchemaFactoryError(`Target should have @${type} field`, SchemaFactoryErrorType.NO_QUERY_FIELD);
   }

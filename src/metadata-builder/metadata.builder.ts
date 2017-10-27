@@ -1,14 +1,13 @@
 import {
+  EntryTypeMetadata,
   EnumTypeMetadata,
   EnumValueMetadata,
-  UnionTypeMetadata,
   ObjectTypeMetadata,
-  EntryTypeMetadata,
   SchemaMetadata,
+  UnionTypeMetadata,
 } from '../metadata/types';
 
 import { EntryType } from '../metadata/args';
-
 import { getMetadataArgsStorage } from './metadata-args.storage';
 
 /**
@@ -59,7 +58,7 @@ export class MetadataBuilder {
       }));
   }
 
-  buildEntrytypeMetadata(target: any, type: EntryType): EntryTypeMetadata[] | undefined {
+  buildEntryTypeMetadata(target: any, type: EntryType): EntryTypeMetadata[] | undefined {
     return getMetadataArgsStorage()
       .filterEntryTypesByClassAndType(target, type)
       .map(queryArg => ({
