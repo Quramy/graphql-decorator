@@ -1,3 +1,3 @@
-import { DefaultArg } from './default.arg';
+import { Argument } from './argument';
 
-export interface SchemaArg extends DefaultArg { }
+export interface SchemaArg extends Argument { }

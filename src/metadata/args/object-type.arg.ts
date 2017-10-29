@@ -1,5 +1,5 @@
-import { DefaultArg } from './default.arg';
+import { Argument } from './argument';
 
-export interface ObjectTypeArg extends DefaultArg {
+export interface ObjectTypeArg extends Argument {
   isInput: boolean;
 }

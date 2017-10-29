@@ -1,9 +1,9 @@
-import { DefaultOption } from './default.option';
+import { Option } from './option';
 
 /**
  * Arguments for an Union type on graphql schema
  */
-export interface UnionOption<T> extends DefaultOption {
+export interface UnionOption<T> extends Option {
   /**
    * Concrete object types
    */

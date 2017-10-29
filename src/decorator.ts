@@ -10,6 +10,7 @@ import { PaginationResponse } from './pagination.type';
 
 export * from './decorator/';
 export * from './metadata/options';
+export * from './middleware';
 
 export const GQ_FIELDS_KEY = 'gq_fields';
 export const GQ_DESCRIPTION_KEY = 'gq_description';

@@ -1,6 +1,6 @@
-import { DefaultArg } from './default.arg';
+import { Argument } from './argument';
 
-export interface ArgumentArg extends DefaultArg {
+export interface ArgumentArg extends Argument {
   index: number;
   property: string;
   type?: any;

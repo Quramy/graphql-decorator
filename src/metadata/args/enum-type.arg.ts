@@ -1,8 +1,8 @@
-import { DefaultArg } from './default.arg';
+import { Argument } from './argument';
 
-export interface EnumTypeArg extends DefaultArg { }
+export interface EnumTypeArg extends Argument { }
 
-export interface EnumValueArg extends DefaultArg {
+export interface EnumValueArg extends Argument {
   value: any;
 }
 

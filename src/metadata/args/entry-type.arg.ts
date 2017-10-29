@@ -1,4 +1,4 @@
-import { DefaultArg } from './default.arg';
+import { Argument } from './argument';
 
 export enum EntryType {
   Query         = <any>'Query',
@@ -6,7 +6,7 @@ export enum EntryType {
   Subscription  = <any>'Subscription',
 }
 
-export interface EntryTypeArg extends DefaultArg {
+export interface EntryTypeArg extends Argument {
   type: EntryType;
   property: string;
 }

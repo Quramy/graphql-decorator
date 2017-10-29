@@ -1,7 +1,7 @@
 import * as D from './decorator';
 import * as graphql from 'graphql';
 
-import { fieldTypeFactory, resolverFactory, clearFieldTypeCache } from './field_type_factory';
+import { clearFieldTypeCache, fieldTypeFactory, resolverFactory } from './field_type_factory';
 
 import { clearObjectTypeRepository } from './type-factory';
 

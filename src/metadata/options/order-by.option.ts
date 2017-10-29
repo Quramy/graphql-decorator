@@ -1,9 +1,9 @@
-import { DefaultOption } from './default.option';
+import { Option } from './option';
 
 /**
  * [GraphQL Object Field's Argument]{@ http://graphql.org/learn/schema/#arguments} Decorator
  */
-export interface OrderByOption extends DefaultOption {
+export interface OrderByOption extends Option {
   /**
    *
    */

@@ -1,4 +1,4 @@
-export interface DefaultOption {
+export interface Option {
   /**
    * (Optional) Description
    */

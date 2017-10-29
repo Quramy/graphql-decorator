@@ -1,6 +1,6 @@
-import { DefaultArg } from './default.arg';
+import { Argument } from './argument';
 
-export interface FieldArg extends DefaultArg {
+export interface FieldArg extends Argument {
   type?: any;
   nonNull?: boolean;
   isList?: boolean;

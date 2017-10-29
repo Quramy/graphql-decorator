@@ -1,7 +1,7 @@
-import { DefaultArg } from './default.arg';
+import { Argument } from './argument';
 import { Middleware } from '../../middleware';
 
-export interface BeforeArg extends DefaultArg {
+export interface BeforeArg extends Argument {
   index: number;
   property: string;
   middleware: Middleware;

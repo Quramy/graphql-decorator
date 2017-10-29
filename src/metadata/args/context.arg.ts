@@ -1,6 +1,6 @@
-import { DefaultArg } from './default.arg';
+import { Argument } from './argument';
 
-export interface ContextArg extends DefaultArg {
+export interface ContextArg extends Argument {
   index: number;
   property: string;
 }

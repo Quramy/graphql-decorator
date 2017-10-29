@@ -1,6 +1,6 @@
-import { DefaultOption } from './default.option';
+import { Option } from './option';
 
 /**
  * Arguments for an Object type on graphql schema
  */
-export interface ObjectOption extends DefaultOption { }
+export interface ObjectOption extends Option { }

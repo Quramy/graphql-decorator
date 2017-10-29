@@ -1,4 +1,4 @@
-export interface DefaultMetadata {
+export interface Metadata {
   target: any;
   name: string;
   description?: string;
