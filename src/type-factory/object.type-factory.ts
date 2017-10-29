@@ -1,7 +1,7 @@
 import * as graphql from 'graphql';
 
 import { FieldTypeMetadata, GQ_FIELDS_KEY } from '../decorator';
-import { SchemaFactoryError, SchemaFactoryErrorType } from '../schema_factory';
+import { SchemaFactoryError, SchemaFactoryErrorType } from './schema.type-factory';
 
 import { GraphQLObjectType } from 'graphql';
 import { fieldTypeFactory } from '../field_type_factory';

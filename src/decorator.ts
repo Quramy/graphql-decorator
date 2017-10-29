@@ -3,7 +3,6 @@ import 'reflect-metadata';
 import * as graphql from 'graphql';
 
 import { GraphQLType } from 'graphql';
-import { IoCContainer } from './ioc-container';
 import { OrderByTypeFactory } from './order-by.type-factory';
 import { PageInfo } from './page-info.type';
 import { PaginationResponse } from './pagination.type';
@@ -11,9 +10,6 @@ import { PaginationResponse } from './pagination.type';
 export * from './decorator/';
 export * from './metadata/options';
 
-export const GQ_QUERY_KEY = 'gq_query';
-export const GQ_MUTATION_KEY = 'gq_mutation';
-export const GQ_SUBSCRIPTION_KEY = 'gq_subscription';
 export const GQ_FIELDS_KEY = 'gq_fields';
 export const GQ_DESCRIPTION_KEY = 'gq_description';
 
@@ -401,84 +397,5 @@ export function Description(body: string) {
     return function (target: any, propertyKey?: any, index?: number) {
         setDescriptionMetadata(body, target, propertyKey, index);
     } as Function;
-}
-
-export function Query(option?: DefaultOption) {
-    return function (target: any, propertyKey: any) {
-        if (Reflect.hasMetadata(GQ_QUERY_KEY, target)) {
-            let metadata = Reflect.getMetadata(GQ_QUERY_KEY, target);
-            metadata.push(propertyKey);
-            Reflect.defineMetadata(GQ_QUERY_KEY, metadata, target);
-        } else {
-            Reflect.defineMetadata(GQ_QUERY_KEY, [propertyKey], target);
-        }
-
-        if (option) {
-            // description
-            if (option.description) {
-                setDescriptionMetadata(option.description, target, propertyKey);
-            }
-        }
-
-    } as Function;
-}
-
-export function Mutation(option?: DefaultOption) {
-    return function (target: any, propertyKey: any) {
-        if (Reflect.hasMetadata(GQ_MUTATION_KEY, target)) {
-            let metadata = Reflect.getMetadata(GQ_MUTATION_KEY, target);
-            metadata.push(propertyKey);
-            Reflect.defineMetadata(GQ_MUTATION_KEY, metadata, target);
-        } else {
-            Reflect.defineMetadata(GQ_MUTATION_KEY, [propertyKey], target);
-        }
-
-        if (option) {
-            // description
-            if (option.description) {
-                setDescriptionMetadata(option.description, target, propertyKey);
-            }
-        }
-
-    } as Function;
-}
-
-export function Subscription(option?: DefaultOption) {
-    return function (target: any, propertyKey: any) {
-        if (Reflect.hasMetadata(GQ_SUBSCRIPTION_KEY, target)) {
-            let metadata = Reflect.getMetadata(GQ_SUBSCRIPTION_KEY, target);
-            metadata.push(propertyKey);
-            Reflect.defineMetadata(GQ_SUBSCRIPTION_KEY, metadata, target);
-        } else {
-            Reflect.defineMetadata(GQ_SUBSCRIPTION_KEY, [propertyKey], target);
-        }
-
-        if (option) {
-            // description
-            if (option.description) {
-                setDescriptionMetadata(option.description, target, propertyKey);
-            }
-        }
-
-    } as Function;
-}
-
-export function Schema(option?: SchemaOption) {
-    return function (target: Function) {
-        Reflect.defineMetadata('gq_schema', {}, target);
-
-        if (option) {
-            // description
-            if (option.description) {
-                setDescriptionMetadata(option.description, target);
-            }
-        }
-    } as Function;
-}
-
-export function UseContainer(container: any) {
-    return function (target: Function) {
-        IoCContainer.INSTANCE = container;
-    };
 }
 

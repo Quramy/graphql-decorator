@@ -1,24 +1,26 @@
 import 'reflect-metadata';
 
-import * as D from './decorator';
+import * as D from '../decorator';
 import * as graphql from 'graphql';
 
-import { SchemaFactoryError, SchemaFactoryErrorType, schemaFactory } from './schema_factory';
+import { SchemaFactoryError, SchemaFactoryErrorType, schemaFactory } from '../type-factory';
 
 import { GraphQLString } from 'graphql';
-import { OrderByItem } from './order-by-item';
-import { clearFieldTypeCache } from './field_type_factory';
-import { clearObjectTypeRepository } from './type-factory';
+import { OrderByItem } from '../order-by-item';
+import { clearFieldTypeCache } from '../field_type_factory';
+import { clearObjectTypeRepository } from '../type-factory';
 import { execute } from 'graphql/execution';
 import { parse } from 'graphql/language';
 import { validate } from 'graphql/validation';
-import { getMetadataArgsStorage } from './metadata-builder';
+import { getMetadataArgsStorage } from '../metadata-builder';
 
 const assert = require('assert');
 
 // const parse = require("graphql/language").parse as (source: string) => any;
 // const validate = require("graphql/validation").validate as (schema: any, ast: any, ...args: any[]) => any[];
 // const execute = require("graphql/execution").execute as (schema: any, ast: any, ...args: any[]) => Promise<any>;
+
+process.on('unhandledRejection', (up: any) => { throw up; });
 
 describe('schemaFactory', function() {
     beforeEach(function () {

@@ -1,13 +1,8 @@
-export interface EnumTypeArg {
-  target: any;
-  name: string;
-  description?: string;
-}
+import { DefaultArg } from './default.arg';
 
-export interface EnumValueArg {
-  target: any;
-  name: string;
-  description?: string;
+export interface EnumTypeArg extends DefaultArg { }
+
+export interface EnumValueArg extends DefaultArg {
   value: any;
 }
 

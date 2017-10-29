@@ -1,10 +1,13 @@
 import {
+  EntryTypeMetadata,
   EnumTypeMetadata,
   EnumValueMetadata,
-  UnionTypeMetadata,
   ObjectTypeMetadata,
+  SchemaMetadata,
+  UnionTypeMetadata,
 } from '../metadata/types';
 
+import { EntryType } from '../metadata/args';
 import { getMetadataArgsStorage } from './metadata-args.storage';
 
 /**
@@ -52,6 +55,28 @@ export class MetadataBuilder {
         name: objectArg.name,
         description: objectArg.description,
         isInput: objectArg.isInput,
+      }));
+  }
+
+  buildEntryTypeMetadata(target: any, type: EntryType): EntryTypeMetadata[] | undefined {
+    return getMetadataArgsStorage()
+      .filterEntryTypesByClassAndType(target, type)
+      .map(queryArg => ({
+        target: queryArg.target,
+        name: queryArg.name,
+        description: queryArg.description,
+        property: queryArg.property,
+        isSubscription: type === EntryType.Subscription,
+      }));
+  }
+
+  buildSchemaMetadata(target: any): SchemaMetadata[] | undefined {
+    return getMetadataArgsStorage()
+      .filterSchemaByClass(target)
+      .map(queryArg => ({
+        target: queryArg.target,
+        name: queryArg.name,
+        description: queryArg.description,
       }));
   }
 
