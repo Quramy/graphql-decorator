@@ -3,6 +3,7 @@ import 'reflect-metadata';
 import * as graphql from 'graphql';
 
 import { GraphQLType } from 'graphql';
+import { Middleware } from './middleware';
 import { OrderByTypeFactory } from './order-by.type-factory';
 import { PageInfo } from './page-info.type';
 import { PaginationResponse } from './pagination.type';
@@ -73,7 +74,7 @@ export interface PropertyDescriptionMetadata extends DescriptionMetadata {
     name: string;
 }
 
-export type Middleware = (context: any, args: { [key: string]: any }, next: (error?: Error, value?: any) => any) => Promise<any> | any;
+// type Middleware = (context: any, args: { [key: string]: any }, next: (error?: Error, value?: any) => any) => Promise<any> | any;
 
 function mergeDescriptionMetadata(target: any, sourceMetadata: any): any {
     if (target.prototype != null && Reflect.hasMetadata(GQ_DESCRIPTION_KEY, target.prototype)) {
@@ -238,51 +239,51 @@ function setPaginationMetadata(target: any, propertyKey: string, methodDescripto
     };
 }
 
-export function Field(option?: FieldOption) {
-    return function (target: any, propertyKey: any, methodDescriptor?: any) {
-        createOrSetFieldTypeMetadata(target, {
-            name: propertyKey,
-            explicitType: option && option.type,
-        });
+// export function Field(option?: FieldOption) {
+//     return function (target: any, propertyKey: any, methodDescriptor?: any) {
+//         createOrSetFieldTypeMetadata(target, {
+//             name: propertyKey,
+//             explicitType: option && option.type,
+//         });
 
-        if (option) {
-            // description
-            if (option.description) {
-                setDescriptionMetadata(option.description, target, propertyKey);
-            }
+//         if (option) {
+//             // description
+//             if (option.description) {
+//                 setDescriptionMetadata(option.description, target, propertyKey);
+//             }
 
-            // nonNull
-            if (option.nonNull) {
-                setNonNullMetadata(target, propertyKey);
-            }
+//             // nonNull
+//             if (option.nonNull) {
+//                 setNonNullMetadata(target, propertyKey);
+//             }
 
-            // isList
-            if (option.isList) {
-                const index = methodDescriptor;
-                if (index >= 0) {
-                    setArgumentMetadata(target, propertyKey, index, {
-                        isList: true,
-                    });
-                } else {
-                    createOrSetFieldTypeMetadata(target, {
-                        name: propertyKey,
-                        isList: true,
-                    });
-                }
-            }
+//             // isList
+//             if (option.isList) {
+//                 const index = methodDescriptor;
+//                 if (index >= 0) {
+//                     setArgumentMetadata(target, propertyKey, index, {
+//                         isList: true,
+//                     });
+//                 } else {
+//                     createOrSetFieldTypeMetadata(target, {
+//                         name: propertyKey,
+//                         isList: true,
+//                     });
+//                 }
+//             }
 
-            // pagination
-            if (option.pagination) {
-                if (!methodDescriptor || !methodDescriptor.value) {
-                    console.warn('Field can\'t be pagination enabled', propertyKey);
-                    return;
-                }
-                return setPaginationMetadata(target, propertyKey, methodDescriptor);
-            }
-        }
+//             // pagination
+//             if (option.pagination) {
+//                 if (!methodDescriptor || !methodDescriptor.value) {
+//                     console.warn('Field can\'t be pagination enabled', propertyKey);
+//                     return;
+//                 }
+//                 return setPaginationMetadata(target, propertyKey, methodDescriptor);
+//             }
+//         }
 
-    } as Function;
-}
+//     } as Function;
+// }
 
 export function NonNull() {
     return function (target: any, propertyKey: any, index?: number) {
@@ -290,20 +291,20 @@ export function NonNull() {
     } as Function;
 }
 
-export function Before(middleware: Middleware) {
-    return function (target: any, propertyKey: any, index?: number) {
-        if (index >= 0) {
-            setArgumentMetadata(target, propertyKey, index, {
-                beforeMiddleware: middleware,
-            });
-        } else {
-            createOrSetFieldTypeMetadata(target, {
-                name: propertyKey,
-                beforeMiddleware: middleware,
-            });
-        }
-    } as Function;
-}
+// export function Before(middleware: Middleware) {
+//     return function (target: any, propertyKey: any, index?: number) {
+//         if (index >= 0) {
+//             setArgumentMetadata(target, propertyKey, index, {
+//                 beforeMiddleware: middleware,
+//             });
+//         } else {
+//             createOrSetFieldTypeMetadata(target, {
+//                 name: propertyKey,
+//                 beforeMiddleware: middleware,
+//             });
+//         }
+//     } as Function;
+// }
 
 export function Pagination() {
     return function (target: any, propertyKey: any, methodDescriptor: any) {
@@ -336,62 +337,62 @@ export function List(option?: DefaultOption) {
     } as Function;
 }
 
-export function Arg(option: ArgumentOption) {
-    return function (target: any, propertyKey: any, index: number) {
-        setArgumentMetadata(target, propertyKey, index, {
-            name: option.name,
-            explicitType: option.type,
-            index: index,
-        });
+// export function Arg(option: ArgumentOption) {
+//     return function (target: any, propertyKey: any, index: number) {
+//         setArgumentMetadata(target, propertyKey, index, {
+//             name: option.name,
+//             explicitType: option.type,
+//             index: index,
+//         });
 
-        if (option) {
-            // description
-            if (option.description) {
-                setDescriptionMetadata(option.description, target, propertyKey, index);
-            }
+//         if (option) {
+//             // description
+//             if (option.description) {
+//                 setDescriptionMetadata(option.description, target, propertyKey, index);
+//             }
 
-            // nonNull
-            if (option.nonNull) {
-                setNonNullMetadata(target, propertyKey, index);
-            }
+//             // nonNull
+//             if (option.nonNull) {
+//                 setNonNullMetadata(target, propertyKey, index);
+//             }
 
-            // isList
-            if (option.isList) {
-              if (index >= 0) {
-                  setArgumentMetadata(target, propertyKey, index, {
-                      isList: true,
-                  });
-              } else {
-                  createOrSetFieldTypeMetadata(target, {
-                      name: propertyKey,
-                      isList: true,
-                  });
-              }
-          }
-        }
-    } as Function;
-}
+//             // isList
+//             if (option.isList) {
+//               if (index >= 0) {
+//                   setArgumentMetadata(target, propertyKey, index, {
+//                       isList: true,
+//                   });
+//               } else {
+//                   createOrSetFieldTypeMetadata(target, {
+//                       name: propertyKey,
+//                       isList: true,
+//                   });
+//               }
+//           }
+//         }
+//     } as Function;
+// }
 
-export function Root() {
-    return function (target: any, propertyKey: any, index: number) {
-        setRootMetadata(target, propertyKey, index, {});
-    } as Function;
-}
+// export function Root() {
+//     return function (target: any, propertyKey: any, index: number) {
+//         setRootMetadata(target, propertyKey, index, {});
+//     } as Function;
+// }
 
-export function Ctx() {
-    return function (target: any, propertyKey: any, index: number) {
-        setContextMetadata(target, propertyKey, index, {});
-    } as Function;
-}
+// export function Ctx() {
+//     return function (target: any, propertyKey: any, index: number) {
+//         setContextMetadata(target, propertyKey, index, {});
+//     } as Function;
+// }
 
-export function OrderBy(params?: { extraColumns: string[], shouldIgnoreSchemaFields?: boolean } | string[]) {
-    return function (target: any, propertyKey: any, index: number) {
-        setArgumentMetadata(target, propertyKey, index, {
-            name: 'orderBy',
-            extraParams: (params && params.constructor === Array) ? { extraColumns: params } : params,
-        });
-    } as Function;
-}
+// export function OrderBy(params?: { extraColumns: string[], shouldIgnoreSchemaFields?: boolean } | string[]) {
+//     return function (target: any, propertyKey: any, index: number) {
+//         setArgumentMetadata(target, propertyKey, index, {
+//             name: 'orderBy',
+//             extraParams: (params && params.constructor === Array) ? { extraColumns: params } : params,
+//         });
+//     } as Function;
+// }
 
 export function Description(body: string) {
     return function (target: any, propertyKey?: any, index?: number) {
