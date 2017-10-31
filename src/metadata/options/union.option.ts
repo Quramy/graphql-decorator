@@ -1,7 +1,7 @@
 import { DefaultOption } from './default.option';
 
 /**
- * Arguments for an Union type on graphql schema
+ * Arguments for an {@link UnionType} on graphql schema
  */
 export interface UnionOption<T> extends DefaultOption {
   /**

@@ -33,13 +33,13 @@ export function Subscription(option?: SubscriptionOption) {
 }
 
 function entry(type: EntryType, option?: EntryTypeOption) {
-    return function (target: any, propertyKey: any) {
-      getMetadataArgsStorage().entries.push({
-        target: target,
-        name: target.name,
-        description: option ? option.description : null,
-        property: propertyKey,
-        type: type,
-      });
-    };
+  return function (target: any, propertyKey: any) {
+    getMetadataArgsStorage().entries.push({
+      target: target,
+      name: target.name,
+      description: option ? option.description : null,
+      property: propertyKey,
+      type: type,
+    });
+  };
 }
