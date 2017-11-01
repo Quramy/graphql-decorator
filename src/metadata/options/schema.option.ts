@@ -1,6 +1,6 @@
 import { DefaultOption } from './default.option';
 
 /**
- * Arguments for the GraphQL Schema definition
+ * Arguments for the GraphQL {@link Schema} definition
  */
 export interface SchemaOption extends DefaultOption { }
