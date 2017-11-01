@@ -12,7 +12,7 @@ export function Before(option: BeforeOption | Middleware) {
   return function (target: any, propertyKey: any, index: number) {
     getMetadataArgsStorage().befores.push({
           target: target,
-          name: target.name,
+          name: target.name || propertyKey,
           description: option && (option as BeforeOption).description ? (option as BeforeOption).description : null,
           index: index,
           property: propertyKey,

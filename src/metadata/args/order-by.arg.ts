@@ -4,5 +4,5 @@ export interface OrderByArg extends Argument {
   index: number;
   property: string;
   extraColumns: string[];
-  shouldIgnoreSchemaFields?: boolean;
+  shouldIgnoreSchemaFields: boolean;
 }

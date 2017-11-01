@@ -11,7 +11,7 @@ export function Arg(option?: ArgumentOption) {
   return function (target: any, propertyKey: any, index: number) {
     getMetadataArgsStorage().arguments.push({
           target: target,
-          name: target.name,
+          name: option.name,
           description: option ? option.description : null,
           index: index,
           property: propertyKey,

@@ -1,8 +1,14 @@
 import {
+  ArgumentMetadata,
+  BeforeMetadata,
+  ContextMetadata,
   EntryTypeMetadata,
   EnumTypeMetadata,
   EnumValueMetadata,
+  FieldMetadata,
   ObjectTypeMetadata,
+  OrderByMetadata,
+  RootMetadata,
   SchemaMetadata,
   UnionTypeMetadata,
 } from '../metadata/types';
@@ -27,10 +33,10 @@ export class MetadataBuilder {
   buildEnumMetadata(target: any): EnumTypeMetadata[] | undefined {
     return getMetadataArgsStorage()
       .filterEnumsByClass(target)
-      .map(enumArg => ({
-        target: enumArg.target,
-        name: enumArg.name,
-        description: enumArg.description,
+      .map(arg => ({
+        target: arg.target,
+        name: arg.name,
+        description: arg.description,
         values: this.buildEnumValueMetadata(target),
       }));
   }
@@ -38,34 +44,34 @@ export class MetadataBuilder {
   buildUnionTypeMetadata(target: any): UnionTypeMetadata[] | undefined {
     return getMetadataArgsStorage()
       .filterUnionTypeByClass(target)
-      .map(unionArg => ({
-        target: unionArg.target,
-        name: unionArg.name,
-        resolver: unionArg.resolver,
-        types: unionArg.types,
-        description: unionArg.description,
+      .map(arg => ({
+        target: arg.target,
+        name: arg.name,
+        resolver: arg.resolver,
+        types: arg.types,
+        description: arg.description,
       }));
   }
 
   buildObjectTypeMetadata(target: any): ObjectTypeMetadata[] | undefined {
     return getMetadataArgsStorage()
       .filterObjectTypeByClass(target)
-      .map(objectArg => ({
-        target: objectArg.target,
-        name: objectArg.name,
-        description: objectArg.description,
-        isInput: objectArg.isInput,
+      .map(arg => ({
+        target: arg.target,
+        name: arg.name,
+        description: arg.description,
+        isInput: arg.isInput,
       }));
   }
 
   buildEntryTypeMetadata(target: any, type: EntryType): EntryTypeMetadata[] | undefined {
     return getMetadataArgsStorage()
       .filterEntryTypesByClassAndType(target, type)
-      .map(queryArg => ({
-        target: queryArg.target,
-        name: queryArg.name,
-        description: queryArg.description,
-        property: queryArg.property,
+      .map(arg => ({
+        target: arg.target,
+        name: arg.name,
+        description: arg.description,
+        property: arg.property,
         isSubscription: type === EntryType.Subscription,
       }));
   }
@@ -73,21 +79,112 @@ export class MetadataBuilder {
   buildSchemaMetadata(target: any): SchemaMetadata[] | undefined {
     return getMetadataArgsStorage()
       .filterSchemaByClass(target)
-      .map(queryArg => ({
-        target: queryArg.target,
-        name: queryArg.name,
-        description: queryArg.description,
+      .map(arg => ({
+        target: arg.target,
+        name: arg.name,
+        description: arg.description,
       }));
+  }
+
+  buildFieldMetadata(target: any): FieldMetadata[] | undefined {
+    return getMetadataArgsStorage()
+      .filterFieldByClass(target)
+      .map((arg) => ({
+        type: arg.type,
+        target: arg.target,
+        name: arg.name,
+        description: arg.description,
+        isNonNull: !!arg.nonNull,
+        isList: !!arg.isList,
+        isPagination: !!arg.pagination,
+        arguments: this.buildArgumentMetadata(target),
+        context: this.buildContextMetadata(target),
+        root: this.buildRootMetadata(target),
+        orderBy: this.buildOrderByMetadata(target),
+        before: this.buildBeforeMetadata(target),
+      }));
+  }
+
+  protected buildArgumentMetadata(target: any): ArgumentMetadata[] | undefined {
+    return getMetadataArgsStorage()
+      .filterArgumentByClass(target)
+      .map(arg => ({
+        type: arg.type,
+        target: arg.target,
+        name: arg.name,
+        description: arg.description,
+        index: arg.index,
+        property: arg.property,
+        isNonNull: !!arg.nonNull,
+        isList: !!arg.isList,
+      }));
+  }
+
+  protected buildContextMetadata(target: any): ContextMetadata | undefined {
+    return getMetadataArgsStorage()
+      .filterContextByClass(target)
+      .map(arg => ({
+        target: arg.target,
+        name: arg.name,
+        description: arg.description,
+        index: arg.index,
+        property: arg.property,
+      }))
+      .find((_, index) => index === 0);
+  }
+
+  protected buildRootMetadata(target: any): RootMetadata | undefined {
+    return getMetadataArgsStorage()
+      .filterRootByClass(target)
+      .map(arg => ({
+        target: arg.target,
+        name: arg.name,
+        description: arg.description,
+        index: arg.index,
+        property: arg.property,
+      }))
+      .find((_, index) => index === 0);
+  }
+
+  protected buildOrderByMetadata(target: any): OrderByMetadata | undefined {
+    return getMetadataArgsStorage()
+      .filterOrderByByClass(target)
+      .map(arg => ({
+        target: arg.target,
+        name: arg.name,
+        description: arg.description,
+        index: arg.index,
+        property: arg.property,
+        extraColumns: arg.extraColumns,
+        shouldIgnoreSchemaFields: arg.shouldIgnoreSchemaFields,
+        isNonNull: false,
+        isList: false,
+      }))
+      .find((_, index) => index === 0);
+  }
+
+  protected buildBeforeMetadata(target: any): BeforeMetadata | undefined {
+    return getMetadataArgsStorage()
+      .filterBeforeByByClass(target)
+      .map(arg => ({
+        target: arg.target,
+        name: arg.name,
+        description: arg.description,
+        index: arg.index,
+        property: arg.property,
+        middleware: arg.middleware,
+      }))
+      .find((_, index) => index === 0);
   }
 
   protected buildEnumValueMetadata(target: any): EnumValueMetadata[] | undefined {
     return getMetadataArgsStorage()
       .filterEnumValuesByClass(target)
-      .map(enumValueArg => ({
-        target: enumValueArg.target,
-        name: enumValueArg.name,
-        value: enumValueArg.value,
-        description: enumValueArg.description,
+      .map(arg => ({
+        target: arg.target,
+        name: arg.name,
+        value: arg.value,
+        description: arg.description,
       }));
   }
 

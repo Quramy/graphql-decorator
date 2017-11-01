@@ -1,6 +1,8 @@
-import { FieldTypeMetadata, GQ_FIELDS_KEY } from './decorator';
 import { GraphQLEnumType, GraphQLInputObjectType, GraphQLInputObjectTypeConfig, GraphQLList, GraphQLNonNull } from 'graphql';
-import { SchemaFactoryError, SchemaFactoryErrorType } from './type-factory';
+import { SchemaFactoryError, SchemaFactoryErrorType } from './schema.type-factory';
+
+import { FieldMetadata } from '../metadata';
+import { getMetadataBuilder } from '../metadata-builder';
 
 export class OrderByTypeFactory {
 
@@ -45,45 +47,40 @@ export class OrderByTypeFactory {
     });
   }
 
-  static orderByFactory(metadata: FieldTypeMetadata, args: {[name: string]: any; }): {[name: string]: any; } {
+  static orderByFactory(metadata: FieldMetadata, args: {[name: string]: any; }): {[name: string]: any; } {
     let orderByFieldArray: Array<{[name: string]: any; }> = [];
-
     if (args && args['orderBy'] != null) {
       if (metadata.isPagination) {
-        if (metadata.explicitType == null) {
+        if (metadata.type == null) {
           throw new SchemaFactoryError('The @Field related to @OrderBy should have its type explicitly defined.',
             SchemaFactoryErrorType.NO_TYPE_ORDERBY_PARENT_FIELD);
         }
 
-        let returnType = metadata.explicitType;
-        const fieldMetadataList = Reflect.getMetadata(GQ_FIELDS_KEY, returnType.prototype) as FieldTypeMetadata[];
+        // load metadata for pagination returning type to dynamically create an array of
+        //  type properties name to use as pagination values
+        const fieldMetadataList: FieldMetadata[] = getMetadataBuilder().buildFieldMetadata(metadata.type.prototype);
         fieldMetadataList.forEach(def => {
-            let fieldReturnType = def.explicitType;
+            let fieldReturnType = def.type;
             if (fieldReturnType.prototype == null) {
                 orderByFieldArray.push(def);
             }
         });
 
-        if (metadata.args &&
-            metadata.args.length > 0) {
+        if ( metadata.orderBy &&
+            metadata.orderBy.extraColumns &&
+            metadata.orderBy.extraColumns.constructor === Array) {
 
-          let sortArg = metadata.args.filter(arg => arg.name === 'orderBy')[0];
-          if ( sortArg &&
-              sortArg.extraParams &&
-              sortArg.extraParams.extraColumns &&
-              sortArg.extraParams.extraColumns.constructor === Array) {
+          if (metadata.orderBy.shouldIgnoreSchemaFields) {
+            // remove all previous items from `orderByFieldArray`
+            orderByFieldArray.splice(0, Number.POSITIVE_INFINITY);
+          }
 
-            if (sortArg.extraParams.shouldIgnoreSchemaFields) {
-              // remove all previous items from `orderByFieldArray`
-              orderByFieldArray.splice(0, Number.POSITIVE_INFINITY);
-            }
-
-            sortArg.extraParams.extraColumns.filter((item: any) => item && item.constructor === String)
+          metadata.orderBy.extraColumns
+            .filter((item: any) => item && item.constructor === String)
             .forEach((item: string) => orderByFieldArray.push({
               name: item,
               description: item,
             }));
-          }
         }
         let orderBySortEnumObject = OrderByTypeFactory.orderByFieldEnumFactory(metadata.name, orderByFieldArray);
         let orderByDirectionEnumObject = OrderByTypeFactory.orderByDirectionEnumFactory(metadata.name);

@@ -4,15 +4,14 @@ import * as D from '../decorator';
 import * as graphql from 'graphql';
 
 import { SchemaFactoryError, SchemaFactoryErrorType, schemaFactory } from '../type-factory';
+import { clearFieldTypeCache, clearObjectTypeRepository } from '../type-factory';
 
 import { GraphQLString } from 'graphql';
 import { OrderByItem } from '../order-by-item';
-import { clearFieldTypeCache } from '../field_type_factory';
-import { clearObjectTypeRepository } from '../type-factory';
 import { execute } from 'graphql/execution';
+import { getMetadataArgsStorage } from '../metadata-builder';
 import { parse } from 'graphql/language';
 import { validate } from 'graphql/validation';
-import { getMetadataArgsStorage } from '../metadata-builder';
 
 const assert = require('assert');
 
@@ -152,8 +151,7 @@ describe('schemaFactory', function() {
 
       @D.InputObjectType()
       class AnInputObj {
-        @D.Description('a field')
-        @D.Field({ type: EnumObj })
+        @D.Field({ type: EnumObj, description: 'a field' })
         anInputField: string;
       }
 
@@ -161,8 +159,7 @@ describe('schemaFactory', function() {
 
         @D.ObjectType()
         class JustAnObj {
-          @D.Description('another field')
-          @D.Field({ type: EnumObj })
+          @D.Field({ type: EnumObj, description: 'another field' })
           anObjectField: string;
         }
 
@@ -185,9 +182,7 @@ describe('schemaFactory', function() {
 
         @D.ObjectType()
         class JustAnObj {
-          @D.NonNull()
-          @D.Description('another field')
-          @D.Field({ type: EnumObj })
+          @D.Field({ type: EnumObj, nonNull: true, description: 'another field' })
           anObjectField: string;
         }
 
@@ -210,9 +205,7 @@ describe('schemaFactory', function() {
 
           @D.ObjectType()
           class JustAnObj {
-            @D.List()
-            @D.Description('another field')
-            @D.Field({ type: EnumObj })
+            @D.Field({ type: EnumObj, isList: true, description: 'another field' })
             anObjectField: string[];
           }
 
@@ -236,10 +229,7 @@ describe('schemaFactory', function() {
 
         @D.ObjectType()
         class JustAnObj {
-          @D.List()
-          @D.NonNull()
-          @D.Description('another field')
-          @D.Field({ type: EnumObj })
+          @D.Field({ type: EnumObj, nonNull: true, isList: true, description: 'another field' })
           anObjectField: string[];
         }
 
@@ -265,14 +255,12 @@ describe('schemaFactory', function() {
       it('returns a GraphQL Pagination object with custom @OrberBy fields', async function() {
         @D.ObjectType()
         class Obj {
-          @D.Description('a field')
-          @D.Field({ type: GraphQLString })
+          @D.Field({ type: GraphQLString, description: 'a field' })
           aField: string;
         }
 
         @D.ObjectType() class Query {
-            @D.Field({ type: Obj })
-            @D.Pagination()
+            @D.Field({ type: Obj, pagination: true })
             async paginate(
                 @D.OrderBy({extraColumns: ['extraField']}) orderBy?: OrderByItem[],
             ): Promise<[Obj, number]> {
@@ -293,14 +281,13 @@ describe('schemaFactory', function() {
     it('returns a GraphQL Pagination object with custom @OrberBy fields (backwards compatibility)', async function() {
       @D.ObjectType()
       class Obj {
-        @D.Description('a field')
-        @D.Field({ type: GraphQLString })
+
+        @D.Field({ type: GraphQLString, description: 'a field' })
         aField: string;
       }
 
       @D.ObjectType() class Query {
-          @D.Field({ type: Obj })
-          @D.Pagination()
+          @D.Field({ type: Obj, pagination: true })
           async paginate(
               @D.OrderBy(['extraField']) orderBy?: OrderByItem[],
           ): Promise<[Obj, number]> {
@@ -322,14 +309,12 @@ describe('schemaFactory', function() {
 
       @D.ObjectType()
       class Obj {
-        @D.Description('a field')
-        @D.Field({ type: GraphQLString })
+        @D.Field({ type: GraphQLString, description: 'a field' })
         aField: string;
       }
 
       @D.ObjectType() class Query {
-          @D.Field({ type: Obj })
-          @D.Pagination()
+          @D.Field({ type: Obj, pagination: true })
           async paginate(
               @D.OrderBy({extraColumns: ['extraField'], shouldIgnoreSchemaFields: true}) orderBy?: OrderByItem[],
           ): Promise<[Obj, number]> {

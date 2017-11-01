@@ -1,11 +1,10 @@
 import * as graphql from 'graphql';
 
-import { EntryType, EntryTypeMetadata } from '../metadata';
-import { FieldTypeMetadata, GQ_FIELDS_KEY } from '../decorator';
+import { EntryType, EntryTypeMetadata, FieldMetadata } from '../metadata';
 import { GraphQLObjectType, GraphQLSchema } from 'graphql';
 import { mutationObjectTypeFactory, queryObjectTypeFactory, subscriptionObjectTypeFactory } from './object.type-factory';
 
-import { fieldTypeFactory } from '../field_type_factory';
+import { fieldTypeFactory } from './field.type-factory';
 import { getMetadataBuilder } from '../metadata-builder';
 
 export enum SchemaFactoryErrorType {
@@ -34,10 +33,10 @@ function getEntryObject(
   }
 
   return metadatas.map(metadata => {
-      const typeFn = Reflect.getMetadata('design:type', metadata.target, metadata.property) as Function;
-      const fieldMetadatas = Reflect.getMetadata(GQ_FIELDS_KEY, typeFn.prototype) as FieldTypeMetadata[];
-      return fieldMetadatas.reduce((fields, field) => {
-        fields[field.name] = fieldTypeFactory(typeFn, field, undefined, metadata.isSubscription);
+      const fieldTarget = Reflect.getMetadata('design:type', metadata.target, metadata.property) as Function;
+      const fieldMetadatas = getMetadataBuilder().buildFieldMetadata(fieldTarget.prototype);
+      return fieldMetadatas.reduce((fields, fieldMetadata) => {
+        fields[fieldMetadata.name] = fieldTypeFactory(fieldTarget, fieldMetadata, undefined, metadata.isSubscription);
         return fields;
       } , {} as { [key: string]: any });
     })

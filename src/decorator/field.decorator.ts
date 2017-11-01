@@ -18,7 +18,7 @@ export function Field(option?: FieldOption) {
     }
     getMetadataArgsStorage().fields.push({
           target: target,
-          name: target.name,
+          name: propertyKey,
           description: option ? option.description : null,
           type: option ? option.type : null,
           nonNull: option ? option.nonNull : null,

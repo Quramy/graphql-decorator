@@ -1,4 +1,4 @@
-import { PageInfo } from './page-info.type';
+import { PageInfo } from '../page-info.type';
 
 const assert = require('assert');
 
