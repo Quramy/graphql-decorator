@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import * as graphql from 'graphql';
 
 import { EntryType, EntryTypeMetadata, FieldMetadata } from '../metadata';

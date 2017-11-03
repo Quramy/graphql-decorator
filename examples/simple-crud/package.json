@@ -12,7 +12,7 @@
     "express": "^4.14.0",
     "express-graphql": "^0.5.3",
     "graphql": "0.9.1",
-    "graphql-decorator": "file:../../",
+    "graphql-schema-decorator": "file:../../",
     "typescript": "2.3.4"
   },
   "keywords": [],

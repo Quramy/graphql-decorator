@@ -8,15 +8,15 @@
     "start": "node .built/main.js"
   },
   "dependencies": {
-    "graphql": "0.9.1",
-    "graphql-decorator": "file:../../",
+    "graphql": "0.11.7",
+    "graphql-schema-decorator": "file:../../",
     "typescript": "2.3.4"
   },
   "keywords": [],
   "author": "Quramy",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Quramy/graphql-decorator.git"
+    "url": "https://github.com/indigotech/graphql-schema-decorator.git"
   },
   "license": "ISC",
   "devDependencies": {

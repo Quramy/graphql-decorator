@@ -1,27 +1,24 @@
-npm run test
+#!/bin/sh
 
-if [ "$?" -gt 0 ]; then
-  exit 1
-fi
+set -e
 
+yarn run test
+./node_modules/.bin/rimraf node_modules
+yarn install --production
+
+# Hellow World
 cd examples/hello-world/
-
-npm install
-npm start
-
-if [ "$?" -gt 0 ]; then
-  exit 1
-fi
+yarn install
+yarn start
 cd ../../
 
+# Simple CRUD
 cd examples/simple-crud
-
-npm install
-npm run print
-
-if [ "$?" -gt 0 ]; then
-  exit 1
-fi
+yarn install
+yarn run print
 cd ../../
+
+# Restore lib environment
+yarn install
 
 exit 0
