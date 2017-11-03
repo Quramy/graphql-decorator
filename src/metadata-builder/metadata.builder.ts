@@ -97,17 +97,18 @@ export class MetadataBuilder {
         isNonNull: !!arg.nonNull,
         isList: !!arg.isList,
         isPagination: !!arg.pagination,
-        arguments: this.buildArgumentMetadata(target),
-        context: this.buildContextMetadata(target),
-        root: this.buildRootMetadata(target),
-        orderBy: this.buildOrderByMetadata(target),
-        before: this.buildBeforeMetadata(target),
+        property: arg.property,
+        arguments: this.buildArgumentMetadata(target, arg.property),
+        context: this.buildContextMetadata(target, arg.property),
+        root: this.buildRootMetadata(target, arg.property),
+        orderBy: this.buildOrderByMetadata(target, arg.property),
+        before: this.buildBeforeMetadata(target, arg.property),
       }));
   }
 
-  protected buildArgumentMetadata(target: any): ArgumentMetadata[] | undefined {
+  protected buildArgumentMetadata(target: any, property: string): ArgumentMetadata[] | undefined {
     return getMetadataArgsStorage()
-      .filterArgumentByClass(target)
+      .filterArgumentByClassAndProperty(target, property)
       .map(arg => ({
         type: arg.type,
         target: arg.target,
@@ -120,9 +121,9 @@ export class MetadataBuilder {
       }));
   }
 
-  protected buildContextMetadata(target: any): ContextMetadata | undefined {
+  protected buildContextMetadata(target: any, property: string): ContextMetadata | undefined {
     return getMetadataArgsStorage()
-      .filterContextByClass(target)
+      .filterContextByClassAndProperty(target, property)
       .map(arg => ({
         target: arg.target,
         name: arg.name,
@@ -133,9 +134,9 @@ export class MetadataBuilder {
       .find((_, index) => index === 0);
   }
 
-  protected buildRootMetadata(target: any): RootMetadata | undefined {
+  protected buildRootMetadata(target: any, property: string): RootMetadata | undefined {
     return getMetadataArgsStorage()
-      .filterRootByClass(target)
+      .filterRootByClassAndProperty(target, property)
       .map(arg => ({
         target: arg.target,
         name: arg.name,
@@ -146,9 +147,9 @@ export class MetadataBuilder {
       .find((_, index) => index === 0);
   }
 
-  protected buildOrderByMetadata(target: any): OrderByMetadata | undefined {
+  protected buildOrderByMetadata(target: any, property: string): OrderByMetadata | undefined {
     return getMetadataArgsStorage()
-      .filterOrderByByClass(target)
+      .filterOrderByByClassAndProperty(target, property)
       .map(arg => ({
         target: arg.target,
         name: arg.name,
@@ -163,9 +164,9 @@ export class MetadataBuilder {
       .find((_, index) => index === 0);
   }
 
-  protected buildBeforeMetadata(target: any): BeforeMetadata | undefined {
+  protected buildBeforeMetadata(target: any, property: string): BeforeMetadata | undefined {
     return getMetadataArgsStorage()
-      .filterBeforeByByClass(target)
+      .filterBeforeByByClassAndProperty(target, property)
       .map(arg => ({
         target: arg.target,
         name: arg.name,

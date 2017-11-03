@@ -1,6 +1,7 @@
 import { SchemaFactoryError, SchemaFactoryErrorType } from '../type-factory';
 
 import { FieldOption } from '../metadata';
+import { PaginationMiddleware } from '../pagination.middleware';
 import { getMetadataArgsStorage } from '../metadata-builder';
 
 /**
@@ -20,10 +21,14 @@ export function Field(option?: FieldOption) {
           target: target,
           name: propertyKey,
           description: option ? option.description : null,
+          property: propertyKey,
           type: option ? option.type : null,
           nonNull: option ? option.nonNull : null,
           isList: option ? option.isList : null,
           pagination: option ? option.pagination : null,
       });
+    if (option && option.pagination) {
+      return PaginationMiddleware(target, propertyKey, methodDescriptor);
+    }
   } as Function;
 }

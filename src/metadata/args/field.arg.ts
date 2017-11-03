@@ -5,4 +5,5 @@ export interface FieldArg extends Argument {
   nonNull?: boolean;
   isList?: boolean;
   pagination?: boolean;
+  property: string;
 }

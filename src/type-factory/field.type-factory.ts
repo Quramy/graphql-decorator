@@ -141,7 +141,9 @@ export function resolverFactory(
             //  So Promise will be added as a future feature/enhancement
             let result: any = null;
             let next: (error?: Error) => void = (error?: Error, value?: any): any => {
-                if (typeof (value) !== 'undefined') {
+                if (error) {
+                    throw error;
+                } else if (typeof (value) !== 'undefined') {
                     result = value;
                 } else {
                     result = originalFn.apply(fieldParentClass, rest);

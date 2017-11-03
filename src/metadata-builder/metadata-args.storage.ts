@@ -68,24 +68,24 @@ export class MetadataArgsStorage {
     return this.fields.filter(item => item.target === target);
   }
 
-  filterArgumentByClass(target: any): ArgumentArg[] {
-    return this.arguments.filter(item => item.target === target);
+  filterArgumentByClassAndProperty(target: any, property: string): ArgumentArg[] {
+    return this.arguments.filter(item => item.target === target && item.property === property);
   }
 
-  filterContextByClass(target: any): ContextArg[] {
-    return this.contexts.filter(item => item.target === target);
+  filterContextByClassAndProperty(target: any, property: string): ContextArg[] {
+    return this.contexts.filter(item => item.target === target && item.property === property);
   }
 
-  filterRootByClass(target: any): RootArg[] {
-    return this.roots.filter(item => item.target === target);
+  filterRootByClassAndProperty(target: any, property: string): RootArg[] {
+    return this.roots.filter(item => item.target === target && item.property === property);
   }
 
-  filterOrderByByClass(target: any): OrderByArg[] {
-    return this.orderBys.filter(item => item.target === target);
+  filterOrderByByClassAndProperty(target: any, property: string): OrderByArg[] {
+    return this.orderBys.filter(item => item.target === target && item.property === property);
   }
 
-  filterBeforeByByClass(target: any): BeforeArg[] {
-    return this.befores.filter(item => item.target === target);
+  filterBeforeByByClassAndProperty(target: any, property: string): BeforeArg[] {
+    return this.befores.filter(item => item.target === target && item.property === property);
   }
 }
 

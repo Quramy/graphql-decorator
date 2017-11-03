@@ -10,6 +10,7 @@ export interface FieldMetadata extends Metadata {
   isNonNull: boolean;
   isList: boolean;
   isPagination: boolean;
+  property: string;
   arguments: ArgumentMetadata[];
   context?: ContextMetadata;
   root?: RootMetadata;
