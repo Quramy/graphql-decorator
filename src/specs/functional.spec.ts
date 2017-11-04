@@ -31,16 +31,42 @@ describe('Functional', function () {
           @D.Query() query: QueryType;
       }
 
-      it('resolves @D.Field', async function() {
+      it('resolves @Field', async function() {
         const schema = schemaFactory(SchemaType);
         const result = await graphql.graphql(schema, `query { greeting } `);
         assert(result.data.greeting === 'Hello, world!');
       });
 
-      it('resolves @D.Field as Promise', async function() {
+      it('resolves @Field as Promise', async function() {
         const schema = schemaFactory(SchemaType);
         const result = await graphql.graphql(schema, `query { greetingAsPromise } `);
         assert(result.data.greetingAsPromise === 'Hello, world!');
+      });
+
+    });
+
+    describe('Arg', function () {
+
+      @D.ObjectType()
+      class QueryType {
+          @D.Field()
+          greeting(
+            @D.Arg({name: 'arg', description: 'any desc'}) arg: string,
+          ): string {
+              return `Hello, ${arg}!`;
+          }
+      }
+
+      @D.Schema()
+      class SchemaType {
+          @D.Query() query: QueryType;
+      }
+
+      it('resolves @Field with @Arg input value', async function() {
+        const schema = schemaFactory(SchemaType);
+        console.log(graphql.printSchema(schema));
+        const result = await graphql.graphql(schema, `query { greeting(arg: "world") } `);
+        assert(result.data.greeting === 'Hello, world!');
       });
 
     });
@@ -60,7 +86,7 @@ describe('Functional', function () {
           @D.Query() query: QueryType;
       }
 
-      it('resolves @D.Field with isList', async function() {
+      it('resolves @Field with isList', async function() {
         const schema = schemaFactory(SchemaType);
         const result = await graphql.graphql(schema, `
           query {
@@ -88,7 +114,7 @@ describe('Functional', function () {
           @D.Query() query: QueryType;
       }
 
-      it('resolves @D.Field with pagination', async function() {
+      it('resolves @Field with pagination', async function() {
         const schema = schemaFactory(SchemaType);
         const result = await graphql.graphql(schema, `
           query {
@@ -141,19 +167,19 @@ describe('Functional', function () {
           @D.Query() query: QueryType;
       }
 
-      it('resolves @D.Field decorated with @Before Middleware replacing resolver', async function() {
+      it('resolves @Field decorated with @Before Middleware replacing resolver', async function() {
         const schema = schemaFactory(SchemaType);
         const result = await graphql.graphql(schema, `query { replace }`);
         assert(result.data.replace === 'Hello from middleware');
       });
 
-      it('resolves @D.Field decorated with @Before Middleware and returning from resolver', async function() {
+      it('resolves @Field decorated with @Before Middleware and returning from resolver', async function() {
         const schema = schemaFactory(SchemaType);
         const result = await graphql.graphql(schema, `query { replace }`);
         assert(result.data.replace === 'Hello from middleware');
       });
 
-      it('resolves @D.Field decorated with @Before Middleware and erroring', async function() {
+      it('resolves @Field decorated with @Before Middleware and erroring', async function() {
         const schema = schemaFactory(SchemaType);
         const result = await graphql.graphql(schema, `query { callError }`);
 
@@ -200,7 +226,7 @@ describe('Functional', function () {
           @D.Mutation() mutation: MutationType;
       }
 
-      it('resolves @D.Mutation with @InputTypeObject', async function() {
+      it('resolves @Mutation with @InputTypeObject', async function() {
         const schema = schemaFactory(SchemaType);
         const result = await graphql.graphql(schema, `mutation { willItMutate(input: {value: "world"}) } `);
         assert(result.data.willItMutate === 'Hello, world!');
