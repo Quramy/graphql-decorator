@@ -84,6 +84,18 @@ describe('Decorators', function () {
             assert(actual.type === graphql.GraphQLID);
             assert(actual.isNonNull === true);
         });
+
+        it('pagination can only be added to functions', function () {
+          try {
+            class Obj { @D.Field({ type: graphql.GraphQLID, pagination: true }) someField: any; }
+          } catch (e) {
+            assert(e !== null);
+            return;
+          }
+
+          assert(false);
+
+      });
     });
 
     describe('@Arg', function () {

@@ -12,7 +12,6 @@ import { getMetadataArgsStorage } from '../metadata-builder';
  */
 export function Field(option?: FieldOption) {
   return function (target: any, propertyKey: any, methodDescriptor?: any) {
-    // TODO: Check if test exist for this condition and if not, add one
     if (option && option.pagination && (!methodDescriptor || !methodDescriptor.value)) {
         throw new SchemaFactoryError(`Field '${propertyKey}' can't have pagination enabled`,
           SchemaFactoryErrorType.INPUT_FIELD_SHOULD_NOT_BE_PAGINATED);
