@@ -1,8 +1,7 @@
 import { getMetadataArgsStorage } from '../metadata-builder';
 
 /**
- * GraphQL Schema entry point
- * See [GraphQL Documentation - Arguments]{@link http://graphql.org/learn/schema/}
+ * Injects the root query object into resolve function
  *
  * @param option Options for an Schema
  */

@@ -2,8 +2,12 @@ import { Middleware } from '../../middleware';
 import { Option } from './option';
 
 /**
- * [GraphQL Object Field's Argument]{@ http://graphql.org/learn/schema/#arguments} Decorator
+ * Before (aka Middleware) options
  */
 export interface BeforeOption extends Option {
+  /**
+   * Middeware to change resolver behavior.
+   * Check decorator docs for example usage.
+   */
   middleware: Middleware;
 }

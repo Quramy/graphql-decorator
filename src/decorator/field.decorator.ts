@@ -5,8 +5,8 @@ import { PaginationMiddleware } from '../pagination.middleware';
 import { getMetadataArgsStorage } from '../metadata-builder';
 
 /**
- * GraphQL Schema entry point
- * See [GraphQL Documentation - Schema]{@link http://graphql.org/learn/schema/}
+ * GraphQL Schema field
+ * See [GraphQL Documentation - Field]{@link http://graphql.org/learn/queries/#fields}
  *
  * @param option Options for an Schema
  */

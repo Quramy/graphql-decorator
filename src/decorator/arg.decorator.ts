@@ -2,8 +2,8 @@ import { ArgumentOption } from '../metadata';
 import { getMetadataArgsStorage } from '../metadata-builder';
 
 /**
- * GraphQL Schema entry point
- * See [GraphQL Documentation - Arguments]{@link http://graphql.org/learn/schema/}
+ * GraphQL Schema field argument
+ * See [GraphQL Documentation - Arguments]{@link http://graphql.org/learn/queries/#arguments}
  *
  * @param option Options for an Schema
  */

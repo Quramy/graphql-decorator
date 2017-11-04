@@ -1,8 +1,8 @@
 import { getMetadataArgsStorage } from '../metadata-builder';
 
 /**
- * GraphQL Schema entry point
- * See [GraphQL Documentation - Arguments]{@link http://graphql.org/learn/schema/}
+ * Ads the ability to add HTTP request context to each resolver function
+ * See [Express GraphQL Documentation 'context' Option]{@link https://github.com/graphql/express-graphql#options} for an example
  *
  * @param option Options for an Schema
  */

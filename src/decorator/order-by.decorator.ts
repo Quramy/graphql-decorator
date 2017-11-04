@@ -2,10 +2,9 @@ import { OrderByOption } from '../metadata';
 import { getMetadataArgsStorage } from '../metadata-builder';
 
 /**
- * GraphQL Schema entry point
- * See [GraphQL Documentation - Arguments]{@link http://graphql.org/learn/schema/}
+ * Configures and inject order by parameters for an {@see Field} with `pagination` parameter enabled.
  *
- * @param option Options for an Schema
+ * @param option Options for OrderBy
  */
 export function OrderBy(option?: OrderByOption | string[]) {
   return function (target: any, propertyKey: any, index: number) {
