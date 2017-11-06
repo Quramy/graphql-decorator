@@ -1,5 +1,3 @@
-import 'reflect-metadata';
-
 import { SchemaFactoryError, SchemaFactoryErrorType } from './schema.type-factory';
 
 import { EnumValueMetadata } from '../metadata';

@@ -64,7 +64,6 @@ describe('Functional', function () {
 
       it('resolves @Field with @Arg input value', async function() {
         const schema = schemaFactory(SchemaType);
-        console.log(graphql.printSchema(schema));
         const result = await graphql.graphql(schema, `query { greeting(arg: "world") } `);
         assert(result.data.greeting === 'Hello, world!');
       });

@@ -1,5 +1,3 @@
-import 'reflect-metadata';
-
 import { FieldMetadata } from './metadata';
 import { PageInfo } from './page-info.type';
 import { PaginationResponse } from './pagination.type';

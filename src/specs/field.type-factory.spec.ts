@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import * as D from '../decorator';
 import * as graphql from 'graphql';
 

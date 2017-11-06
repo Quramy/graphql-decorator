@@ -1,5 +1,3 @@
-import 'reflect-metadata';
-
 import * as graphql from 'graphql';
 
 import {
