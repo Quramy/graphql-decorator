@@ -14,7 +14,7 @@
 - Refactored `@Query`, `@Mutation`, `@Subscription` and `@Schema` - #32 - [@felipesabino](https://github.com/felipesabino)
 - Refactored `@ObjectType` and `@InputObjectType` - #31 - [@felipesabino](https://github.com/felipesabino)
 - Refactored `@EnumType`, `@Value` and `@UnionType` - #29 - [@felipesabino](https://github.com/felipesabino)
-- Deprecated all usages of the decorators bellow - #34 - [@felipesabino](https://github.com/felipesabino)
+- Deprecated all usages of the decorators below - #34 - [@felipesabino](https://github.com/felipesabino)
   - `@Pagination`
   - `@Description`
   - `@List`
@@ -69,7 +69,7 @@
 
 ## Fork changes
 
-Added new docorators bellow - [@thiago-soliveira](https://github.com/thiago-soliveira)
+Added new docorators below - [@thiago-soliveira](https://github.com/thiago-soliveira)
 - `@Ctx`
 - `@Root`
 - `@Pagination`
