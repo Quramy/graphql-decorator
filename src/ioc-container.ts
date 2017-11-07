@@ -1,4 +1,3 @@
 export class IoCContainer {
-
-    public static INSTANCE: any;
+  public static INSTANCE: any;
 }

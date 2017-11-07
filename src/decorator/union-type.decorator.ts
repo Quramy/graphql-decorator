@@ -1,5 +1,5 @@
-import { getMetadataArgsStorage } from '../metadata-builder';
 import { UnionOption } from '../metadata';
+import { getMetadataArgsStorage } from '../metadata-builder';
 
 /**
  * Union Type.
@@ -10,11 +10,11 @@ import { UnionOption } from '../metadata';
 export function UnionType<T>(option: UnionOption<T>) {
   return function (target: any) {
     getMetadataArgsStorage().union.push({
-          target: target,
-          name: target.name,
-          types: option.types,
-          resolver: option.resolver,
-          description: option.description,
-      });
+      target: target,
+      name: target.name,
+      types: option.types,
+      resolver: option.resolver,
+      description: option.description,
+    });
   } as Function;
 }

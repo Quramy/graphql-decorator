@@ -14,18 +14,6 @@ import {
   UnionTypeArg,
 } from '../metadata/args';
 
-/**
- * Gets metadata args storage.
- * Metadata args storage follows the best practices and stores metadata in a global variable.
- */
-export function getMetadataArgsStorage(): MetadataArgsStorage {
-  if (!(global as any).graphqlSchemaMetadataArgsStorage) {
-      (global as any).graphqlSchemaMetadataArgsStorage = new MetadataArgsStorage();
-  }
-
-  return (global as any).graphqlSchemaMetadataArgsStorage;
-}
-
 export class MetadataArgsStorage {
   enums: EnumTypeArg[] = [];
   enumValues: EnumValueArg[] = [];
@@ -89,3 +77,14 @@ export class MetadataArgsStorage {
   }
 }
 
+/**
+ * Gets metadata args storage.
+ * Metadata args storage follows the best practices and stores metadata in a global variable.
+ */
+export function getMetadataArgsStorage(): MetadataArgsStorage {
+  if (!(global as any).graphqlSchemaMetadataArgsStorage) {
+    (global as any).graphqlSchemaMetadataArgsStorage = new MetadataArgsStorage();
+  }
+
+  return (global as any).graphqlSchemaMetadataArgsStorage;
+}
