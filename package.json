@@ -8,7 +8,8 @@
   },
   "scripts": {
     "build": "rimraf lib && tsc",
-    "lint": "tslint \"src/**/*.ts\"",
+    "lint": "tslint \"src/**/*.ts\" --type-check --project ./tsconfig.json",
+    "lint:fix": "tslint --fix \"src/**/*.ts\" --type-check --project ./tsconfig.json",
     "test": "npm run build && npm run lint && mocha lib/**/*.spec.js",
     "watch": "tsc -w",
     "watch-test": "mocha lib/**/*.spec.js --watch"

@@ -65,7 +65,8 @@
     "eofline": true,
     "indent": [
       true,
-      "spaces"
+      "spaces",
+      2
     ],
     "max-line-length": [
       true,

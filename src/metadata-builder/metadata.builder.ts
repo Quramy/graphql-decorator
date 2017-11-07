@@ -16,18 +16,6 @@ import {
 import { EntryType } from '../metadata/args';
 import { getMetadataArgsStorage } from './metadata-args.storage';
 
-/**
- * Gets metadata builder
- * Metadata builder follows the best practices and stores metadata in a global variable.
- */
-export function getMetadataBuilder(): MetadataBuilder {
-  if (!(global as any).graphqlSchemaMetadataBuilder) {
-      (global as any).graphqlSchemaMetadataBuilder = new MetadataBuilder();
-  }
-
-  return (global as any).graphqlSchemaMetadataBuilder;
-}
-
 export class MetadataBuilder {
 
   buildEnumMetadata(target: any): EnumTypeMetadata[] | undefined {
@@ -189,4 +177,16 @@ export class MetadataBuilder {
       }));
   }
 
+}
+
+/**
+ * Gets metadata builder
+ * Metadata builder follows the best practices and stores metadata in a global variable.
+ */
+export function getMetadataBuilder(): MetadataBuilder {
+  if (!(global as any).graphqlSchemaMetadataBuilder) {
+    (global as any).graphqlSchemaMetadataBuilder = new MetadataBuilder();
+  }
+
+  return (global as any).graphqlSchemaMetadataBuilder;
 }

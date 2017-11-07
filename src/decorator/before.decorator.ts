@@ -33,12 +33,12 @@ import { getMetadataArgsStorage } from '../metadata-builder';
 export function Before(option: BeforeOption | Middleware) {
   return function (target: any, propertyKey: any, index: number) {
     getMetadataArgsStorage().befores.push({
-          target: target,
-          name: target.name || propertyKey,
-          description: option && (option as BeforeOption).description ? (option as BeforeOption).description : null,
-          index: index,
-          property: propertyKey,
-          middleware: option && (option as BeforeOption).middleware ? (option as BeforeOption).middleware : option as Middleware,
-      });
+      target: target,
+      name: target.name || propertyKey,
+      description: option && (option as BeforeOption).description ? (option as BeforeOption).description : null,
+      index: index,
+      property: propertyKey,
+      middleware: option && (option as BeforeOption).middleware ? (option as BeforeOption).middleware : option as Middleware,
+    });
   } as Function;
 }

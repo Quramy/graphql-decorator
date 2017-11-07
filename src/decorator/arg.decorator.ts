@@ -10,14 +10,14 @@ import { getMetadataArgsStorage } from '../metadata-builder';
 export function Arg(option?: ArgumentOption) {
   return function (target: any, propertyKey: any, index: number) {
     getMetadataArgsStorage().arguments.push({
-          target: target,
-          name: option.name,
-          description: option ? option.description : null,
-          index: index,
-          property: propertyKey,
-          type: option ? option.type : null,
-          nonNull: option ? option.nonNull : null,
-          isList: option ? option.isList : null,
-      });
+      target: target,
+      name: option.name,
+      description: option ? option.description : null,
+      index: index,
+      property: propertyKey,
+      type: option ? option.type : null,
+      nonNull: option ? option.nonNull : null,
+      isList: option ? option.isList : null,
+    });
   } as Function;
 }

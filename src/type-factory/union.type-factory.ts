@@ -1,6 +1,7 @@
 import * as graphql from 'graphql';
-import { getMetadataBuilder } from '../metadata-builder';
+
 import { UnionTypeMetadata } from '../metadata';
+import { getMetadataBuilder } from '../metadata-builder';
 import { objectTypeFactory } from './object.type-factory';
 
 export function unionTypeFactory(target: any, isInput: boolean): graphql.GraphQLUnionType | undefined {
@@ -11,7 +12,7 @@ export function unionTypeFactory(target: any, isInput: boolean): graphql.GraphQL
         name: union.name,
         resolveType: union.resolver,
         types: union.types
-          .map(type => objectTypeFactory(type, isInput) as graphql.GraphQLObjectType )
+          .map(type => objectTypeFactory(type, isInput) as graphql.GraphQLObjectType)
           .filter(_ => _), //filter null values
       });
     })

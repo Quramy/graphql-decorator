@@ -6,8 +6,8 @@ import { getMetadataBuilder } from '../metadata-builder';
 
 export class OrderByTypeFactory {
 
-  private static orderByFieldEnumFactory(name: string, values: {[name: string]: any; }[]): GraphQLEnumType {
-    let valuesDict: {[name: string]: any; } = {};
+  private static orderByFieldEnumFactory(name: string, values: { [name: string]: any; }[]): GraphQLEnumType {
+    let valuesDict: { [name: string]: any; } = {};
     values.forEach((value: any) => {
       valuesDict[value.name] = {
         description: value.description && value.description,
@@ -26,8 +26,8 @@ export class OrderByTypeFactory {
       name: name + 'OrderingInputObjectType',
       description: 'Ordering object',
       fields: {
-          sort: { type: new GraphQLNonNull(orderBySortEnumObject) },
-          direction: { type: orderByDirectionEnumObject },
+        sort: { type: new GraphQLNonNull(orderBySortEnumObject) },
+        direction: { type: orderByDirectionEnumObject },
       },
     });
   }
@@ -47,8 +47,8 @@ export class OrderByTypeFactory {
     });
   }
 
-  static orderByFactory(metadata: FieldMetadata, args: {[name: string]: any; }): {[name: string]: any; } {
-    let orderByFieldArray: Array<{[name: string]: any; }> = [];
+  static orderByFactory(metadata: FieldMetadata, args: { [name: string]: any; }): { [name: string]: any; } {
+    let orderByFieldArray: Array<{ [name: string]: any; }> = [];
     if (args && args['orderBy'] != null) {
       if (metadata.isPagination) {
         if (metadata.type == null) {
@@ -60,15 +60,15 @@ export class OrderByTypeFactory {
         //  type properties name to use as pagination values
         const fieldMetadataList: FieldMetadata[] = getMetadataBuilder().buildFieldMetadata(metadata.type.prototype);
         fieldMetadataList.forEach(def => {
-            let fieldReturnType = def.type;
-            if (fieldReturnType.prototype == null) {
-                orderByFieldArray.push(def);
-            }
+          let fieldReturnType = def.type;
+          if (fieldReturnType.prototype == null) {
+            orderByFieldArray.push(def);
+          }
         });
 
-        if ( metadata.orderBy &&
-            metadata.orderBy.extraColumns &&
-            metadata.orderBy.extraColumns.constructor === Array) {
+        if (metadata.orderBy &&
+          metadata.orderBy.extraColumns &&
+          metadata.orderBy.extraColumns.constructor === Array) {
 
           if (metadata.orderBy.shouldIgnoreSchemaFields) {
             // remove all previous items from `orderByFieldArray`
@@ -89,8 +89,8 @@ export class OrderByTypeFactory {
         let orderByInputObjectArray = new GraphQLList(orderByInputObject);
         args['orderBy'].type = orderByInputObjectArray;
       } else {
-          throw new SchemaFactoryError('@OrderBy decorator is only allowed inside a method decorated with @Pagination.',
-                SchemaFactoryErrorType.ORDER_BY_OUTSIDE_PAGINATION);
+        throw new SchemaFactoryError('@OrderBy decorator is only allowed inside a method decorated with @Pagination.',
+          SchemaFactoryErrorType.ORDER_BY_OUTSIDE_PAGINATION);
       }
     }
 

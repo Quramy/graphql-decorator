@@ -1,5 +1,5 @@
-import { getMetadataArgsStorage } from '../metadata-builder';
 import { SchemaOption } from '../metadata';
+import { getMetadataArgsStorage } from '../metadata-builder';
 
 /**
  * GraphQL Schema entry point
@@ -10,9 +10,9 @@ import { SchemaOption } from '../metadata';
 export function Schema(option?: SchemaOption) {
   return function (target: any) {
     getMetadataArgsStorage().schemas.push({
-          target: target,
-          name: target.name,
-          description: option ? option.description : null,
-      });
+      target: target,
+      name: target.name,
+      description: option ? option.description : null,
+    });
   } as Function;
 }

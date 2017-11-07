@@ -7,6 +7,6 @@ import { IoCContainer } from '../ioc-container';
  */
 export function UseContainer(container: any) {
   return function (target: Function) {
-      IoCContainer.INSTANCE = container;
+    IoCContainer.INSTANCE = container;
   };
 }
