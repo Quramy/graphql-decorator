@@ -9,7 +9,7 @@
   "scripts": {
     "build": "rimraf lib && tsc",
     "lint": "tslint \"src/**/*.ts\"",
-    "test": "npm run build && npm run lint && mocha lib/*.spec.js lib/**/*.spec.js",
+    "test": "npm run build && npm run lint && mocha lib/**/*.spec.js",
     "watch": "tsc -w",
     "watch-test": "mocha lib/**/*.spec.js --watch"
   },

@@ -1,4 +1,6 @@
-import { PageInfo } from './page-info.type';
+import 'reflect-metadata';
+
+import { PageInfo } from '../page-info.type';
 
 const assert = require('assert');
 

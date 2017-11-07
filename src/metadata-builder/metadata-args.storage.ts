@@ -1,11 +1,17 @@
 import {
+  ArgumentArg,
+  BeforeArg,
+  ContextArg,
+  EntryType,
+  EntryTypeArg,
   EnumTypeArg,
   EnumValueArg,
-  UnionTypeArg,
+  FieldArg,
   ObjectTypeArg,
-  EntryTypeArg,
-  EntryType,
+  OrderByArg,
+  RootArg,
   SchemaArg,
+  UnionTypeArg,
 } from '../metadata/args';
 
 /**
@@ -27,6 +33,12 @@ export class MetadataArgsStorage {
   objects: ObjectTypeArg[] = [];
   entries: EntryTypeArg[] = [];
   schemas: SchemaArg[] = [];
+  fields: FieldArg[] = [];
+  arguments: ArgumentArg[] = [];
+  contexts: ContextArg[] = [];
+  roots: RootArg[] = [];
+  orderBys: OrderByArg[] = [];
+  befores: BeforeArg[] = [];
 
   filterEnumsByClass(target: any): EnumTypeArg[] {
     return this.enums.filter(item => item.target === target);
@@ -50,6 +62,30 @@ export class MetadataArgsStorage {
 
   filterSchemaByClass(target: any): SchemaArg[] {
     return this.schemas.filter(item => item.target === target);
+  }
+
+  filterFieldByClass(target: any): FieldArg[] {
+    return this.fields.filter(item => item.target === target);
+  }
+
+  filterArgumentByClassAndProperty(target: any, property: string): ArgumentArg[] {
+    return this.arguments.filter(item => item.target === target && item.property === property);
+  }
+
+  filterContextByClassAndProperty(target: any, property: string): ContextArg[] {
+    return this.contexts.filter(item => item.target === target && item.property === property);
+  }
+
+  filterRootByClassAndProperty(target: any, property: string): RootArg[] {
+    return this.roots.filter(item => item.target === target && item.property === property);
+  }
+
+  filterOrderByByClassAndProperty(target: any, property: string): OrderByArg[] {
+    return this.orderBys.filter(item => item.target === target && item.property === property);
+  }
+
+  filterBeforeByByClassAndProperty(target: any, property: string): BeforeArg[] {
+    return this.befores.filter(item => item.target === target && item.property === property);
   }
 }
 

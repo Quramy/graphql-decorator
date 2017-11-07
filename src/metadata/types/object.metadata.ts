@@ -1,5 +1,5 @@
-import { DefaultMetadata } from './default.metadata';
+import { Metadata } from './metadata';
 
-export interface ObjectTypeMetadata extends DefaultMetadata {
+export interface ObjectTypeMetadata extends Metadata {
   isInput: boolean;
 }

@@ -1,3 +1,3 @@
-import { DefaultMetadata } from './default.metadata';
+import { Metadata } from './metadata';
 
-export interface SchemaMetadata extends DefaultMetadata { }
+export interface SchemaMetadata extends Metadata { }

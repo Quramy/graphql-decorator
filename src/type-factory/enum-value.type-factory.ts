@@ -1,5 +1,6 @@
+import { SchemaFactoryError, SchemaFactoryErrorType } from './schema.type-factory';
+
 import { EnumValueMetadata } from '../metadata';
-import { SchemaFactoryError , SchemaFactoryErrorType } from './schema.type-factory';
 
 export function enumValueTypeFactory(target: Function, metadata: EnumValueMetadata): any {
     let description = metadata.description;
