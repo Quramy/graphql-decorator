@@ -27,6 +27,7 @@ propose changes to this document in a pull request.
 * Make sure to create test for all feature added. Also run the test before commiting any changes: `npm test`.
 * Verify if there are any documents in need of updates.
 * Include screenshots and animated GIFs in your pull request whenever possible.
+* Add your change to the `CHANGELOG.md` file
 
 ## Git Commit Messages
 
