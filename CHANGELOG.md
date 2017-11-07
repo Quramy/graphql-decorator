@@ -1,3 +1,7 @@
+## master
+
+- (breaking change) `useContainer` is now a function instead of a decorator - #40
+
 ## 0.8.0
 
 ### Feature

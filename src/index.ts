@@ -7,3 +7,4 @@ export * from './pagination.type';
 export * from './decorator/';
 export * from './metadata/options';
 export * from './middleware';
+export * from './use-container';
