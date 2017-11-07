@@ -3,7 +3,9 @@ import 'reflect-metadata';
 import * as D from '../decorator';
 import * as graphql from 'graphql';
 
+import { IoCContainer } from '../ioc-container';
 import { schemaFactory } from '../type-factory';
+import { useContainer } from '../use-container';
 
 const assert = require('assert');
 
@@ -232,6 +234,21 @@ describe('Functional', function () {
       });
 
 
+    });
+
+  });
+
+  describe('useContainer', function() {
+
+    afterEach(function() {
+      delete IoCContainer.INSTANCE;
+    });
+
+    it('sets the DI container properly', function() {
+
+      const container = {};
+      useContainer(container);
+      assert(IoCContainer.INSTANCE === container);
     });
 
   });

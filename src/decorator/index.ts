@@ -3,7 +3,6 @@ export * from './union-type.decorator';
 export * from './object-type.decorator';
 export * from './entry-type.decorator';
 export * from './schema.decorator';
-export * from './use-container.decorator';
 export * from './arg.decorator';
 export * from './context.decorator';
 export * from './field.decorator';
