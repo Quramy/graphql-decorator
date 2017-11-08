@@ -6,6 +6,8 @@
 - Added CHANGELOG.md - #38 - [@fvasc](https://github.com/fvasc)
 - Added CI and npm badges to README - #27 - [@askmon](https://github.com/askmon)
 - Added contributing guidelines - #30 - [@askmon](https://github.com/askmon)
+- Fixed @Field arguments handling - #42 - [@felipesabino](https://github.com/felipesabino)
+- Fixed @UnionType usage with abstract classes - #43 - [@felipesabino](https://github.com/felipesabino)
 
 ### Breaking changes
 
