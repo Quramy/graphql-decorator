@@ -8,6 +8,7 @@
 - Added contributing guidelines - #30 - [@askmon](https://github.com/askmon)
 - Fixed @Field arguments handling - #42 - [@felipesabino](https://github.com/felipesabino)
 - Fixed @UnionType usage with abstract classes - #43 - [@felipesabino](https://github.com/felipesabino)
+- Fixed error that just one @Query was added to resulting schema - #44 - [@felipesabino](https://github.com/felipesabino)
 
 ### Breaking changes
 
