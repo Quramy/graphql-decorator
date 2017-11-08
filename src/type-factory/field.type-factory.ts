@@ -101,11 +101,13 @@ export function resolverFactory(
       const argumentMetadata = (metadata.arguments.concat(metadata.orderBy))
         .filter(value => value)
         .find((value: ArgumentMetadata | OrderByMetadata) => value.index === index); //TODO: Can avoin O(n x m) here using a hash for arguments
-      argumentConfigMap[argumentMetadata.name] = {
-        name: argumentMetadata.name,
-        type: convertType(paramFn, argumentMetadata, true),
-      };
-      indexMap[argumentMetadata.name] = index;
+      if (argumentMetadata) {
+        argumentConfigMap[argumentMetadata.name] = {
+          name: argumentMetadata.name,
+          type: convertType(paramFn, argumentMetadata, true),
+        };
+        indexMap[argumentMetadata.name] = index;
+      }
     });
   }
 

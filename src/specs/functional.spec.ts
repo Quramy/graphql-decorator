@@ -105,8 +105,11 @@ describe('Functional', function () {
       @D.ObjectType()
       class QueryType {
         @D.Field({ pagination: true, type: graphql.GraphQLString })
-        async paginated(): Promise<[string[], number]> {
-          return [['Hello, world!'], 1];
+        async paginated(
+          @D.Arg({name: 'value', type: graphql.GraphQLString}) value: string,
+          @D.Ctx() context: any,
+        ): Promise<[string[], number]> {
+          return [[`Hello, ${value}!`], 1];
         }
       }
 
@@ -119,7 +122,7 @@ describe('Functional', function () {
         const schema = schemaFactory(SchemaType);
         const result = await graphql.graphql(schema, `
           query {
-            paginated {
+            paginated(value: "world") {
               count
               nodes
               pageInfo {
