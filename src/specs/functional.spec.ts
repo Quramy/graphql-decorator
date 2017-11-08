@@ -272,6 +272,36 @@ describe('Functional', function () {
       });
 
     });
+
+    describe('Multiple Queries', function () {
+
+      @D.ObjectType()
+      class QueryAType {
+        @D.Field()
+        greetingA(): string { return `Hello, world`; }
+      }
+
+      @D.ObjectType()
+      class QueryBType {
+        @D.Field()
+        greetingB(): string { return `Hello, world`; }
+      }
+
+      @D.Schema()
+      class SchemaType {
+        @D.Query() queryA: QueryAType;
+        @D.Query() queryB: QueryBType;
+      }
+
+      it('resolves multiple queries with @Schema and @Query', async function () {
+        const schema = schemaFactory(SchemaType);
+        const result = await graphql.graphql(schema, `query { greetingA, greetingB } `);
+        assert(result.data.greetingA === 'Hello, world');
+        assert(result.data.greetingB === 'Hello, world');
+      });
+
+    });
+
   });
 
   describe('Mutation', function () {
