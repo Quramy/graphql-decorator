@@ -250,8 +250,6 @@ describe('Functional', function () {
       it('resolves @UnionType with abstact class', async function () {
         const schema = schemaFactory(SchemaType);
 
-        console.log(graphql.printSchema(schema));
-
         const result = await graphql.graphql(schema, `
         query {
           value {
