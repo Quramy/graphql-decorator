@@ -106,7 +106,7 @@ describe('Functional', function () {
       class QueryType {
         @D.Field({ pagination: true, type: graphql.GraphQLString })
         async paginated(
-          @D.Arg({name: 'value', type: graphql.GraphQLString}) value: string,
+          @D.Arg({ name: 'value', type: graphql.GraphQLString }) value: string,
           @D.Ctx() context: any,
         ): Promise<[string[], number]> {
           return [[`Hello, ${value}!`], 1];
@@ -194,6 +194,86 @@ describe('Functional', function () {
       });
 
     });
+
+    describe('Union', function () {
+
+      abstract class BaseType {
+        @D.Field()
+        type: string;
+      }
+
+      @D.ObjectType()
+      class QueryAType extends BaseType {
+        @D.Field()
+        queryA: string;
+      }
+
+      @D.ObjectType()
+      class QueryBType extends BaseType {
+        @D.Field()
+        queryB: string;
+      }
+
+      type QueryUnionType = QueryAType | QueryBType;
+
+      @D.UnionType<QueryUnionType>({
+        types: [QueryAType, QueryBType],
+        resolver: (obj: QueryUnionType): string | null => {
+          if (obj.type === 'A') { return QueryAType.name; }
+          return QueryBType.name;
+        },
+      })
+      class UnionType { }
+
+      @D.ObjectType()
+      class QueryType {
+        @D.Field({ type: UnionType, isList: true })
+        value(): UnionType[] {
+          return [
+            {
+              type: 'A',
+              queryA: 'hello',
+            },
+            {
+              type: 'B',
+              queryB: 'world',
+            },
+          ];
+        }
+      }
+
+      @D.Schema()
+      class SchemaType {
+        @D.Query() query: QueryType;
+      }
+
+      it('resolves @UnionType with abstact class', async function () {
+        const schema = schemaFactory(SchemaType);
+
+        console.log(graphql.printSchema(schema));
+
+        const result = await graphql.graphql(schema, `
+        query {
+          value {
+            ...on QueryAType {
+              type
+              queryA
+            }
+            ...on QueryBType {
+              type
+              queryB
+            }
+          }
+        }
+        `);
+        assert(result.data.value.length === 2);
+        assert(result.data.value[0].type === 'A');
+        assert(result.data.value[0].queryA === 'hello');
+        assert(result.data.value[1].type === 'B');
+        assert(result.data.value[1].queryB === 'world');
+      });
+
+    });
   });
 
   describe('Mutation', function () {
@@ -241,13 +321,13 @@ describe('Functional', function () {
 
   });
 
-  describe('useContainer', function() {
+  describe('useContainer', function () {
 
-    afterEach(function() {
+    afterEach(function () {
       delete IoCContainer.INSTANCE;
     });
 
-    it('sets the DI container properly', function() {
+    it('sets the DI container properly', function () {
 
       const container = {};
       useContainer(container);
