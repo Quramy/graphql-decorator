@@ -14,6 +14,8 @@ import {
   UnionTypeArg,
 } from '../metadata/args';
 
+import { MetadataUtils } from './metadata.utils';
+
 export class MetadataArgsStorage {
   enums: EnumTypeArg[] = [];
   enumValues: EnumValueArg[] = [];
@@ -53,7 +55,8 @@ export class MetadataArgsStorage {
   }
 
   filterFieldByClass(target: any): FieldArg[] {
-    return this.fields.filter(item => item.target === target);
+    const inheritanceTree = MetadataUtils.getInheritanceTree(target);
+    return this.filterByTargetAndWithoutDuplicateProperties(this.fields, inheritanceTree);
   }
 
   filterArgumentByClassAndProperty(target: any, property: string): ArgumentArg[] {
@@ -75,7 +78,27 @@ export class MetadataArgsStorage {
   filterBeforeByByClassAndProperty(target: any, property: string): BeforeArg[] {
     return this.befores.filter(item => item.target === target && item.property === property);
   }
+
+  /**
+ * Filters given array by a given target or targets and prevents duplicate property names.
+ */
+  protected filterByTargetAndWithoutDuplicateProperties<T extends { target: Function | string, property: string }>(
+    array: T[],
+    target: (Function | string) | (Function | string)[],
+  ): T[] {
+    const newArray: T[] = [];
+    array.forEach(item => {
+      const sameTarget = target instanceof Array ? target.indexOf(item.target) !== -1 : item.target === target;
+      if (sameTarget) {
+        if (!newArray.find(newItem => newItem.property === item.property))
+          newArray.push(item);
+      }
+    });
+    return newArray;
+  }
 }
+
+
 
 /**
  * Gets metadata args storage.

@@ -1,23 +1,24 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "declaration": true,
-        "target": "es6",
-        "noImplicitAny": true,
-        "sourceMap": true,
-        "inlineSources": true,
-        "moduleResolution": "node",
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "rootDir": "src",
-        "outDir": "lib",
-        "lib": [
-            "esnext"
-        ]
-    },
-    "exclude": [
-        "node_modules",
-        "lib",
-        "examples"
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "target": "es6",
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "inlineSources": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "rootDir": "src",
+    "outDir": "lib",
+    "pretty": true,
+    "lib": [
+      "esnext"
     ]
+  },
+  "exclude": [
+    "node_modules",
+    "lib",
+    "examples"
+  ]
 }
