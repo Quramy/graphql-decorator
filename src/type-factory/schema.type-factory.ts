@@ -47,11 +47,7 @@ function getEntryObject(
       return fields;
     }, {} as { [key: string]: any });
   })
-  .reduce((map, fields) => {
-    Object.keys(fields)
-      .forEach(key => map[key] = fields[key]);
-      return map;
-  }, {} as { [key: string]: any });
+  .reduce((map, fields) => ({ ...map, ...fields }), {});
 
   return Object.keys(fieldMap).length > 0 ? objectTypeFactory(fieldMap) : undefined;
 
