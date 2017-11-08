@@ -39,7 +39,7 @@ function getEntryObject(
     throw new SchemaFactoryError(`Target should have @${type} field`, SchemaFactoryErrorType.NO_QUERY_FIELD);
   }
 
-  return metadatas.map(metadata => {
+  const fieldMap = metadatas.map(metadata => {
     const fieldTarget = Reflect.getMetadata('design:type', metadata.target, metadata.property) as Function;
     const fieldMetadatas = getMetadataBuilder().buildFieldMetadata(fieldTarget.prototype);
     return fieldMetadatas.reduce((fields, fieldMetadata) => {
@@ -47,8 +47,13 @@ function getEntryObject(
       return fields;
     }, {} as { [key: string]: any });
   })
-    .map(fields => objectTypeFactory(fields))
-    .find((value, index) => index === 0);
+  .reduce((map, fields) => {
+    Object.keys(fields)
+      .forEach(key => map[key] = fields[key]);
+      return map;
+  }, {} as { [key: string]: any });
+
+  return Object.keys(fieldMap).length > 0 ? objectTypeFactory(fieldMap) : undefined;
 
 }
 
