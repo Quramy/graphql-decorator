@@ -9,3 +9,4 @@ export * from './field.decorator';
 export * from './order-by.decorator';
 export * from './root.decorator';
 export * from './before.decorator';
+export * from './interface-type.decorator';

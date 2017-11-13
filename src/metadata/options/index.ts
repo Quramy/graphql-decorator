@@ -7,3 +7,4 @@ export * from './field.option';
 export * from './argument.option';
 export * from './order-by.option';
 export * from './before.option';
+export * from './interface.option';

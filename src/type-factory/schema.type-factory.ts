@@ -18,6 +18,7 @@ export enum SchemaFactoryErrorType {
   INPUT_FIELD_SHOULD_NOT_BE_PAGINATED,
   VALUE_SHOULD_NOT_BE_FUNC,
   ORDER_BY_OUTSIDE_PAGINATION,
+  INPUT_FIELD_SHOULD_NOT_HAVE_INTERFACE,
 }
 
 export class SchemaFactoryError extends Error {

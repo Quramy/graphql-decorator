@@ -15,6 +15,7 @@ import { enumTypeFactory } from './enum.type-factory';
 import { getMetadataArgsStorage } from '../metadata-builder';
 import { objectTypeFactory } from './object.type-factory';
 import { unionTypeFactory } from './union.type-factory';
+import { interfaceTypeFactory } from './interface.type-factory';
 
 export interface ResolverHolder {
     fn: Function;
@@ -51,6 +52,8 @@ function convertType(typeFn: Function, metadata: FieldMetadata | ArgumentMetadat
     } else if (returnType && returnType.prototype && getMetadataArgsStorage().filterObjectTypeByClass(returnType).length > 0) {
       // recursively call objectFactory
       returnType = objectTypeFactory(returnType, isInput);
+    } else if (returnType && returnType.prototype && getMetadataArgsStorage().filterInterfaceTypeByClass(returnType).length > 0) {
+      returnType = interfaceTypeFactory(returnType);
     } else if (returnType && returnType.prototype && getMetadataArgsStorage().filterEnumsByClass(returnType).length > 0) {
       returnType = enumTypeFactory(returnType);
     }

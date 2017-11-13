@@ -10,3 +10,4 @@ export * from './context.metadata';
 export * from './order-by.metadata';
 export * from './root.metadata';
 export * from './field.metadata';
+export * from './interface.metadata';
