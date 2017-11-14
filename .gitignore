@@ -4,3 +4,4 @@ node_modules/
 lib/
 typings/
 .built/
+.DS_Store
