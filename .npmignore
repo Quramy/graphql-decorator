@@ -4,7 +4,6 @@
 .editorconfig
 .github/
 .travis.yml
-docs/
 examples/
 runtest.sh
 src/
