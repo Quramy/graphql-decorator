@@ -9,6 +9,8 @@
 - Fixed @Field arguments handling - #42 - [@felipesabino](https://github.com/felipesabino)
 - Fixed @UnionType usage with abstract classes - #43 - [@felipesabino](https://github.com/felipesabino)
 - Fixed error that just one @Query was added to resulting schema - #44 - [@felipesabino](https://github.com/felipesabino)
+- Fixed `.npmignore` and `.gitignore` - #48 - [@marcelorisse](https://github.com/marcelorisse)
+- Removed duplicated CHANGELOG file - #48 - [@marcelorisse](https://github.com/marcelorisse)
 
 ### Breaking changes
 
