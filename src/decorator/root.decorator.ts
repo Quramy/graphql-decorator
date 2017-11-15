@@ -5,7 +5,7 @@ import { getMetadataArgsStorage } from '../metadata-builder';
  *
  * @param option Options for an Schema
  */
-export function Ctx() {
+export function Root() {
   return function (target: any, propertyKey: any, index: number) {
     getMetadataArgsStorage().roots.push({
       target: target,
