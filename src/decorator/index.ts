@@ -7,4 +7,5 @@ export * from './arg.decorator';
 export * from './context.decorator';
 export * from './field.decorator';
 export * from './order-by.decorator';
+export * from './root.decorator';
 export * from './before.decorator';
