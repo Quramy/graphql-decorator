@@ -49,7 +49,7 @@ export class RootSchema {
 
 Example usage of @Ctx and @Root.
 ```typescript
-import { ObjectType, Ctx, Field, Root } from 'graphql-decorator';
+import { ObjectType, Ctx, Field, Root } from 'graphql-schema-decorator';
 import { GraphQLID, GraphQLString, GraphQLList } from 'graphql';
 import * as AnswerTypes from 'graphql/answer/types/index';
 
@@ -78,7 +78,7 @@ export class UserType {
 
 Use of @Pagination with @OrderBy
 ```typescript
-import { ObjectType, Arg, Ctx, List, Field } from 'graphql-decorator';
+import { ObjectType, Arg, Ctx, List, Field } from 'graphql-schema-decorator';
 
 @ObjectType({description: 'Get all users query.'})
 export class UsersQuery {
@@ -203,7 +203,7 @@ It provide the following features:
 This tool requires Node.js v4.4.0 or later.
 
 ```sh
-npm i graphql-decorator typescript
+npm i graphql-schema-decorator typescript
 ```
 
 This tool uses ES.next Decorators and Reflect, so create tsconfig.json :
@@ -230,7 +230,7 @@ And write .ts code such as:
 ```ts
 /* main.ts */
 
-import { Schema, Query, ObjectType, Field, schemaFactory } from "graphql-decorator";
+import { Schema, Query, ObjectType, Field, schemaFactory } from "graphql-schema-decorator";
 const graphql = require("graphql").graphql;
 
 // @ObjectType creates GraphQLObjectType from a class
@@ -276,7 +276,7 @@ You can declare a GraphQL schema class with `@Schema`, `@Query` and `@Mutation` 
 For example:
 
 ```ts
-import { Schema, Query, Mutation } from "graphql-decorator";
+import { Schema, Query, Mutation } from "graphql-schema-decorator";
 
 @Schema()
 class MySchema {
