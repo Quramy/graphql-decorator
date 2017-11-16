@@ -11,6 +11,8 @@
 - Fixed error that just one @Query was added to resulting schema - #44 - [@felipesabino](https://github.com/felipesabino)
 - Fixed `.npmignore` and `.gitignore` - #48 - [@marcelorisse](https://github.com/marcelorisse)
 - Removed duplicated CHANGELOG file - #48 - [@marcelorisse](https://github.com/marcelorisse)
+- Fixed `@Root` decorator now being correctly exported - #51 - [@babbarankit](https://github.com/babbarankit)
+- Fixed README examples - #51 - [@babbarankit](https://github.com/babbarankit)
 
 ### Breaking changes
 
