@@ -1,6 +1,6 @@
 /**
  * Concats two arrays
- * @param itemsA fist array argument
+ * @param itemsA first array argument
  * @param itemsB second array argument
  */
 export const concat = (itemsA: any[], itemsB: any[]) => itemsA.concat(itemsB);
