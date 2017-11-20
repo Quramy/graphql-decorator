@@ -385,16 +385,6 @@ describe('Functional', function () {
             },
           ];
         }
-
-        @D.Field({ type: MyObjectType })
-        x(): any {
-          return null;
-        }
-
-        @D.Field({ type: MyOtherObjectType })
-        y(): any {
-          return null;
-        }
       }
 
       @D.Schema()
@@ -404,8 +394,6 @@ describe('Functional', function () {
 
       it('resolves interfaces', async function () {
         const schema = schemaFactory(SchemaType);
-
-        console.log(graphql.printSchema(schema));
 
         const result = await graphql.graphql(schema, `
         query {
