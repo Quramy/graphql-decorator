@@ -2,10 +2,10 @@ import { getMetadataArgsStorage } from '../metadata-builder';
 import { InterfaceOption } from '../index';
 
 /**
- * Union Type.
- * See [GraphQL Documentation - Union Types]{@link http://graphql.org/learn/schema/#union-types}
+ * Interface Type.
+ * See [GraphQL Documentation - Interfaces]{@link http://graphql.org/learn/schema/#interfaces}
  *
- * @param option Options for an Union Type
+ * @param option Options for an Interface definition
  */
 export function InterfaceType<T>(option: InterfaceOption<T>) {
   return function (target: any) {
