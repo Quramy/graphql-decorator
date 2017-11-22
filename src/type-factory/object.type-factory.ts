@@ -30,10 +30,7 @@ export function objectTypeFactory(target: Function, isInput: boolean = false): g
           }
           const fieldMetadataList: { target: Function, field: FieldMetadata}[] = getMetadataBuilder()
             .buildFieldMetadata(target.prototype)
-            .map(field => ({
-              target: target,
-              field: field,
-            }))
+            .map(field => ({ target, field }))
             .concat(
               flatten(
                 metadata.interfaces.map(interfaceMetadata => flatten(
