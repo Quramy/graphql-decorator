@@ -14,6 +14,7 @@ import {
   InterfaceTypeMetadata,
 } from '../metadata/types';
 
+import { flatten } from '../array.utils';
 import { EntryType } from '../metadata/args';
 import { getMetadataArgsStorage } from './metadata-args.storage';
 
@@ -61,7 +62,7 @@ export class MetadataBuilder {
         name: arg.name,
         description: arg.description,
         isInput: arg.isInput,
-        interfaces: Array.prototype.concat.apply([], arg.interfaces.map(this.buildInterfaceTypeMetadata)),
+        interfaces: flatten(arg.interfaces.map(this.buildInterfaceTypeMetadata)),
       }));
   }
 
