@@ -6,7 +6,6 @@ import * as graphql from 'graphql';
 import { IoCContainer } from '../ioc-container';
 import { schemaFactory } from '../type-factory';
 import { useContainer } from '../use-container';
-import { GraphQLString } from 'graphql/type/scalars';
 
 const assert = require('assert');
 
@@ -307,7 +306,7 @@ describe('Functional', function () {
 
       @D.ObjectType()
       class ReturnType {
-        @D.Field({ type: GraphQLString })
+        @D.Field({ type: graphql.GraphQLString })
         valueFromProvidedRoot(
           @D.Root() root: { value: string },
         ): string {
