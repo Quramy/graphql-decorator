@@ -1,11 +1,12 @@
 import * as graphql from 'graphql';
 
-import { EntryType, EntryTypeMetadata, FieldMetadata } from '../metadata';
+import { EntryType, EntryTypeMetadata, FieldMetadata, ObjectTypeMetadata } from '../metadata';
 import { GraphQLObjectType, GraphQLSchema } from 'graphql';
 import { mutationObjectTypeFactory, queryObjectTypeFactory, subscriptionObjectTypeFactory } from './object.type-factory';
 
 import { fieldTypeFactory } from './field.type-factory';
-import { getMetadataBuilder } from '../metadata-builder';
+import { objectTypeFactory } from './object.type-factory';
+import { getMetadataBuilder, getMetadataArgsStorage } from '../metadata-builder';
 
 export enum SchemaFactoryErrorType {
   NO_SCHEMA_ANNOTATION,
@@ -18,6 +19,7 @@ export enum SchemaFactoryErrorType {
   INPUT_FIELD_SHOULD_NOT_BE_PAGINATED,
   VALUE_SHOULD_NOT_BE_FUNC,
   ORDER_BY_OUTSIDE_PAGINATION,
+  INPUT_FIELD_SHOULD_NOT_HAVE_INTERFACE,
 }
 
 export class SchemaFactoryError extends Error {
@@ -31,7 +33,7 @@ function getEntryObject(
   target: any,
   type: EntryType,
   mandatory: boolean,
-  objectTypeFactory: (fieldsDict: any) => GraphQLObjectType,
+  entryObjectTypeFactory: (fieldsDict: any) => GraphQLObjectType,
 ) {
 
   const metadatas: EntryTypeMetadata[] = getMetadataBuilder().buildEntryTypeMetadata(target, type);
@@ -39,7 +41,7 @@ function getEntryObject(
     throw new SchemaFactoryError(`Target should have @${type} field`, SchemaFactoryErrorType.NO_QUERY_FIELD);
   }
 
-  const fieldMap = metadatas.map(metadata => {
+  let fieldMap = metadatas.map(metadata => {
     const fieldTarget = Reflect.getMetadata('design:type', metadata.target, metadata.property) as Function;
     const fieldMetadatas = getMetadataBuilder().buildFieldMetadata(fieldTarget.prototype);
     return fieldMetadatas.reduce((fields, fieldMetadata) => {
@@ -49,8 +51,15 @@ function getEntryObject(
   })
   .reduce((map, fields) => ({ ...map, ...fields }), {});
 
-  return Object.keys(fieldMap).length > 0 ? objectTypeFactory(fieldMap) : undefined;
+  return Object.keys(fieldMap).length > 0 ? entryObjectTypeFactory(fieldMap) : undefined;
 
+}
+
+function getAllTypes() {
+  return getMetadataArgsStorage()
+    .objects
+    .filter(arg => arg.interfaces.length > 0)
+    .map(arg => objectTypeFactory(arg.target, arg.isInput));
 }
 
 export function schemaFactory(target: Function) {
@@ -59,13 +68,15 @@ export function schemaFactory(target: Function) {
       SchemaFactoryErrorType.NO_SCHEMA_ANNOTATION);
   }
 
-  let query = getEntryObject(target, EntryType.Query, true, queryObjectTypeFactory);
-  let mutation = getEntryObject(target, EntryType.Mutation, false, mutationObjectTypeFactory);
-  let subscription = getEntryObject(target, EntryType.Subscription, false, subscriptionObjectTypeFactory);
+  const query = getEntryObject(target, EntryType.Query, true, queryObjectTypeFactory);
+  const mutation = getEntryObject(target, EntryType.Mutation, false, mutationObjectTypeFactory);
+  const subscription = getEntryObject(target, EntryType.Subscription, false, subscriptionObjectTypeFactory);
+  const types = getAllTypes();
 
   return new graphql.GraphQLSchema({
     query: query,
     mutation: mutation,
     subscription: subscription,
+    types: types,
   });
 }

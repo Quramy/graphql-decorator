@@ -12,6 +12,7 @@ import {
   RootArg,
   SchemaArg,
   UnionTypeArg,
+  InterfaceTypeArg,
 } from '../metadata/args';
 
 import { MetadataUtils } from './metadata.utils';
@@ -29,6 +30,7 @@ export class MetadataArgsStorage {
   roots: RootArg[] = [];
   orderBys: OrderByArg[] = [];
   befores: BeforeArg[] = [];
+  interfaces: InterfaceTypeArg[] = [];
 
   filterEnumsByClass(target: any): EnumTypeArg[] {
     return this.enums.filter(item => item.target === target);
@@ -40,6 +42,10 @@ export class MetadataArgsStorage {
 
   filterUnionTypeByClass(target: any): UnionTypeArg[] {
     return this.union.filter(item => item.target === target);
+  }
+
+  filterInterfaceTypeByClass(target: any): InterfaceTypeArg[] {
+    return this.interfaces.filter(item => item.target === target);
   }
 
   filterObjectTypeByClass(target: any): ObjectTypeArg[] {

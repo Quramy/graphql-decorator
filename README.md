@@ -17,7 +17,8 @@ Apart from the decorators listed on the original documentation, we have added si
 - @Query: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
 - @Mutation: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
 - @UseContainer: Sets the IoC container to be used in order to instantiate the decorated clas.
-- @Uniontype: It can be used to create `GraphQLUnionType` objects.
+- @UnionType: It can be used to create `GraphQLUnionType` objects.
+- @InterfaceType: It can be used to create `GraphQLInterfaceType` objects.
 
 #### GraphQL Decorator Examples
 

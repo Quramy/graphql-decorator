@@ -11,8 +11,10 @@ import {
   RootMetadata,
   SchemaMetadata,
   UnionTypeMetadata,
+  InterfaceTypeMetadata,
 } from '../metadata/types';
 
+import { flatten } from '../array.utils';
 import { EntryType } from '../metadata/args';
 import { getMetadataArgsStorage } from './metadata-args.storage';
 
@@ -41,6 +43,17 @@ export class MetadataBuilder {
       }));
   }
 
+  buildInterfaceTypeMetadata(target: any): InterfaceTypeMetadata[] | undefined {
+    return getMetadataArgsStorage()
+      .filterInterfaceTypeByClass(target)
+      .map(arg => ({
+        target: arg.target,
+        name: arg.name,
+        resolver: arg.resolver,
+        description: arg.description,
+      }));
+  }
+
   buildObjectTypeMetadata(target: any): ObjectTypeMetadata[] | undefined {
     return getMetadataArgsStorage()
       .filterObjectTypeByClass(target)
@@ -49,6 +62,7 @@ export class MetadataBuilder {
         name: arg.name,
         description: arg.description,
         isInput: arg.isInput,
+        interfaces: flatten(arg.interfaces.map(this.buildInterfaceTypeMetadata)),
       }));
   }
 

@@ -1,3 +1,5 @@
+import { SchemaFactoryError, SchemaFactoryErrorType } from '../type-factory';
+
 import { ObjectOption } from '../metadata/options';
 import { getMetadataArgsStorage } from '../metadata-builder';
 
@@ -23,11 +25,20 @@ export function InputObjectType(option?: ObjectOption) {
 
 function CreateObjectType(isInput: boolean, option?: ObjectOption) {
   return function (target: any) {
+
+    if (isInput && option && option.interfaces) {
+      throw new SchemaFactoryError(`Input types are not allowed to have interfaces: '${target.name}'`,
+        SchemaFactoryErrorType.INPUT_FIELD_SHOULD_NOT_HAVE_INTERFACE);
+    }
+
     getMetadataArgsStorage().objects.push({
       target: target,
       name: target.name,
       description: option ? option.description : null,
       isInput: isInput,
+      interfaces: option && option.interfaces ? (
+        option.interfaces.constructor !== Array ? [option.interfaces as Function] : option.interfaces as Function[]
+      ) : [],
     });
   };
 }

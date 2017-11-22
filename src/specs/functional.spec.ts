@@ -302,7 +302,7 @@ describe('Functional', function () {
 
     });
 
-    describe('Root', function() {
+    describe('Root', function () {
 
       @D.ObjectType()
       class ReturnType {
@@ -334,7 +334,7 @@ describe('Functional', function () {
         @D.Query() query: QueryType;
       }
 
-      it('resolves value from provided root object', async function() {
+      it('resolves value from provided root object', async function () {
         const schema = schemaFactory(SchemaType);
         const result = await graphql.graphql(schema, `query { field { valueFromProvidedRoot } } `);
         assert(result.data.field.valueFromProvidedRoot === 'Hello, world!');
@@ -342,6 +342,79 @@ describe('Functional', function () {
 
     });
 
+    describe('Interfaces', function () {
+
+      @D.InterfaceType({
+        resolver: (obj: any): string | null => {
+          // tslint:disable:no-use-before-declare
+          if (obj.objectField) { return MyObjectType.name; }
+          if (obj.otherObjectField) { return MyOtherObjectType.name; }
+          return null;
+          // tslint:enable:no-use-before-declare
+        },
+      })
+      class MyInterface {
+        @D.Field()
+        interfaceField: string;
+      }
+
+      @D.ObjectType({ interfaces: MyInterface })
+      class MyObjectType {
+        @D.Field()
+        objectField: string;
+      }
+
+      @D.ObjectType({ interfaces: [MyInterface] })
+      class MyOtherObjectType {
+        @D.Field()
+        otherObjectField: string;
+      }
+
+      @D.ObjectType()
+      class QueryType {
+        @D.Field({ type: MyInterface, isList: true })
+        value(): any[] {
+          return [
+            {
+              interfaceField: 'A',
+              objectField: 'objectField',
+            },
+            {
+              interfaceField: 'B',
+              otherObjectField: 'otherObjectField',
+            },
+          ];
+        }
+      }
+
+      @D.Schema()
+      class SchemaType {
+        @D.Query() query: QueryType;
+      }
+
+      it('resolves interfaces', async function () {
+        const schema = schemaFactory(SchemaType);
+
+        const result = await graphql.graphql(schema, `
+        query {
+          value {
+            interfaceField
+            ...on MyObjectType {
+              objectField
+            }
+            ...on MyOtherObjectType {
+              otherObjectField
+            }
+          }
+        }
+        `);
+        assert(result.data.value.length === 2);
+        assert(result.data.value[0].interfaceField === 'A');
+        assert(result.data.value[0].objectField === 'objectField');
+        assert(result.data.value[1].interfaceField === 'B');
+        assert(result.data.value[1].otherObjectField === 'otherObjectField');
+      });
+    });
 
   });
 
