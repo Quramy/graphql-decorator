@@ -132,4 +132,12 @@ describe('Decorators', function () {
       assert(actual.isList === true);
     });
   });
+
+  describe('@Root', function () {
+    it('check root decoration exists', function () {
+       class Obj { @D.Field() someFunction( @D.Root() root: any) { } }
+       const actual = getMetadataBuilder().buildFieldMetadata(Obj.prototype).find(value => value.name === 'someFunction').root;
+       assert(actual.name === 'someFunction');
+    });
+  });
 });

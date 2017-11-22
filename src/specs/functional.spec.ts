@@ -6,6 +6,7 @@ import * as graphql from 'graphql';
 import { IoCContainer } from '../ioc-container';
 import { schemaFactory } from '../type-factory';
 import { useContainer } from '../use-container';
+import { GraphQLString } from 'graphql/type/scalars';
 
 const assert = require('assert');
 
@@ -301,6 +302,47 @@ describe('Functional', function () {
       });
 
     });
+
+    describe('Root', function() {
+
+      @D.ObjectType()
+      class ReturnType {
+        @D.Field({ type: GraphQLString })
+        valueFromProvidedRoot(
+          @D.Root() root: { value: string },
+        ): string {
+          return root.value;
+        }
+      }
+
+      @D.ObjectType()
+      class QueryType {
+        @D.Field({ type: ReturnType })
+        field(): any {
+          return {
+            any: '',
+            object: '',
+            with: '',
+            a: '',
+            value: 'Hello, world!',
+            key: '',
+          };
+        }
+      }
+
+      @D.Schema()
+      class SchemaType {
+        @D.Query() query: QueryType;
+      }
+
+      it('resolves value from provided root object', async function() {
+        const schema = schemaFactory(SchemaType);
+        const result = await graphql.graphql(schema, `query { field { valueFromProvidedRoot } } `);
+        assert(result.data.field.valueFromProvidedRoot === 'Hello, world!');
+      });
+
+    });
+
 
   });
 
