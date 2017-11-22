@@ -10,3 +10,4 @@ export * from './root.arg';
 export * from './order-by.arg';
 export * from './before.arg';
 export * from './interface-type.arg';
+export * from './after.arg';

@@ -10,3 +10,4 @@ export * from './order-by.decorator';
 export * from './root.decorator';
 export * from './before.decorator';
 export * from './interface-type.decorator';
+export * from './after.decorator';

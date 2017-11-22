@@ -179,11 +179,109 @@ describe('Functional', function () {
 
       it('resolves @Field decorated with @Before Middleware and returning from resolver', async function () {
         const schema = schemaFactory(SchemaType);
+        const result = await graphql.graphql(schema, `query { ignore }`);
+        assert(result.data.ignore === 'Hello, world!');
+      });
+
+      it('resolves @Field decorated with @Before Middleware and erroring', async function () {
+        const schema = schemaFactory(SchemaType);
+        const result = await graphql.graphql(schema, `query { callError }`);
+
+        assert(result.data.callError === null);
+        assert(typeof (result.errors) !== 'undefined');
+        assert(result.errors.length === 1);
+        assert(result.errors[0].message === 'Error from middleware');
+      });
+
+    });
+
+    describe('After Middleware', function () {
+
+      @D.ObjectType()
+      class QueryType {
+        @D.Field({ type: graphql.GraphQLString })
+        @D.After({
+          middleware: (context, args, result, next) => next(null, 'Hello from middleware'),
+        })
+        async replace(): Promise<string> {
+          return 'Hello, world!';
+        }
+
+        @D.Field({ type: graphql.GraphQLString })
+        @D.After({
+          middleware: (context, args, result, next) => {
+            if (args.replace) {
+              next(null, 'Hello from middleware');
+            } else {
+              next();
+            }
+          },
+        })
+        async replaceWithCondition(
+          @D.Arg({ name: 'replace', description: 'any desc' }) replace: boolean,
+        ): Promise<string> {
+          return 'Hello!';
+        }
+
+        @D.Field({ type: graphql.GraphQLString })
+        @D.After({
+          middleware: (context, args, result, next) => {
+            next(null, Promise.resolve(result).then(str => str.replace('world', 'after middleware')));
+          },
+        })
+        async modifyResult(): Promise<string> {
+          return 'Hello, world!';
+        }
+
+        @D.Field({ type: graphql.GraphQLString })
+        @D.After({ middleware: (context, args, result, next) => next() })
+        async ignore(): Promise<string> {
+          return 'Hello, world!';
+        }
+
+        @D.Field({ type: graphql.GraphQLString })
+        @D.After({ middleware: (context, args, result, next) => next(new Error('Error from middleware'), 'x') })
+        async callError(): Promise<string> {
+          return 'Hello, world!';
+        }
+      }
+
+      @D.Schema()
+      class SchemaType {
+        @D.Query() query: QueryType;
+      }
+
+      it('resolves @Field decorated with @After Middleware replacing resolver', async function () {
+        const schema = schemaFactory(SchemaType);
         const result = await graphql.graphql(schema, `query { replace }`);
         assert(result.data.replace === 'Hello from middleware');
       });
 
-      it('resolves @Field decorated with @Before Middleware and erroring', async function () {
+      it('resolves @Field decorated with @After Middleware and modifying resolver depending on condition', async function () {
+        const schema = schemaFactory(SchemaType);
+        const result = await graphql.graphql(schema, `query { replaceWithCondition(replace: true) }`);
+        assert(result.data.replaceWithCondition === 'Hello from middleware');
+      });
+
+      it('resolves @Field decorated with @After Middleware and modifying resolver depending on condition', async function () {
+        const schema = schemaFactory(SchemaType);
+        const result = await graphql.graphql(schema, `query { replaceWithCondition }`);
+        assert(result.data.replaceWithCondition === 'Hello!');
+      });
+
+      it('resolves @Field decorated with @After Middleware and modifying resolver result', async function () {
+        const schema = schemaFactory(SchemaType);
+        const result = await graphql.graphql(schema, `query { modifyResult }`);
+        assert(result.data.modifyResult === 'Hello, after middleware!');
+      });
+
+      it('resolves @Field decorated with @After Middleware and returning from resolver', async function () {
+        const schema = schemaFactory(SchemaType);
+        const result = await graphql.graphql(schema, `query { ignore }`);
+        assert(result.data.ignore === 'Hello, world!');
+      });
+
+      it('resolves @Field decorated with @After Middleware and erroring', async function () {
         const schema = schemaFactory(SchemaType);
         const result = await graphql.graphql(schema, `query { callError }`);
 

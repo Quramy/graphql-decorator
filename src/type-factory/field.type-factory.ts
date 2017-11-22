@@ -8,14 +8,13 @@ import {
 import { SchemaFactoryError, SchemaFactoryErrorType } from './schema.type-factory';
 
 import { IoCContainer } from '../ioc-container';
-import { Middleware } from '../middleware';
 import { OrderByTypeFactory } from './order-by.type-factory';
 import { PaginationType } from '../pagination.type';
 import { enumTypeFactory } from './enum.type-factory';
 import { getMetadataArgsStorage } from '../metadata-builder';
+import { interfaceTypeFactory } from './interface.type-factory';
 import { objectTypeFactory } from './object.type-factory';
 import { unionTypeFactory } from './union.type-factory';
-import { interfaceTypeFactory } from './interface.type-factory';
 
 export interface ResolverHolder {
     fn: Function;
@@ -138,11 +137,12 @@ export function resolverFactory(
         rest[index] = root;
       }
     }
+
+    let result: any = null;
     if (metadata.before) {
 
       // TODO: This whole chain should be promise based but this would impact the whole `schemaFactory` call chain.
       //  So Promise will be added as a future feature/enhancement
-      let result: any = null;
       let next: (error?: Error) => void = (error?: Error, value?: any): any => {
         if (error) {
           throw error;
@@ -153,12 +153,24 @@ export function resolverFactory(
         }
       };
       metadata.before.middleware.call(fieldParentClass, context, args, next);
-      return result;
     } else {
-      return originalFn.apply(fieldParentClass, rest);
+      result = originalFn.apply(fieldParentClass, rest);
     }
-  };
 
+    if (metadata.after) {
+      let next: (error?: Error) => void = (error?: Error, value?: any): any => {
+        if (error) {
+          throw error;
+        } else if (typeof (value) !== 'undefined') {
+          result = value;
+        }
+        return result;
+      };
+      metadata.after.middleware.call(fieldParentClass, context, args, result, next);
+    }
+
+    return result;
+  };
 
   return {
     fn,
