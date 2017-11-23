@@ -198,12 +198,36 @@ describe('Functional', function () {
     describe('After Middleware', function () {
 
       @D.ObjectType()
+      class ChangedReturnType {
+        @D.Field({ nonNull: true })
+        data: string;
+      }
+
+      @D.ObjectType()
       class QueryType {
         @D.Field({ type: graphql.GraphQLString })
         @D.After({
           middleware: (context, args, result, next) => next(null, 'Hello from middleware'),
         })
         async replace(): Promise<string> {
+          return 'Hello, world!';
+        }
+
+        @D.Field({ type: ChangedReturnType })
+        @D.After({
+          middleware: async (
+            context,
+            args,
+            result: Promise<string>,
+            next: (error?: Error, value?: ChangedReturnType) => void,
+          ) => {
+            let changedReturnType = {
+              data: (await result),
+            };
+            next(null, changedReturnType);
+          },
+        })
+        async changeReturnType(): Promise<string> {
           return 'Hello, world!';
         }
 
@@ -244,6 +268,7 @@ describe('Functional', function () {
         async callError(): Promise<string> {
           return 'Hello, world!';
         }
+
       }
 
       @D.Schema()
@@ -289,6 +314,12 @@ describe('Functional', function () {
         assert(typeof (result.errors) !== 'undefined');
         assert(result.errors.length === 1);
         assert(result.errors[0].message === 'Error from middleware');
+      });
+
+      it('resolves @Field decorated with @After Middleware changing result type', async function () {
+        const schema = schemaFactory(SchemaType);
+        const result = await graphql.graphql(schema, `query { changeReturnType { data } }`);
+        assert(result.data.changeReturnType.data === 'Hello, world!');
       });
 
     });

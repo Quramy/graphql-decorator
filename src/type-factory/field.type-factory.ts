@@ -158,18 +158,22 @@ export function resolverFactory(
     }
 
     if (metadata.after) {
-      let next: (error?: Error) => void = (error?: Error, value?: any): any => {
-        if (error) {
-          throw error;
-        } else if (typeof (value) !== 'undefined') {
-          result = value;
-        }
-        return result;
-      };
-      metadata.after.middleware.call(fieldParentClass, context, args, result, next);
+      return new Promise((resolve, reject) => {
+        let next: (error?: Error) => void = (error?: Error, value?: any): any => {
+          if (error) {
+            reject(error);
+          } else if (typeof (value) !== 'undefined') {
+            resolve(value);
+          } else {
+            resolve(result);
+          }
+        };
+        metadata.after.middleware.call(fieldParentClass, context, args, result, next);
+      });
+    } else {
+      return result;
     }
 
-    return result;
   };
 
   return {

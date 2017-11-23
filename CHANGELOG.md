@@ -16,6 +16,7 @@
 - Improved tests by adding @Root ones - [#52](https://github.com/indigotech/graphql-schema-decorator/pull/52) - [@babbarankit](https://github.com/babbarankit)
 - Added @InterfaceType decorator - [#46](https://github.com/indigotech/graphql-schema-decorator/pull/46) - [@felipesabino](https://github.com/felipesabino)
 - Added @After middleware decorator - [#56](https://github.com/indigotech/graphql-schema-decorator/pull/56) - [@marcelorisse](https://github.com/marcelorisse)
+- Bugfix - @After middleware changing return type - [#58](https://github.com/indigotech/graphql-schema-decorator/pull/58) - [@felipesabino](https://github.com/felipesabino)
 
 ### Breaking changes
 
