@@ -1,6 +1,6 @@
 {
   "name": "graphql-schema-decorator",
-  "version": "1.0.0-alpha6",
+  "version": "1.0.0-alpha7",
   "description": "Creates GraphQL Schema from decorated TypeScript Class",
   "main": "lib/index.js",
   "engines": {
