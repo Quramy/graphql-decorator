@@ -1,4 +1,5 @@
 import {
+  AfterMetadata,
   ArgumentMetadata,
   BeforeMetadata,
   ContextMetadata,
@@ -105,6 +106,7 @@ export class MetadataBuilder {
         root: this.buildRootMetadata(target, arg.property),
         orderBy: this.buildOrderByMetadata(target, arg.property),
         before: this.buildBeforeMetadata(target, arg.property),
+        after: this.buildAfterMetadata(target, arg.property),
       }));
   }
 
@@ -189,6 +191,20 @@ export class MetadataBuilder {
         value: arg.value,
         description: arg.description,
       }));
+  }
+
+  protected buildAfterMetadata(target: any, property: string): AfterMetadata | undefined {
+    return getMetadataArgsStorage()
+      .filterAfterByByClassAndProperty(target, property)
+      .map(arg => ({
+        target: arg.target,
+        name: arg.name,
+        description: arg.description,
+        index: arg.index,
+        property: arg.property,
+        middleware: arg.middleware,
+      }))
+      .find((_, index) => index === 0);
   }
 
 }

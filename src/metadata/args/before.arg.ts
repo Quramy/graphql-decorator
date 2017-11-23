@@ -1,8 +1,8 @@
 import { Argument } from './argument';
-import { Middleware } from '../../middleware';
+import { BeforeMiddleware } from '../../middleware';
 
 export interface BeforeArg extends Argument {
   index: number;
   property: string;
-  middleware: Middleware;
+  middleware: BeforeMiddleware;
 }

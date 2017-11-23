@@ -1,3 +1,4 @@
+import { AfterMetadata } from './after.metadata';
 import { ArgumentMetadata } from './argument.metadata';
 import { BeforeMetadata } from './before.metadata';
 import { ContextMetadata } from './context.metadata';
@@ -16,4 +17,5 @@ export interface FieldMetadata extends Metadata {
   root?: RootMetadata;
   orderBy?: OrderByMetadata;
   before?: BeforeMetadata;
+  after?: AfterMetadata;
 }

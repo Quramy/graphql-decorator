@@ -1,7 +1,7 @@
-import { FieldMetadata } from './metadata';
-import { PageInfo } from './page-info.type';
-import { PaginationResponse } from './pagination.type';
-import { getMetadataBuilder } from './metadata-builder';
+import { FieldMetadata } from '../metadata';
+import { PageInfo } from '../page-info.type';
+import { PaginationResponse } from '../pagination.type';
+import { getMetadataBuilder } from '../metadata-builder';
 
 export function PaginationMiddleware(target: any, propertyKey: string, methodDescriptor: TypedPropertyDescriptor<any>): any {
   return {

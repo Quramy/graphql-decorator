@@ -1,4 +1,5 @@
 import {
+  AfterArg,
   ArgumentArg,
   BeforeArg,
   ContextArg,
@@ -7,12 +8,12 @@ import {
   EnumTypeArg,
   EnumValueArg,
   FieldArg,
+  InterfaceTypeArg,
   ObjectTypeArg,
   OrderByArg,
   RootArg,
   SchemaArg,
   UnionTypeArg,
-  InterfaceTypeArg,
 } from '../metadata/args';
 
 import { MetadataUtils } from './metadata.utils';
@@ -31,6 +32,7 @@ export class MetadataArgsStorage {
   orderBys: OrderByArg[] = [];
   befores: BeforeArg[] = [];
   interfaces: InterfaceTypeArg[] = [];
+  afters: AfterArg[] = [];
 
   filterEnumsByClass(target: any): EnumTypeArg[] {
     return this.enums.filter(item => item.target === target);
@@ -85,9 +87,13 @@ export class MetadataArgsStorage {
     return this.befores.filter(item => item.target === target && item.property === property);
   }
 
+  filterAfterByByClassAndProperty(target: any, property: string): AfterArg[] {
+    return this.afters.filter(item => item.target === target && item.property === property);
+  }
+
   /**
- * Filters given array by a given target or targets and prevents duplicate property names.
- */
+   * Filters given array by a given target or targets and prevents duplicate property names.
+   */
   protected filterByTargetAndWithoutDuplicateProperties<T extends { target: Function | string, property: string }>(
     array: T[],
     target: (Function | string) | (Function | string)[],

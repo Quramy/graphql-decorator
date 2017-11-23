@@ -1,7 +1,7 @@
 import { SchemaFactoryError, SchemaFactoryErrorType } from '../type-factory';
 
 import { FieldOption } from '../metadata';
-import { PaginationMiddleware } from '../pagination.middleware';
+import { PaginationMiddleware } from '../middleware';
 import { getMetadataArgsStorage } from '../metadata-builder';
 
 /**

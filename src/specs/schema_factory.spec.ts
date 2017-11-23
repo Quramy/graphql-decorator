@@ -252,7 +252,7 @@ describe('schemaFactory', function () {
 
   describe('Pagination', function () {
 
-    it('returns a GraphQL Pagination object with custom @OrberBy fields', async function () {
+    it('returns a GraphQL Pagination object with custom @OrderBy fields', async function () {
       @D.ObjectType()
       class Obj {
         @D.Field({ type: GraphQLString, description: 'a field' })
@@ -278,7 +278,7 @@ describe('schemaFactory', function () {
       assert.deepEqual(validate(schema, ast), []);
     });
 
-    it('returns a GraphQL Pagination object with custom @OrberBy fields (backwards compatibility)', async function () {
+    it('returns a GraphQL Pagination object with custom @OrderBy fields (backwards compatibility)', async function () {
       @D.ObjectType()
       class Obj {
 
@@ -305,7 +305,7 @@ describe('schemaFactory', function () {
       assert.deepEqual(validate(schema, ast), []);
     });
 
-    it('returns a GraphQL Pagination object with custom @OrberBy fields ignoring schema fields', async function () {
+    it('returns a GraphQL Pagination object with custom @OrderBy fields ignoring schema fields', async function () {
 
       @D.ObjectType()
       class Obj {

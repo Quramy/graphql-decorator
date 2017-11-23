@@ -14,6 +14,8 @@
 - Fixed `@Root` decorator now being correctly exported - #51 - [@babbarankit](https://github.com/babbarankit)
 - Fixed README examples - #51 - [@babbarankit](https://github.com/babbarankit)
 - Improved tests by adding @Root ones - #52 - [@babbarankit](https://github.com/babbarankit)
+- Added @InterfaceType decorator - #46 - [@felipesabino](https://github.com/felipesabino)
+- Added @After middleware decorator - #56 - [@marcelorisse](https://github.com/marcelorisse)
 
 ### Breaking changes
 

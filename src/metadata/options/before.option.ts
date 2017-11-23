@@ -1,4 +1,4 @@
-import { Middleware } from '../../middleware';
+import { BeforeMiddleware } from '../../middleware';
 import { Option } from './option';
 
 /**
@@ -9,5 +9,5 @@ export interface BeforeOption extends Option {
    * Middeware to change resolver behavior.
    * Check decorator docs for example usage.
    */
-  middleware: Middleware;
+  middleware: BeforeMiddleware;
 }
