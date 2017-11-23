@@ -7,7 +7,12 @@ import { getMetadataArgsStorage } from '../metadata-builder';
  *
  * Usage example:
  * ```
- * let middleware: AfterMiddleware = (context: any, args: { [key: string]: any }, next: (error?: Error, value?: any) => any): any => {
+ * let middleware: AfterMiddleware = (
+ *   context: any,
+ *   args: { [key: string]: any },
+ *   result: Promise<any> | any,
+ *   next: (error?: Error, value?: any) => any
+ * ): any => {
  *   if(context.user.role != 'any role') {
  *     // can use context and resolve/return value as `1000`, for example, regardless of what resolve function actually implements
  *     next(null, 1000);
