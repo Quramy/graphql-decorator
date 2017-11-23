@@ -5,8 +5,8 @@ import * as graphql from 'graphql';
 
 import { clearFieldTypeCache, clearObjectTypeRepository, fieldTypeFactory, resolverFactory } from '../type-factory';
 
+import { BeforeMiddleware } from '../middleware';
 import { FieldMetadata } from '../metadata';
-import { Middleware } from '../middleware';
 import { getMetadataBuilder } from '../metadata-builder';
 
 const assert = require('assert');
@@ -80,7 +80,7 @@ describe('field specs', function () {
 
       it('makes sure Before is executed before resolving', function (done) {
 
-        let middleware: Middleware = (context: any, args: { [key: string]: any }, next: (error?: Error, value?: any) => any): any => {
+        let middleware: BeforeMiddleware = (context: any, args: { [key: string]: any }, next: (error?: Error, value?: any) => any): any => {
           assert(true);
           done();
         };
@@ -92,7 +92,7 @@ describe('field specs', function () {
 
       it('makes sure middleware can override function execution if next is called with a value', function () {
 
-        let middleware: Middleware = (context: any, args: { [key: string]: any }, next: (error?: Error, value?: any) => any): any => {
+        let middleware: BeforeMiddleware = (context: any, args: { [key: string]: any }, next: (error?: Error, value?: any) => any): any => {
           next(null, 5);
         };
         class Obj { @D.Field() @D.Before(middleware) twice(input: number): number { return input * 2; } }
@@ -105,7 +105,7 @@ describe('field specs', function () {
       // tslint:disable-next-line:max-line-length
       it('makes sure middleware can override function execution if next is called with a value even if it is null (as long it ir not undefined)', function () {
 
-        let middleware: Middleware = (context: any, args: { [key: string]: any }, next: (error?: Error, value?: any) => any): any => {
+        let middleware: BeforeMiddleware = (context: any, args: { [key: string]: any }, next: (error?: Error, value?: any) => any): any => {
           next(null, null);
         };
         class Obj { @D.Field() @D.Before(middleware) twice(input: number): number { return input * 2; } }

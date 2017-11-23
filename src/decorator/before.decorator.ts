@@ -1,5 +1,5 @@
+import { BeforeMiddleware } from '../middleware';
 import { BeforeOption } from '../metadata';
-import { Middleware } from '../middleware';
 import { getMetadataArgsStorage } from '../metadata-builder';
 
 /**
@@ -7,7 +7,7 @@ import { getMetadataArgsStorage } from '../metadata-builder';
  *
  * Usage example:
  * ```
- * let middleware: Middleware = (context: any, args: { [key: string]: any }, next: (error?: Error, value?: any) => any): any => {
+ * let middleware: BeforeMiddleware = (context: any, args: { [key: string]: any }, next: (error?: Error, value?: any) => any): any => {
  *   if(context.user.role != 'any role') {
  *     // can use context and resolve/return value as `1000`, for example, regardless of what resolve function actually implements
  *     next(null, 1000);
@@ -30,7 +30,7 @@ import { getMetadataArgsStorage } from '../metadata-builder';
  * ```
  * @param option Options for an Schema
  */
-export function Before(option: BeforeOption | Middleware) {
+export function Before(option: BeforeOption | BeforeMiddleware) {
   return function (target: any, propertyKey: any, index: number) {
     getMetadataArgsStorage().befores.push({
       target: target,
@@ -38,7 +38,7 @@ export function Before(option: BeforeOption | Middleware) {
       description: option && (option as BeforeOption).description ? (option as BeforeOption).description : null,
       index: index,
       property: propertyKey,
-      middleware: option && (option as BeforeOption).middleware ? (option as BeforeOption).middleware : option as Middleware,
+      middleware: option && (option as BeforeOption).middleware ? (option as BeforeOption).middleware : option as BeforeMiddleware,
     });
   } as Function;
 }
