@@ -16,7 +16,6 @@ Apart from the decorators listed on the original documentation, we have added si
 - @Value: Should be used on classes decorated with @EnumType. It creates values for enums. Accepts an object of type `any` as parameter. This paremeter will be the enum value. If none is passed, the enum value is the enum itself. See example below.
 - @Query: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
 - @Mutation: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
-- @UseContainer: Sets the IoC container to be used in order to instantiate the decorated clas.
 - @UnionType: It can be used to create `GraphQLUnionType` objects.
 - @InterfaceType: It can be used to create `GraphQLInterfaceType` objects.
 
@@ -167,17 +166,37 @@ export class UsersQuery {
 }
 ```
 
-Use of `UseContainer` along with `typedi` container. Note that `bannerRepository` will be injected through the constructor.
+## How to use this project with a dependency injection tool?
+
+You can use service containers, which allow you to inject custom services in some places, like in subscribers or custom naming strategies. Or for example, you can get access to any dependency inside your schema classes using a service container.
+
+Here is a example for how you can setup [`typedi`](https://github.com/pleerock/typedi) service containers. But note, that you can setup any service container you choose to.
 
 ```typescript
-import { ObjectType, Field, Description, List, UseContainer } from 'graphql-schema-decorator';
-import { Container, Inject, Service } from 'typedi';
-import * as BannerTypes from 'graphql-schema/banner/type/banner.type';
-import { BannerRepository, BannerLocalDataSource } from 'data/source/banner';
-import { ModuleRepository } from 'data/source/module';
+
+import {useContainer} from 'graphql-schema-decorator';
+
+// its important to setup container before you start to work with graphql-schema-decorator
+useContainer(Container);
+
+```
+
+Use of `useContainer` along with `typedi` container. Note that `bannerRepository` will be injected through the constructor.
+
+```typescript
+
+import { ObjectType, Field } from 'graphql-schema-decorator';
+import { Service } from 'typedi';
+
+@Service()
+export class BannerRepository {
+  getBanners(): any[] {
+    // getBanners implementation
+  }
+}
+
 
 @ObjectType({description: 'Get a list of banners.'})
-@UseContainer(Container)
 @Service()
 export class BannersQuery {
 	
@@ -193,15 +212,9 @@ export class BannersQuery {
 }
 ```
 
-Helps to build [GraphQL](http://graphql.org/) schema with TypeScript.
-
-It provide the following features:
- * Decorators(`@ObjectType`, `@Schema`, `@NonNull`, and more...) corresponding to [GraphQL type system](http://graphql.org/docs/api-reference-type-system/). 
- * A function to create GraphQL Schema from decorated TypeScript class.
-
 ## Getting started
 
-This tool requires Node.js v4.4.0 or later.
+This tool requires Node.js v6.10.0 or later.
 
 ```sh
 npm i graphql-schema-decorator typescript
