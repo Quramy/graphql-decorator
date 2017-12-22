@@ -1,65 +1,56 @@
 import {
-    schemaFactory,
-    Schema,
-    Query,
+    Arg,
+    Field,
+    InputObjectType,
     Mutation,
     ObjectType,
-    InputObjectType,
-    Field,
-    List,
-    NonNull,
-    Arg,
-    Description,
-} from "graphql-decorator";
+    Query,
+    Schema,
+    schemaFactory,
+} from 'graphql-schema-decorator';
 
-const graphql = require("graphql");
-import {users as data} from "./data";
-import { createHash } from "crypto";
+import { createHash } from 'crypto';
+import {users as data} from './data';
+
+const graphql = require('graphql');
 
 let users = data.slice();
 
-@ObjectType()
-@Description("A user type.")
+@ObjectType({description: 'A user type.'})
 class User {
-    @NonNull() @Field({type: graphql.GraphQLID}) id: string;
+    @Field({type: graphql.GraphQLID, nonNull: true}) id: string;
     @Field() name: string;
-    @NonNull() @Field() email: string;
+    @Field({nonNull: true}) email: string;
 }
 
-@ObjectType()
-@Description("A root query.")
+@ObjectType({description: 'A root query.'})
 class QueryType {
-    @Description("return all users.")
-    @List() @Field({type: User})
+    @Field({description: 'return all users.', isList: true, type: User})
     allUsers() {
         return users;
     }
 }
 
-@InputObjectType()
-@Description("A input object to update a user.")
+@InputObjectType({description: 'A input object to update a user.'})
 class UserForUpdate {
     @Field() name: string;
     @Field() email: string;
 }
 
-@InputObjectType()
-@Description("A input object to create a user.")
+@InputObjectType({description: 'A input object to create a user.'})
 class UserForCreate {
     @Field() name: string;
-    @NonNull() @Field() email: string;
+    @Field({nonNull: true}) email: string;
 }
 
 
-@ObjectType()
-@Description("Mutations.")
+@ObjectType({description: 'Mutations.'})
 class MutationType {
 
-    @Field({type: User})
-    @Description("Update a user and return the changed user.")
+    @Field({type: User, description: 'Update a user and return the changed user.'})
     changeUser(
-        @NonNull() @Arg({name: "id"}) id: string,
-        @Arg({name: "input"}) input: UserForUpdate
+        @Arg({name: 'id', nonNull: true}) id: string,
+        @Arg({name: 'input'}) input: UserForUpdate,
     ) {
         const user = users.find(u => u.id === id) as User;
         if (!user) return null;
@@ -67,24 +58,22 @@ class MutationType {
         return user;
     }
 
-    @Field({type: User})
-    @Description("Create a user and return the created user.")
+    @Field({type: User, description: 'Create a user and return the created user.'})
     addUser(
-        @NonNull() @Arg({name: "input"}) input: UserForCreate
+        @Arg({name: 'input', nonNull: true}) input: UserForCreate,
     ) {
         const newUser = new User();
-        const shasum = createHash("sha1");
-        shasum.update("usr" + Date.now());
-        newUser.id = shasum.digest("hex");
+        const shasum = createHash('sha1');
+        shasum.update('usr' + Date.now());
+        newUser.id = shasum.digest('hex');
         Object.assign(newUser, input);
         users.push(newUser);
         return newUser;
     }
 
-    @Field({type: User})
-    @Description("Delete a user and return the removed user.")
+    @Field({type: User, description: 'Delete a user and return the removed user.'})
     deleteUser(
-        @NonNull() @Arg({name: "id"}) id: string
+        @Arg({name: 'id', nonNull: true}) id: string,
     ) {
         const user = users.find(u => u.id === id) as User;
         if (!user) return null;

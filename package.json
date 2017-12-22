@@ -1,15 +1,15 @@
 {
-  "name": "graphql-decorator",
-  "version": "0.2.0",
+  "name": "graphql-schema-decorator",
+  "version": "1.0.0-alpha8",
   "description": "Creates GraphQL Schema from decorated TypeScript Class",
   "main": "lib/index.js",
   "engines": {
-    "node": ">=4.4.0"
+    "node": ">=6.10.0"
   },
   "scripts": {
-    "typings": "dtsm install",
     "build": "rimraf lib && tsc",
-    "lint": "tslint \"src/**/*.ts\"",
+    "lint": "tslint \"src/**/*.ts\" --type-check --project ./tsconfig.json",
+    "lint:fix": "tslint --fix \"src/**/*.ts\" --type-check --project ./tsconfig.json",
     "test": "npm run build && npm run lint && mocha lib/**/*.spec.js",
     "watch": "tsc -w",
     "watch-test": "mocha lib/**/*.spec.js --watch"
@@ -22,22 +22,25 @@
   "author": "Quramy",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Quramy/graphql-decorator.git"
+    "url": "https://github.com/indigotech/graphql-schema-decorator.git"
   },
   "license": "MIT",
   "dependencies": {
-    "reflect-metadata": "^0.1.3"
+    "reflect-metadata": "0.1.9"
   },
   "peerDependencies": {
-    "graphql": "^0.6.0"
+    "graphql": "0.11.7"
   },
   "devDependencies": {
-    "graphql": "^0.6.0",
-    "dtsm": "^1.1.0",
-    "mocha": "^2.5.3",
-    "rimraf": "^2.5.2",
-    "tslint": "^3.11.0",
-    "typescript": "^1.8.10"
+    "graphql": "0.11.7",
+    "mocha": "2.5.3",
+    "assert": "1.4.1",
+    "rimraf": "2.5.2",
+    "tslint": "5.1.0",
+    "typescript": "2.3.4",
+    "@types/graphql": "0.11.5",
+    "@types/mocha": "2.2.39",
+    "@types/node": "7.0.5"
   },
   "typings": "lib/index.d.ts"
 }

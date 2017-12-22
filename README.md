@@ -1,17 +1,223 @@
-# graphql-decorator [![Build Status](https://travis-ci.org/Quramy/graphql-decorator.svg?branch=master)](https://travis-ci.org/Quramy/graphql-decorator) [![npm version](https://badge.fury.io/js/graphql-decorator.svg)](https://badge.fury.io/js/graphql-decorator)
+# Graphql-Schema-Decorator
 
-Helps to build [GraphQL](http://graphql.org/) schema with TypeScript.
+[![Build Status](https://travis-ci.org/indigotech/graphql-schema-decorator.svg?branch=master)](https://travis-ci.org/indigotech/graphql-schema-decorator)
+[![npm version](https://badge.fury.io/js/graphql-schema-decorator.svg)](https://badge.fury.io/js/graphql-schema-decorator)
 
-It provide the following features:
- * Decorators(`@ObjectType`, `@Schema`, `@NonNull`, and more...) corresponding to [GraphQL type system](http://graphql.org/docs/api-reference-type-system/). 
- * A function to create GraphQL Schema from decorated TypeScript class.
+## Differences from graphql-decorator
+
+This package makes possible the use of decorators to define a GraphQL schema. Note that this package is a fork, we have added some new features to the original package.  
+Apart from the decorators listed on the original documentation, we have added six new and changed the behavior for two others.
+
+- @Ctx: Injects GraphQL context object into annotated method parameter.
+- @Root: Injects GraphQL root object into annotated method parameter.
+- @Pagination: Wraps the type into a pagination model (http://graphql.org/learn/pagination/). For clarification, see examples below.
+- @OrderBy: It creates an `orderBy` input object to the related @Connection query. The available fields for ordering, comes the the type declared on the related @Field. Examples should make this clearer.
+- @EnumType: It can be used just like @ObjectType in order to create `GraphQLEnumType` objects.
+- @Value: Should be used on classes decorated with @EnumType. It creates values for enums. Accepts an object of type `any` as parameter. This paremeter will be the enum value. If none is passed, the enum value is the enum itself. See example below.
+- @Query: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
+- @Mutation: It can be used multiple times on the same file. This way we make it possible to break queries into different folders.
+- @UnionType: It can be used to create `GraphQLUnionType` objects.
+- @InterfaceType: It can be used to create `GraphQLInterfaceType` objects.
+
+#### GraphQL Decorator Examples
+
+Use of modified @Query and @Mutation. @Schema stayed the same as on the original repo.
+```typescript
+import { Schema, Query, Mutation } from "graphql-schema-decorator";
+import * as AnswerMutations from 'graphql/answer/mutations/index';
+import * as AnswerQueries from 'graphql/answer/queries/index';
+import * as UserQueries from 'graphql/user/queries/index';
+import * as UserMutations from 'graphql/user/mutations/index';
+
+@Schema()
+export class RootSchema {
+
+  @Query() 
+  answerQuery: AnswerQueries.AnswerQuery;
+
+  @Query() 
+  answersQuery: AnswerQueries.AnswersQuery;
+
+  @Mutation()
+  answerCreateMutation: AnswerMutations.AnswerCreateMutation;
+
+  @Mutation()
+  answerUpvoteMutation: AnswerMutations.AnswerUpvoteMutation;
+}
+```
+
+
+Example usage of @Ctx and @Root.
+```typescript
+import { ObjectType, Ctx, Field, Root } from 'graphql-schema-decorator';
+import { GraphQLID, GraphQLString, GraphQLList } from 'graphql';
+import * as AnswerTypes from 'graphql/answer/types/index';
+
+@ObjectType({description: 'An user'})
+export class UserType {
+
+    @Field({type: GraphQLID, nonNull: true})
+    id: number;
+    
+    @Field({type: GraphQLString, })
+    name: string;
+    
+    @Field({type: GraphQLString, nonNull: true})
+    avatarUrl: string;
+
+    @Field({type: GraphQLString, nonNull: true})
+    email: string;
+
+    @Field({type: AnswerTypes.AnswerType, isList: true}) 
+    answers(@Ctx() context: any, @Root() root: any) {
+        // Get answers using ctx and root.
+    }
+
+}
+```
+
+Use of @Pagination with @OrderBy
+```typescript
+import { ObjectType, Arg, Ctx, List, Field } from 'graphql-schema-decorator';
+
+@ObjectType({description: 'Get all users query.'})
+export class UsersQuery {
+
+  @Field({type: UserType, pagination: true}) 
+  users(
+    @Ctx() context: any, 
+    @Arg({name: "offset"}) offset: number, 
+    @Arg({name: "limit"}) limit: number, 
+    @OrderBy() orderBy: orderByItem[]
+  )  {
+    // Get users
+  }
+
+@ObjectType({description: 'An user.'})
+export class UserType {
+
+    @Field({type: GraphQLID, description: 'User id', nonNull: true})
+    id: number;
+    
+    @Field({type: GraphQLString, description: 'User name', nonNull: true})
+    name: string;
+}
+
+}
+```
+
+The `orderByType` interface
+```typescript
+export interface orderByItem {
+
+  sort: string;
+  direction: string;
+
+}
+```
+
+`nodes`, `count` and `pageInfo` comes with the @Pagination decorator. @OrderBy accepts an array of `orderByItem`
+```
+{
+  users(orderBy: [{sort: id, direction: DESC}, {sort: title, direction: ASC}]) {
+    nodes {
+      id,
+      name
+    },
+    count,
+    pageInfo {
+      hasNextPage
+    }
+  }
+}
+```
+
+Use of @EnumType and @Value
+```typescript
+import { EnumType, Description, Value } from 'graphql-schema-decorator';
+
+@EnumType({description: 'An user role. Either ADMIN or DEFAULT'})
+export class UserRoleType {
+
+    @Value(0, {description: 'Admin role'})
+    ADMIN: string;
+    
+    @Value('value', {description: 'Default role'})
+    DEFAULT: string;
+
+    @Value()
+    GOD: string;
+
+}
+```
+And you can use the just declared enum like this.
+```typescript
+import { ObjectType, Arg, Pagination, Field, Description } from 'graphql-schema-decorator';
+import * as UserTypes from 'graphql-schema/user/type';
+
+@ObjectType({description: 'Get all users query.'})
+export class UsersQuery {
+  
+  @Field({type: UserTypes.UserType, pagination: true}) 
+  users(@Arg({name: "role", type: UserTypes.UserRoleType }) role: any) {
+    // The role value will either be 0, "value" or GOD.
+    // Get users by role.
+  }
+}
+```
+
+## How to use this project with a dependency injection tool?
+
+You can use service containers, which allow you to inject custom services in some places, like in subscribers or custom naming strategies. Or for example, you can get access to any dependency inside your schema classes using a service container.
+
+Here is a example for how you can setup [`typedi`](https://github.com/pleerock/typedi) service containers. But note, that you can setup any service container you choose to.
+
+```typescript
+
+import {useContainer} from 'graphql-schema-decorator';
+
+// its important to setup container before you start to work with graphql-schema-decorator
+useContainer(Container);
+
+```
+
+Use of `useContainer` along with `typedi` container. Note that `bannerRepository` will be injected through the constructor.
+
+```typescript
+
+import { ObjectType, Field } from 'graphql-schema-decorator';
+import { Service } from 'typedi';
+
+@Service()
+export class BannerRepository {
+  getBanners(): any[] {
+    // getBanners implementation
+  }
+}
+
+
+@ObjectType({description: 'Get a list of banners.'})
+@Service()
+export class BannersQuery {
+	
+	constructor(
+		private readonly bannerRepository: BannerRepository
+	) { }
+
+	@Field({type: BannerTypes.BannerType, isList: true}) 
+	banners()  {
+		return this.bannerRepository.getBanners();
+	}
+
+}
+```
 
 ## Getting started
 
-This tool requires Node.js v4.4.0 or later.
+This tool requires Node.js v6.10.0 or later.
 
 ```sh
-npm i graphql-decorator typescript
+npm i graphql-schema-decorator typescript
 ```
 
 This tool uses ES.next Decorators and Reflect, so create tsconfig.json :
@@ -38,7 +244,7 @@ And write .ts code such as:
 ```ts
 /* main.ts */
 
-import { Schema, Query, ObjectType, Field, schemaFactory } from "graphql-decorator";
+import { Schema, Query, ObjectType, Field, schemaFactory } from "graphql-schema-decorator";
 const graphql = require("graphql").graphql;
 
 // @ObjectType creates GraphQLObjectType from a class
@@ -84,7 +290,7 @@ You can declare a GraphQL schema class with `@Schema`, `@Query` and `@Mutation` 
 For example:
 
 ```ts
-import { Schema, Query, Mutation } from "graphql-decorator";
+import { Schema, Query, Mutation } from "graphql-schema-decorator";
 
 @Schema()
 class MySchema {
@@ -140,13 +346,13 @@ You can use `@NonNull` and `@List` decorator. For example:
 ```ts
 @ObjectType()
 class User {
-  @NonNull() @Field({type: graphql.GraphQLID})
+  @Field({type: graphql.GraphQLID, nonNull: true})
   id: string;
 }
 
 @ObjectType()
 class Query {
-  @List() @Field({type: User}) getAllUsers(): Promise<User[]> {
+  @Field({type: User, isList: true}) getAllUsers(): Promise<User[]> {
     /* implementation for fetch all users */
   }
 }

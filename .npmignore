@@ -1,6 +1,12 @@
-src/
-examples/
-typings/
+*.spec.d.ts
 *.spec.js
 *.spec.js.map
-*.spec.d.ts
+.editorconfig
+.github/
+.travis.yml
+examples/
+runtest.sh
+src/
+tsconfig.json
+tslint.json
+yarn.lock
