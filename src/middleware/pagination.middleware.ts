@@ -14,7 +14,7 @@ export function PaginationMiddleware(target: any, propertyKey: string, methodDes
         .map(fieldArguments => {
           const paginationValues = fieldArguments
             .reduce((indexMap, metadata) => {
-              indexMap[metadata.name] = metadata.index;
+              indexMap[metadata.name] = args[metadata.index];
               return indexMap;
             }, {} as { [name: string]: number; });
           return new PaginationResponse(count, data, new PageInfo(count, paginationValues['offset'], paginationValues['limit']));

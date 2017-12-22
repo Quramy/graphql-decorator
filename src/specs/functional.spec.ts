@@ -106,10 +106,13 @@ describe('Functional', function () {
       class QueryType {
         @D.Field({ pagination: true, type: graphql.GraphQLString })
         async paginated(
+          @D.Arg({ name: 'offset', type: graphql.GraphQLInt }) offset: number,
+          @D.Arg({ name: 'limit', type: graphql.GraphQLInt }) limit: number,
           @D.Arg({ name: 'value', type: graphql.GraphQLString }) value: string,
           @D.Ctx() context: any,
         ): Promise<[string[], number]> {
-          return [[`Hello, ${value}!`], 1];
+          const items = [`Hello, ${value}!`, `Hello again, ${value}!`, `Hi, ${value}!`];
+          return [items.slice(offset, offset + limit), items.length];
         }
       }
 
@@ -118,11 +121,11 @@ describe('Functional', function () {
         @D.Query() query: QueryType;
       }
 
-      it('resolves @Field with pagination', async function () {
+      it('resolves @Field with pagination for first page', async function () {
         const schema = schemaFactory(SchemaType);
         const result = await graphql.graphql(schema, `
           query {
-            paginated(value: "world") {
+            paginated(value: "world", offset: 0, limit: 1) {
               count
               nodes
               pageInfo {
@@ -132,11 +135,53 @@ describe('Functional', function () {
             }
           }
         `);
-        assert(result.data.paginated.count === 1);
+        assert(result.data.paginated.count === 3);
         assert(result.data.paginated.nodes.length === 1);
         assert(result.data.paginated.nodes[0] === 'Hello, world!');
-        assert(result.data.paginated.pageInfo.hasNextPage === false);
+        assert(result.data.paginated.pageInfo.hasNextPage === true);
         assert(result.data.paginated.pageInfo.hasPreviousPage === false);
+      });
+
+      it('resolves @Field with pagination middle page', async function () {
+        const schema = schemaFactory(SchemaType);
+        const result = await graphql.graphql(schema, `
+          query {
+            paginated(value: "world", offset: 1, limit: 1) {
+              count
+              nodes
+              pageInfo {
+                hasNextPage
+                hasPreviousPage
+              }
+            }
+          }
+        `);
+        assert(result.data.paginated.count === 3);
+        assert(result.data.paginated.nodes.length === 1);
+        assert(result.data.paginated.nodes[0] === 'Hello again, world!');
+        assert(result.data.paginated.pageInfo.hasNextPage === true);
+        assert(result.data.paginated.pageInfo.hasPreviousPage === true);
+      });
+
+      it('resolves @Field with pagination for last page', async function () {
+        const schema = schemaFactory(SchemaType);
+        const result = await graphql.graphql(schema, `
+          query {
+            paginated(value: "world", offset: 2, limit: 1) {
+              count
+              nodes
+              pageInfo {
+                hasNextPage
+                hasPreviousPage
+              }
+            }
+          }
+        `);
+        assert(result.data.paginated.count === 3);
+        assert(result.data.paginated.nodes.length === 1);
+        assert(result.data.paginated.nodes[0] === 'Hi, world!');
+        assert(result.data.paginated.pageInfo.hasNextPage === false);
+        assert(result.data.paginated.pageInfo.hasPreviousPage === true);
       });
 
     });
