@@ -1,3 +1,5 @@
+**This is not maintained. See [issue/#3](https://github.com/Quramy/graphql-decorator/issues/3).**
+
 # graphql-decorator [![Build Status](https://travis-ci.org/Quramy/graphql-decorator.svg?branch=master)](https://travis-ci.org/Quramy/graphql-decorator) [![npm version](https://badge.fury.io/js/graphql-decorator.svg)](https://badge.fury.io/js/graphql-decorator)
 
 Helps to build [GraphQL](http://graphql.org/) schema with TypeScript.
