@@ -2,6 +2,8 @@
 
 # graphql-decorator [![Build Status](https://travis-ci.org/Quramy/graphql-decorator.svg?branch=master)](https://travis-ci.org/Quramy/graphql-decorator) [![npm version](https://badge.fury.io/js/graphql-decorator.svg)](https://badge.fury.io/js/graphql-decorator)
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/Quramy/graphql-decorator.svg)](https://greenkeeper.io/)
+
 Helps to build [GraphQL](http://graphql.org/) schema with TypeScript.
 
 It provide the following features:
